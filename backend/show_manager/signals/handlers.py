@@ -1,7 +1,7 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from ..models import Member
+from ..models import Member, Round
 
 User = get_user_model()
 
@@ -10,3 +10,11 @@ User = get_user_model()
 def create_member_for_user(sender, instance, created, **kwargs):
     if created:
         Member.objects.create(user=instance)
+
+
+@receiver(post_save, sender=Round)
+@receiver(post_delete, sender=Round)
+def update_show_time(sender, instance, **kwargs):
+    rounds = instance.show.round_set.all()
+    instance.show.time = min([round.time for round in rounds]) if rounds else None
+    instance.show.save()
