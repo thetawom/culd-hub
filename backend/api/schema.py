@@ -1,7 +1,17 @@
 import graphene
+import graphql_jwt
 from graphene_django import DjangoObjectType
+from graphql_jwt.decorators import staff_member_required
 from users.models import User
 from show_manager.models import Member, Show, Round, Contact
+
+from django.dispatch import receiver
+from graphql_jwt.refresh_token.signals import refresh_token_rotated
+
+
+@receiver(refresh_token_rotated)
+def revoke_refresh_token(sender, request, refresh_token, **kwargs):
+    refresh_token.revoke(request)
 
 
 class UserType(DjangoObjectType):
@@ -51,6 +61,7 @@ class Query(graphene.ObjectType):
     members = graphene.List(MemberType)
     shows = graphene.List(ShowType)
 
+    @staff_member_required
     def resolve_users(root, info, **kwargs):
         return User.objects.all()
 
@@ -61,4 +72,11 @@ class Query(graphene.ObjectType):
         return Show.objects.all()
 
 
-schema = graphene.Schema(query=Query)
+class Mutation(graphene.ObjectType):
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
+    revoke_token = graphql_jwt.Revoke.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
