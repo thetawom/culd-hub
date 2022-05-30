@@ -15,6 +15,6 @@ def create_member_for_user(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Round)
 @receiver(post_delete, sender=Round)
 def update_show_time(sender, instance, **kwargs):
-    rounds = instance.show.round_set.all()
+    rounds = instance.show.rounds.all()
     instance.show.time = min([round.time for round in rounds]) if rounds else None
     instance.show.save()

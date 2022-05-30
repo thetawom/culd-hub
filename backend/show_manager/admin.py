@@ -11,8 +11,8 @@ class RoleInlineAdmin(admin.TabularInline):
 
 
 class ShowAdmin(admin.ModelAdmin):
-    def rounds(self, obj):
-        count = obj.round_set.count()
+    def rounds(self, show):
+        count = show.rounds.count()
         return count if count > 0 else None
 
     list_display = [
@@ -25,7 +25,6 @@ class ShowAdmin(admin.ModelAdmin):
         "address",
     ]
     empty_value_display = "TBD"
-    ordering = ["date", "time"]
 
     inlines = [RoundInlineAdmin, RoleInlineAdmin]
 
