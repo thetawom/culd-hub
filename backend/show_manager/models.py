@@ -62,6 +62,9 @@ class Show(models.Model):
         choices=SHOW_PRIORITY_CHOICES, default=2
     )
 
+    class Meta:
+        ordering = ["date", "time"]
+
     @admin.display(description="Day of Week")
     def day_of_week(self):
         return self.date.strftime("%a").upper() if self.date else None
@@ -87,7 +90,7 @@ class Show(models.Model):
 
 
 class Round(models.Model):
-    show = models.ForeignKey("Show", on_delete=models.CASCADE)
+    show = models.ForeignKey("Show", on_delete=models.CASCADE, related_name="rounds")
     time = models.TimeField(null=True, blank=True)
 
     class Meta:
@@ -116,7 +119,7 @@ class Role(models.Model):
 class Contact(models.Model):
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-    phone_number = PhoneNumberField(null=True, blank=True)
+    phone = PhoneNumberField(null=True, blank=True)
     email = models.EmailField(max_length=30, blank=True)
 
     def __str__(self):
