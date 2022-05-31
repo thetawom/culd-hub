@@ -41,6 +41,8 @@ export const REFRESH_TOKEN_MUTATION = gql`
 export const AuthProvider = ({ children }) => {
 	const navigate = useNavigate();
 
+	let [invalidCredentials, setInvalidCredentials] = useState(false);
+
 	let [authTokens, setAuthTokens] = useState(() =>
 		localStorage.getItem(AUTH_TOKEN) && localStorage.getItem(REFRESH_TOKEN)
 			? {
@@ -54,6 +56,7 @@ export const AuthProvider = ({ children }) => {
 
 	let [tokenAuth] = useMutation(TOKEN_AUTH_MUTATION, {
 		onCompleted: ({ tokenAuth }) => {
+			setInvalidCredentials(false);
 			setAuthTokens({
 				access: tokenAuth.token,
 				refresh: tokenAuth.refreshToken,
@@ -65,6 +68,7 @@ export const AuthProvider = ({ children }) => {
 		onError: (error) => {
 			if (error.message === "Please enter valid credentials") {
 				console.log(error.message);
+				setInvalidCredentials(true);
 			} else {
 				alert(error.message);
 			}
@@ -144,8 +148,10 @@ export const AuthProvider = ({ children }) => {
 	let contextData = {
 		authTokens: authTokens,
 		client: client,
+		invalidCredentials: invalidCredentials,
 		loginUser: loginUser,
 		logoutUser: logoutUser,
+		setInvalidCredentials: setInvalidCredentials,
 	};
 
 	return (
