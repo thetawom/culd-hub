@@ -1,28 +1,29 @@
 import "./App.css";
-import { gql, useQuery } from "@apollo/client";
-
-const GET_USERS = gql`
-	{
-		users {
-			id
-			firstName
-			lastName
-		}
-	}
-`;
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import Header from "./components/Header";
+import PrivateRoute from "./utils/PrivateRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
-	const { loading, error, data } = useQuery(GET_USERS);
-	if (loading) return "Loading ...";
-	if (error) return `Error! ${error.message}`;
-	console.log(data);
 	return (
 		<div className="App">
-			{data.users.map(({ id, firstName, lastName }) => (
-				<p key={id}>
-					{firstName} {lastName}
-				</p>
-			))}
+			<AuthProvider>
+				<Header />
+				<Routes>
+					<Route
+						exact
+						path="/"
+						element={
+							<PrivateRoute>
+								<HomePage />
+							</PrivateRoute>
+						}
+					/>
+					<Route path="login/" element={<LoginPage />} />
+				</Routes>
+			</AuthProvider>
 		</div>
 	);
 }
