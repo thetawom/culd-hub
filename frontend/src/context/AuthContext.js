@@ -71,12 +71,11 @@ export const AuthProvider = ({ children }) => {
 		},
 	});
 
-	let loginUser = (e) => {
-		e.preventDefault();
+	let loginUser = ({ email, password }) => {
 		tokenAuth({
 			variables: {
-				email: e.target.email.value,
-				password: e.target.password.value,
+				email: email,
+				password: password,
 			},
 		});
 	};

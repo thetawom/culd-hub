@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import React, { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import useAuthQuery from "../utils/useAuthQuery";
+import Header from "../components/Header";
 
 const GET_SHOWS_QUERY = gql`
 	{
@@ -28,13 +29,16 @@ const HomePage = () => {
 	return loading ? (
 		<p>Loading ...</p>
 	) : (
-		<div>
-			{shows.map(({ id, name, date }) => (
-				<p key={id}>
-					{name} {date}
-				</p>
-			))}
-		</div>
+		<>
+			<Header />
+			<div>
+				{shows.map(({ id, name, date }) => (
+					<p key={id}>
+						{name} {date}
+					</p>
+				))}
+			</div>
+		</>
 	);
 };
 
