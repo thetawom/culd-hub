@@ -2,7 +2,7 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
-import Header from "./components/Header";
+import SignupPage from "./pages/SignupPage";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -10,7 +10,6 @@ function App() {
 	return (
 		<div className="App">
 			<AuthProvider>
-				<Header />
 				<Routes>
 					<Route
 						exact
@@ -22,6 +21,7 @@ function App() {
 						}
 					/>
 					<Route path="login/" element={<LoginPage />} />
+					<Route path="signup/" element={<SignupPage />} />
 				</Routes>
 			</AuthProvider>
 		</div>
