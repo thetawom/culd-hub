@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Alert, Form, Input, Button } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 import AuthBox from "../components/AuthBox";
 
@@ -34,17 +34,17 @@ const LoginPage = () => {
 				<Form.Item
 					name="email"
 					rules={[
-						{ required: true, message: "Please enter your email address!" },
+						{ required: true, message: "Please enter your email address." },
 					]}
 					validateStatus={invalidCredentials ? "error" : ""}
 					hasFeedback={invalidCredentials}
 					onChange={onChange}
 				>
-					<Input prefix={<UserOutlined />} placeholder="Email address" />
+					<Input prefix={<MailOutlined />} placeholder="Email address" />
 				</Form.Item>
 				<Form.Item
 					name="password"
-					rules={[{ required: true, message: "Please enter your password!" }]}
+					rules={[{ required: true, message: "Please enter your password." }]}
 					validateStatus={invalidCredentials ? "error" : ""}
 					hasFeedback={invalidCredentials}
 					onChange={onChange}
