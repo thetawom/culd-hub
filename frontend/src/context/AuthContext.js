@@ -1,7 +1,16 @@
-import { createContext, useState } from "react";
-import { gql, useMutation } from "@apollo/client";
-import { AUTH_TOKEN, REFRESH_TOKEN } from "../constants";
+import { createContext, useEffect, useState } from "react";
+import {
+	ApolloClient,
+	createHttpLink,
+	gql,
+	InMemoryCache,
+	useMutation,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+import dayjs from "dayjs";
+import { AUTH_TOKEN, REFRESH_TOKEN } from "../constants";
 
 const AuthContext = createContext();
 
@@ -10,6 +19,17 @@ export default AuthContext;
 export const TOKEN_AUTH_MUTATION = gql`
 	mutation TokenAuth($email: String!, $password: String!) {
 		tokenAuth(email: $email, password: $password) {
+			token
+			payload
+			refreshToken
+			refreshExpiresIn
+		}
+	}
+`;
+
+export const REFRESH_TOKEN_MUTATION = gql`
+	mutation RefreshToken($refreshToken: String!) {
+		refreshToken(refreshToken: $refreshToken) {
 			token
 			payload
 			refreshToken
@@ -27,6 +47,62 @@ export const AuthProvider = ({ children }) => {
 			  }
 			: null
 	);
+
+	let [client, setClient] = useState(null);
+
+	let [refreshToken] = useMutation(REFRESH_TOKEN_MUTATION, {
+		onCompleted: ({ refreshToken }) => {
+			setAuthTokens({
+				access: refreshToken.token,
+				refresh: refreshToken.refreshToken,
+			});
+			localStorage.setItem(AUTH_TOKEN, refreshToken.token);
+			localStorage.setItem(REFRESH_TOKEN, refreshToken.refreshToken);
+		},
+		onError: (error) => {
+			console.log(error.message);
+			setAuthTokens(null);
+			localStorage.removeItem(AUTH_TOKEN);
+			localStorage.removeItem(REFRESH_TOKEN);
+		},
+	});
+
+	useEffect(() => {
+		if (authTokens) {
+			const httpLink = createHttpLink({
+				uri: "http://localhost:8000/graphql/",
+			});
+
+			const authLink = setContext((_, { headers }) => {
+				const exp = jwt_decode(authTokens.access).exp;
+				const isExpired = dayjs.unix(exp).diff(dayjs()) < 1;
+
+				if (isExpired) {
+					refreshToken({
+						variables: {
+							refreshToken: authTokens.refresh,
+						},
+					});
+				}
+
+				return {
+					headers: {
+						...headers,
+						authorization: authTokens ? `JWT ${authTokens.access}` : "",
+					},
+				};
+			});
+
+			setClient(
+				new ApolloClient({
+					link: authLink.concat(httpLink),
+					cache: new InMemoryCache(),
+				})
+			);
+		} else {
+			setClient(null);
+		}
+	}, [authTokens]);
 
 	const navigate = useNavigate();
 
@@ -67,6 +143,7 @@ export const AuthProvider = ({ children }) => {
 
 	let contextData = {
 		authTokens: authTokens,
+		client: client,
 		loginUser: loginUser,
 		logoutUser: logoutUser,
 	};
