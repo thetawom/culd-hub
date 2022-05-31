@@ -140,7 +140,7 @@ export const AuthProvider = ({ children }) => {
 		} else {
 			setClient(null);
 		}
-	}, [authTokens]);
+	}, [authTokens, refreshToken]);
 
 	let contextData = {
 		authTokens: authTokens,
