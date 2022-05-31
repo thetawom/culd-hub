@@ -27,7 +27,7 @@ class Query(graphene.ObjectType):
     def resolve_members(root, info, **kwargs):
         return Member.objects.all()
 
-    # @login_required
+    @login_required
     def resolve_shows(root, info, **kwargs):
         return Show.objects.all()
 

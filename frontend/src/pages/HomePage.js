@@ -1,6 +1,7 @@
-import { gql, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState } from "react";
+import { gql } from "@apollo/client";
+import React, { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
+import useAuthQuery from "../utils/useAuthQuery";
 
 const GET_SHOWS_QUERY = gql`
 	{
@@ -16,7 +17,7 @@ const HomePage = () => {
 	let { logoutUser } = useContext(AuthContext);
 	let [shows, setShows] = useState([]);
 
-	let { loading } = useQuery(GET_SHOWS_QUERY, {
+	let { loading } = useAuthQuery(GET_SHOWS_QUERY, {
 		onCompleted: ({ shows }) => {
 			console.log(shows);
 			setShows(shows);
