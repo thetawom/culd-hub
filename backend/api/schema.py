@@ -1,6 +1,6 @@
 import graphene
 import graphql_jwt
-from graphql_jwt.decorators import staff_member_required
+from graphql_jwt.decorators import login_required, staff_member_required
 from users.models import User
 from show_manager.models import Member, Show
 from .types import UserType, MemberType, ShowType
@@ -23,9 +23,11 @@ class Query(graphene.ObjectType):
     def resolve_users(root, info, **kwargs):
         return User.objects.all()
 
-    def resolve_categories(root, info, **kwargs):
+    @login_required
+    def resolve_members(root, info, **kwargs):
         return Member.objects.all()
 
+    # @login_required
     def resolve_shows(root, info, **kwargs):
         return Show.objects.all()
 
