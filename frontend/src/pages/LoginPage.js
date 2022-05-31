@@ -1,13 +1,20 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { Form, Input, Button } from "antd";
+import { Alert, Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 import AuthBox from "../components/AuthBox";
 
 const LoginPage = () => {
-	let { loginUser } = useContext(AuthContext);
-	const [form] = Form.useForm();
+	let { loginUser, invalidCredentials, setInvalidCredentials } =
+		useContext(AuthContext);
+
+	let [form] = Form.useForm();
+
+	let onChange = () => {
+		setInvalidCredentials(false);
+	};
+
 	let subtitle = (
 		<>
 			Don't have an account?{" "}
@@ -16,20 +23,31 @@ const LoginPage = () => {
 			</Link>
 		</>
 	);
+
+	let alert = invalidCredentials ? (
+		<Alert type="error" message="Username or password are incorrect." banner />
+	) : null;
+
 	return (
-		<AuthBox subtitle={subtitle}>
+		<AuthBox subtitle={subtitle} alert={alert}>
 			<Form form={form} name="login" onFinish={loginUser}>
 				<Form.Item
 					name="email"
 					rules={[
 						{ required: true, message: "Please enter your email address!" },
 					]}
+					validateStatus={invalidCredentials ? "error" : ""}
+					hasFeedback={invalidCredentials}
+					onChange={onChange}
 				>
 					<Input prefix={<UserOutlined />} placeholder="Email address" />
 				</Form.Item>
 				<Form.Item
 					name="password"
 					rules={[{ required: true, message: "Please enter your password!" }]}
+					validateStatus={invalidCredentials ? "error" : ""}
+					hasFeedback={invalidCredentials}
+					onChange={onChange}
 				>
 					<Input.Password prefix={<LockOutlined />} placeholder="Password" />
 				</Form.Item>
