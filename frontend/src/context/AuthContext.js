@@ -39,8 +39,10 @@ export const REFRESH_TOKEN_MUTATION = gql`
 `;
 
 export const AuthProvider = ({ children }) => {
+	const navigate = useNavigate();
+
 	let [authTokens, setAuthTokens] = useState(() =>
-		localStorage.getItem(AUTH_TOKEN)
+		localStorage.getItem(AUTH_TOKEN) && localStorage.getItem(REFRESH_TOKEN)
 			? {
 					access: localStorage.getItem(AUTH_TOKEN),
 					refresh: localStorage.getItem(REFRESH_TOKEN),
@@ -49,6 +51,42 @@ export const AuthProvider = ({ children }) => {
 	);
 
 	let [client, setClient] = useState(null);
+
+	let [tokenAuth] = useMutation(TOKEN_AUTH_MUTATION, {
+		onCompleted: ({ tokenAuth }) => {
+			setAuthTokens({
+				access: tokenAuth.token,
+				refresh: tokenAuth.refreshToken,
+			});
+			localStorage.setItem(AUTH_TOKEN, tokenAuth.token);
+			localStorage.setItem(REFRESH_TOKEN, tokenAuth.refreshToken);
+			navigate("/");
+		},
+		onError: (error) => {
+			if (error.message === "Please enter valid credentials") {
+				console.log(error.message);
+			} else {
+				alert(error.message);
+			}
+		},
+	});
+
+	let loginUser = (e) => {
+		e.preventDefault();
+		tokenAuth({
+			variables: {
+				email: e.target.email.value,
+				password: e.target.password.value,
+			},
+		});
+	};
+
+	let logoutUser = () => {
+		setAuthTokens(null);
+		localStorage.removeItem(AUTH_TOKEN);
+		localStorage.removeItem(REFRESH_TOKEN);
+		navigate("/login");
+	};
 
 	let [refreshToken] = useMutation(REFRESH_TOKEN_MUTATION, {
 		onCompleted: ({ refreshToken }) => {
@@ -103,43 +141,6 @@ export const AuthProvider = ({ children }) => {
 			setClient(null);
 		}
 	}, [authTokens]);
-
-	const navigate = useNavigate();
-
-	let [tokenAuth] = useMutation(TOKEN_AUTH_MUTATION, {
-		onCompleted: ({ tokenAuth }) => {
-			setAuthTokens({
-				access: tokenAuth.token,
-				refresh: tokenAuth.refreshToken,
-			});
-			localStorage.setItem(AUTH_TOKEN, tokenAuth.token);
-			localStorage.setItem(REFRESH_TOKEN, tokenAuth.refreshToken);
-			navigate("/");
-		},
-		onError: (error) => {
-			if (error.message === "Please enter valid credentials") {
-				console.log(error.message);
-			} else {
-				alert(error.message);
-			}
-		},
-	});
-	let loginUser = (e) => {
-		e.preventDefault();
-		tokenAuth({
-			variables: {
-				email: e.target.email.value,
-				password: e.target.password.value,
-			},
-		});
-	};
-
-	let logoutUser = () => {
-		setAuthTokens(null);
-		localStorage.removeItem(AUTH_TOKEN);
-		localStorage.removeItem(REFRESH_TOKEN);
-		navigate("/login");
-	};
 
 	let contextData = {
 		authTokens: authTokens,
