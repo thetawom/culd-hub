@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Input, Button, Alert } from "antd";
+import { Form, Input, Button, Alert, message } from "antd";
 import {
 	UserOutlined,
 	MailOutlined,
@@ -51,8 +51,8 @@ const SignupPage = () => {
 	let [createUser] = useMutation(CREATE_USER_MUTATION, {
 		onCompleted: ({ createUser }) => {
 			setInvalidEmail(false);
-			console.log(createUser);
 			localStorage.setItem(REMEMBER_EMAIL, createUser.user.email);
+			message.success("Account created successfully.");
 			navigate("/login");
 		},
 		onError: (error) => {
@@ -64,7 +64,6 @@ const SignupPage = () => {
 	});
 
 	const onFinish = (values) => {
-		console.log(values);
 		createUser({
 			variables: {
 				email: values.email,
