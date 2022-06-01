@@ -197,7 +197,7 @@ const ShowsTable = ({ user }) => {
 			render: (priority) => {
 				let [color, text] =
 					priority === "A_1"
-						? ["blue", "FULL"]
+						? ["geekblue", "FULL"]
 						: priority === "A_2"
 						? ["green", "NORMAL"]
 						: ["red", "URGENT"];
@@ -328,7 +328,14 @@ const ShowsTable = ({ user }) => {
 							placement="bottom"
 							style={{ textAlign: "center" }}
 						>
-							<Tag icon={<PhoneTwoTone />} style={{ cursor: "pointer" }}>
+							<Tag
+								icon={<PhoneTwoTone />}
+								style={{ cursor: "pointer" }}
+								onClick={() => {
+									navigator.clipboard.writeText(contact.phone);
+									message.info("Phone number copied to clipboard");
+								}}
+							>
 								{contact.firstName} {contact.lastName}
 							</Tag>
 						</Tooltip>
