@@ -1,28 +1,193 @@
-import React from "react";
-import { Badge, Button, Space, Table, Tag, Tooltip } from "antd";
+import React, { useContext, useState } from "react";
+import { message, Badge, Button, Space, Spin, Table, Tag, Tooltip } from "antd";
 import {
 	PlusOutlined,
 	CarTwoTone,
 	PhoneTwoTone,
 	FireOutlined,
+	StarFilled,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { gql } from "@apollo/client";
+import useAuthMutation from "../utils/useAuthMutation";
+import AuthContext from "../context/AuthContext";
+import useAuthQuery from "../utils/useAuthQuery";
 
 var customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
-const ShowsTable = ({ shows, user }) => {
+const GET_SHOWS_QUERY = gql`
+	{
+		shows {
+			id
+			name
+			priority
+			date
+			time
+			address
+			lions
+			performers {
+				user {
+					id
+					firstName
+					lastName
+				}
+			}
+			point {
+				user {
+					id
+					firstName
+					lastName
+				}
+			}
+			contact {
+				firstName
+				lastName
+				phone
+			}
+		}
+	}
+`;
+
+export const CREATE_ROLE_MUTATION = gql`
+	mutation CreateRole($showId: ID!) {
+		createRole(showId: $showId) {
+			role {
+				show {
+					id
+					name
+				}
+				performer {
+					user {
+						id
+						firstName
+						lastName
+					}
+				}
+			}
+		}
+	}
+`;
+
+export const DELETE_ROLE_MUTATION = gql`
+	mutation DeleteRole($showId: ID!) {
+		deleteRole(showId: $showId) {
+			role {
+				show {
+					id
+					name
+				}
+				performer {
+					user {
+						id
+					}
+				}
+			}
+		}
+	}
+`;
+
+const ShowsTable = ({ user }) => {
+	let { logoutUser } = useContext(AuthContext);
+
+	let [shows, setShows] = useState([]);
+
+	let { loading } = useAuthQuery(GET_SHOWS_QUERY, {
+		onCompleted: ({ shows }) => {
+			console.log(shows);
+			setShows(shows);
+		},
+		onError: () => logoutUser(),
+	});
+
+	let [createRole] = useAuthMutation(CREATE_ROLE_MUTATION, {
+		onCompleted: ({ createRole }) => {
+			setShows(
+				shows.map((show) =>
+					show.id === createRole.role.show.id
+						? {
+								...show,
+								performers: [...show.performers, createRole.role.performer],
+						  }
+						: { ...show }
+				)
+			);
+			message.success(`Signed up for ${createRole.role.show.name}`);
+		},
+		onError: (error) => {
+			console.log(error.message);
+		},
+	});
+
+	let addSignup = (id) => {
+		createRole({
+			variables: {
+				showId: id,
+			},
+		});
+	};
+
+	let [deleteRole] = useAuthMutation(DELETE_ROLE_MUTATION, {
+		onCompleted: ({ deleteRole }) => {
+			setShows(
+				shows.map((show) =>
+					show.id === deleteRole.role.show.id
+						? {
+								...show,
+								performers: show.performers.filter(
+									(performer) =>
+										performer.user.id !== deleteRole.role.performer.user.id
+								),
+						  }
+						: { ...show }
+				)
+			);
+			message.error(`Removed from ${deleteRole.role.show.name}`);
+		},
+		onError: (error) => {
+			console.log(error.message);
+		},
+	});
+
+	let removeSignup = (id) => {
+		deleteRole({
+			variables: {
+				showId: id,
+			},
+		});
+	};
+
 	const columns = [
 		{
 			title: "",
 			key: "check",
-			render: () => (
-				<div style={{ textAlign: "center" }}>
-					<Button size="small">
-						<PlusOutlined />
+			render: (_, { id, performers }) =>
+				performers.map((performer) => performer.user.id).includes(user.id) ? (
+					<Button
+						size="small"
+						style={{
+							paddingLeft: "5px",
+							paddingRight: "5px",
+						}}
+						type="primary"
+						onClick={() => removeSignup(id)}
+					>
+						<StarFilled />
 					</Button>
-				</div>
-			),
+				) : (
+					<div style={{ textAlign: "center" }}>
+						<Button
+							size="small"
+							style={{
+								paddingLeft: "5px",
+								paddingRight: "5px",
+							}}
+							onClick={() => addSignup(id)}
+						>
+							<PlusOutlined />
+						</Button>
+					</div>
+				),
 			width: "2%",
 		},
 		{
@@ -52,10 +217,10 @@ const ShowsTable = ({ shows, user }) => {
 			title: "Performance",
 			dataIndex: "name",
 			key: "name",
-			render: (name, { address, contact }) => {
+			render: (name, { address }) => {
 				return (
 					<>
-						<span>{name}</span>
+						<span style={{ fontSize: "1.05em" }}>{name}</span>
 						<Tooltip
 							title={address}
 							placement="bottom"
@@ -109,7 +274,7 @@ const ShowsTable = ({ shows, user }) => {
 			),
 		},
 		{
-			title: "Tentative Roster",
+			title: "Performance Roster",
 			dataIndex: "performers",
 			key: "performers",
 			render: (performers, { point }) => (
@@ -169,7 +334,19 @@ const ShowsTable = ({ shows, user }) => {
 		},
 	];
 
-	return <Table columns={columns} dataSource={shows} rowKey="id" />;
+	return loading ? (
+		<Spin
+			style={{
+				position: "absolute",
+				top: "50vh",
+				left: "50vw",
+				transform: "translate(-50%, -50%)",
+			}}
+			size="large"
+		/>
+	) : (
+		<Table columns={columns} dataSource={shows} rowKey="id" />
+	);
 };
 
 export default ShowsTable;

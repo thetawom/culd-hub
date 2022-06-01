@@ -6,42 +6,10 @@ import useAuthQuery from "../utils/useAuthQuery";
 import Header from "../components/Header";
 import ShowsTable from "../components/ShowsTable";
 
-const GET_SHOWS_QUERY = gql`
-	{
-		shows {
-			id
-			name
-			priority
-			date
-			time
-			address
-			lions
-			performers {
-				user {
-					id
-					firstName
-					lastName
-				}
-			}
-			point {
-				user {
-					id
-					firstName
-					lastName
-				}
-			}
-			contact {
-				firstName
-				lastName
-				phone
-			}
-		}
-	}
-`;
-
 const GET_ME_QUERY = gql`
 	{
 		me {
+			id
 			firstName
 			lastName
 		}
@@ -52,17 +20,8 @@ const HomePage = () => {
 	let { logoutUser } = useContext(AuthContext);
 
 	let [user, setUser] = useState(null);
-	let [shows, setShows] = useState([]);
 
-	let { loading: showsLoading } = useAuthQuery(GET_SHOWS_QUERY, {
-		onCompleted: ({ shows }) => {
-			console.log(shows);
-			setShows(shows);
-		},
-		onError: () => logoutUser(),
-	});
-
-	let { loading: userLoading } = useAuthQuery(GET_ME_QUERY, {
+	let { loading } = useAuthQuery(GET_ME_QUERY, {
 		onCompleted: ({ me }) => {
 			console.log(me);
 			setUser(me);
@@ -80,7 +39,7 @@ const HomePage = () => {
 					padding: "30px",
 				}}
 			>
-				{showsLoading || userLoading ? (
+				{loading ? (
 					<Spin
 						style={{
 							position: "absolute",
@@ -96,7 +55,7 @@ const HomePage = () => {
 							{`Welcome, ${user.firstName}!`}
 						</Typography.Title>
 						<Divider style={{ marginTop: "1.5em", marginBottom: "2em" }} />
-						<ShowsTable shows={shows} user={user} />
+						<ShowsTable user={user} />
 					</>
 				)}
 			</Layout.Content>

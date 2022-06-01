@@ -6,7 +6,7 @@ from graphql_jwt.decorators import login_required, staff_member_required
 from users.models import User
 from show_manager.models import Member, Show
 from .types import UserType, MemberType, ShowType
-from .mutations import CreateUserMutation
+from .mutations import CreateUserMutation, CreateRoleMutation, DeleteRoleMutation
 
 
 @receiver(refresh_token_rotated)
@@ -45,6 +45,8 @@ class Mutation(graphene.ObjectType):
     revoke_token = graphql_jwt.Revoke.Field()
 
     create_user = CreateUserMutation.Field()
+    create_role = CreateRoleMutation.Field()
+    delete_role = DeleteRoleMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

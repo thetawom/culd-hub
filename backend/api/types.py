@@ -1,6 +1,6 @@
 from graphene_django import DjangoObjectType
 from users.models import User
-from show_manager.models import Member, Show, Round, Contact
+from show_manager.models import Member, Show, Round, Contact, Role
 
 
 class UserType(DjangoObjectType):
@@ -44,3 +44,9 @@ class ContactType(DjangoObjectType):
     class Meta:
         model = Contact
         fields = ("id", "first_name", "last_name", "phone", "email")
+
+
+class RoleType(DjangoObjectType):
+    class Meta:
+        model = Role
+        fields = ("id", "show", "performer", "role")
