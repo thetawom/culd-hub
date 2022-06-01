@@ -1,6 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Form, Input, Button } from "antd";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Form, Input, Button, Alert } from "antd";
 import {
 	UserOutlined,
 	MailOutlined,
@@ -8,12 +8,72 @@ import {
 	LockOutlined,
 } from "@ant-design/icons";
 import AuthBox from "../components/AuthBox";
+import { gql, useMutation } from "@apollo/client";
+import { REMEMBER_EMAIL } from "../constants";
+
+export const CREATE_USER_MUTATION = gql`
+	mutation CreateUser(
+		$email: String!
+		$password: String!
+		$firstName: String!
+		$lastName: String!
+		$phone: String!
+	) {
+		createUser(
+			email: $email
+			password: $password
+			firstName: $firstName
+			lastName: $lastName
+			phone: $phone
+		) {
+			user {
+				id
+				firstName
+				lastName
+				email
+				phone
+			}
+		}
+	}
+`;
 
 const SignupPage = () => {
 	const [form] = Form.useForm();
 
+	const navigate = useNavigate();
+
+	let [invalidEmail, setInvalidEmail] = useState(false);
+
+	let onChange = () => {
+		setInvalidEmail(false);
+	};
+
+	let [createUser] = useMutation(CREATE_USER_MUTATION, {
+		onCompleted: ({ createUser }) => {
+			setInvalidEmail(false);
+			console.log(createUser);
+			localStorage.setItem(REMEMBER_EMAIL, createUser.user.email);
+			navigate("/login");
+		},
+		onError: (error) => {
+			console.log(error.message);
+			if (error.message.startsWith("UNIQUE constraint failed")) {
+				setInvalidEmail(true);
+			}
+		},
+	});
+
 	const onFinish = (values) => {
 		console.log(values);
+		createUser({
+			variables: {
+				email: values.email,
+				password: values.password,
+				firstName: values.first_name,
+				lastName: values.last_name,
+				phone: values.phone_number ? values.phone_number : "",
+			},
+		});
 	};
 
 	const toLowerCase = (str) => (str || "").toLowerCase();
@@ -31,8 +91,16 @@ const SignupPage = () => {
 		</>
 	);
 
+	let alert = invalidEmail ? (
+		<Alert
+			type="error"
+			message="Account with the same email already exists."
+			banner
+		/>
+	) : null;
+
 	return (
-		<AuthBox subtitle={subtitle}>
+		<AuthBox subtitle={subtitle} alert={alert}>
 			<Form form={form} name="register" onFinish={onFinish}>
 				<Form.Item>
 					<Input.Group compact>
@@ -68,6 +136,9 @@ const SignupPage = () => {
 						{ type: "email", message: "This is not a valid email address." },
 						{ required: true, message: "Please enter your email address." },
 					]}
+					validateStatus={invalidEmail ? "error" : ""}
+					hasFeedback={invalidEmail}
+					onChange={onChange}
 					normalize={toLowerCase}
 				>
 					<Input prefix={<MailOutlined />} placeholder="Email address" />

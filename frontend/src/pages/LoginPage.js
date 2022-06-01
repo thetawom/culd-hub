@@ -4,6 +4,7 @@ import { Alert, Form, Input, Button } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 import AuthBox from "../components/AuthBox";
+import { REMEMBER_EMAIL } from "../constants";
 
 const LoginPage = () => {
 	let { loginUser, invalidCredentials, setInvalidCredentials } =
@@ -39,6 +40,11 @@ const LoginPage = () => {
 					validateStatus={invalidCredentials ? "error" : ""}
 					hasFeedback={invalidCredentials}
 					onChange={onChange}
+					initialValue={
+						localStorage.getItem(REMEMBER_EMAIL)
+							? localStorage.getItem(REMEMBER_EMAIL)
+							: null
+					}
 				>
 					<Input prefix={<MailOutlined />} placeholder="Email address" />
 				</Form.Item>
