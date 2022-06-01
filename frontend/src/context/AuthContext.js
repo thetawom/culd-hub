@@ -10,7 +10,7 @@ import { setContext } from "@apollo/client/link/context";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
-import { AUTH_TOKEN, REFRESH_TOKEN } from "../constants";
+import { AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL } from "../constants";
 
 const AuthContext = createContext();
 
@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }) => {
 	});
 
 	let loginUser = ({ email, password }) => {
+		localStorage.setItem(REMEMBER_EMAIL, email);
 		tokenAuth({
 			variables: {
 				email: email,
