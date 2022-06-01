@@ -279,34 +279,37 @@ const ShowsTable = ({ user }) => {
 			key: "performers",
 			render: (performers, { point }) => (
 				<Space>
-					{performers.map((performer) => (
-						<Tooltip
-							title={`${performer.user.firstName} ${performer.user.lastName}`}
-							placement="bottom"
-							trigger="click"
-						>
-							{performer.user.id === point?.user.id ? (
-								<Badge
-									count={
-										<FireOutlined
-											style={{
-												color: "#f5222d",
-												fontSize: "0.8em",
-											}}
-										/>
-									}
-								>
+					{performers
+						.slice()
+						.sort((a, b) => a.user.firstName.localeCompare(b.user.firstName))
+						.map((performer) => (
+							<Tooltip
+								title={`${performer.user.firstName} ${performer.user.lastName}`}
+								placement="bottom"
+								trigger="click"
+							>
+								{performer.user.id === point?.user.id ? (
+									<Badge
+										count={
+											<FireOutlined
+												style={{
+													color: "#f5222d",
+													fontSize: "0.8em",
+												}}
+											/>
+										}
+									>
+										<Tag style={{ marginRight: "0px", cursor: "pointer" }}>
+											{performer.user.firstName}
+										</Tag>
+									</Badge>
+								) : (
 									<Tag style={{ marginRight: "0px", cursor: "pointer" }}>
 										{performer.user.firstName}
 									</Tag>
-								</Badge>
-							) : (
-								<Tag style={{ marginRight: "0px", cursor: "pointer" }}>
-									{performer.user.firstName}
-								</Tag>
-							)}
-						</Tooltip>
-					))}
+								)}
+							</Tooltip>
+						))}
 				</Space>
 			),
 		},
