@@ -19,6 +19,8 @@ class Query(graphene.ObjectType):
     members = graphene.List(MemberType)
     shows = graphene.List(ShowType)
 
+    me = graphene.Field(UserType)
+
     @staff_member_required
     def resolve_users(root, info, **kwargs):
         return User.objects.all()
@@ -30,6 +32,10 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_shows(root, info, **kwargs):
         return Show.objects.all()
+
+    @login_required
+    def resolve_me(root, info, **kwargs):
+        return User.objects.get(pk=info.context.user.pk)
 
 
 class Mutation(graphene.ObjectType):
