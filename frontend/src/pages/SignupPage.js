@@ -16,15 +16,11 @@ const SignupPage = () => {
 		console.log(values);
 	};
 
-	const toLowerCase = (value) => (value || "").toLowerCase();
+	const toLowerCase = (str) => (str || "").toLowerCase();
 
 	const toTitleCase = (str) =>
-		str
-			? (str.charAt(0).toUpperCase() + str.substr(1).toLowerCase()).replace(
-					" ",
-					""
-			  )
-			: "";
+		str &&
+		(str[0].toUpperCase() + str.substr(1).toLowerCase()).replace(" ", "");
 
 	let subtitle = (
 		<>

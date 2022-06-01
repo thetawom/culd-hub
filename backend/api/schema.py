@@ -1,12 +1,12 @@
 import graphene
 import graphql_jwt
+from django.dispatch import receiver
+from graphql_jwt.refresh_token.signals import refresh_token_rotated
 from graphql_jwt.decorators import login_required, staff_member_required
 from users.models import User
 from show_manager.models import Member, Show
 from .types import UserType, MemberType, ShowType
-
-from django.dispatch import receiver
-from graphql_jwt.refresh_token.signals import refresh_token_rotated
+from .mutations import CreateUserMutation
 
 
 @receiver(refresh_token_rotated)
@@ -37,6 +37,8 @@ class Mutation(graphene.ObjectType):
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
     revoke_token = graphql_jwt.Revoke.Field()
+
+    create_user = CreateUserMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
