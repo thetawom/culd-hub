@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import { AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL } from "../constants";
+import { message } from "antd";
 
 const AuthContext = createContext();
 
@@ -70,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 				console.log(error.message);
 				setInvalidCredentials(true);
 			} else {
-				alert(error.message);
+				message.error(error.message);
 			}
 		},
 	});
