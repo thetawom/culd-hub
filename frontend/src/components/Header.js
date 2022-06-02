@@ -13,25 +13,34 @@ const Header = () => {
 		}
 	};
 
+	const items = [
+		{
+			label: <Link to="/">Home</Link>,
+			key: "home",
+			icon: <HomeFilled />,
+		},
+		{
+			label: <a href="/admin/">Admin</a>,
+			key: "admin",
+			icon: <SettingFilled />,
+		},
+		authTokens && {
+			label: <Link to="/">Logout</Link>,
+			key: "logout",
+			icon: <LogoutOutlined />,
+			style: { marginLeft: "auto" },
+		},
+	];
+
 	return (
 		<Layout.Header>
-			<Menu theme="dark" mode="horizontal" onClick={onClick} selectedKeys={[]}>
-				<Menu.Item key="home" icon={<HomeFilled />}>
-					<Link to="/">Home</Link>
-				</Menu.Item>
-				<Menu.Item key="admin" icon={<SettingFilled />}>
-					<a href="/admin/">Admin</a>
-				</Menu.Item>
-				{authTokens && (
-					<Menu.Item
-						style={{ marginLeft: "auto" }}
-						key="logout"
-						icon={<LogoutOutlined />}
-					>
-						<Link to="/">Logout</Link>
-					</Menu.Item>
-				)}
-			</Menu>
+			<Menu
+				items={items}
+				theme="dark"
+				mode="horizontal"
+				onClick={onClick}
+				selectedKeys={[]}
+			></Menu>
 		</Layout.Header>
 	);
 };
