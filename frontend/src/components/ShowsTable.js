@@ -23,7 +23,9 @@ const GET_SHOWS_QUERY = gql`
 			name
 			priority
 			date
-			time
+			rounds {
+				time
+			}
 			address
 			lions
 			performers {
@@ -150,7 +152,7 @@ const ShowsTable = ({ user }) => {
 						: { ...show }
 				)
 			);
-			message.error(`Removed from ${deleteRole.role.show.name}`);
+			message.success(`Removed from ${deleteRole.role.show.name}`);
 		},
 		onError: (error) => {
 			console.log(error.message);
@@ -261,10 +263,13 @@ const ShowsTable = ({ user }) => {
 			sorter: (a, b) => a.date.localeCompare(b.date),
 		},
 		{
-			title: "Time",
-			dataIndex: "time",
-			key: "time",
-			render: (time) => (time ? dayjs(time, "HH:mm:ss").format("h:mm A") : ""),
+			title: "Time(s)",
+			dataIndex: "rounds",
+			key: "rounds",
+			render: (rounds) =>
+				rounds.map(({ time }) => (
+					<div>{time ? dayjs(time, "HH:mm:ss").format("h:mm A") : ""}</div>
+				)),
 			sorter: (a, b) => a.time.localeCompare(b.time),
 		},
 		{
@@ -366,7 +371,12 @@ const ShowsTable = ({ user }) => {
 			size="large"
 		/>
 	) : (
-		<Table columns={columns} dataSource={shows} rowKey="id" />
+		<Table
+			columns={columns}
+			dataSource={shows}
+			rowKey="id"
+			pagination={{ pageSize: 10 }}
+		/>
 	);
 };
 
