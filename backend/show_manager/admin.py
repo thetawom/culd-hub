@@ -33,7 +33,18 @@ class ShowAdmin(admin.ModelAdmin):
     inlines = [RoundInlineAdmin, RoleInlineAdmin]
 
 
+class MemberAdmin(admin.ModelAdmin):
+    list_display = [
+        "user",
+        "membership",
+    ]
+
+
+class MemberInlineAdmin(admin.TabularInline):
+    model = Member
+
+
 admin.site.register(Show, ShowAdmin)
-admin.site.register(Member)
+admin.site.register(Member, MemberAdmin)
 admin.site.register(Contact)
 admin.site.register(Role)
