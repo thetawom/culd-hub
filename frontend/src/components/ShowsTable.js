@@ -1,5 +1,15 @@
 import React, { useContext, useState } from "react";
-import { message, Badge, Button, Space, Spin, Table, Tag, Tooltip } from "antd";
+import {
+	message,
+	Badge,
+	Button,
+	Space,
+	Spin,
+	Table,
+	Tag,
+	Tooltip,
+	Progress,
+} from "antd";
 import {
 	PlusOutlined,
 	CompassTwoTone,
@@ -179,32 +189,37 @@ const ShowsTable = ({ user, showClosed }) => {
 		{
 			title: "",
 			key: "check",
-			render: (_, { id, performers, isOpen }) =>
-				performers.map((performer) => performer.user.id).includes(user.id) ? (
-					<Button
-						size="small"
-						style={{
-							paddingLeft: "5px",
-							paddingRight: "5px",
-						}}
-						type="primary"
-						onClick={() => removeSignup(id, isOpen)}
-						disabled={!isOpen}
-					>
-						<StarFilled />
-					</Button>
-				) : isOpen ? (
-					<Button
-						size="small"
-						style={{
-							paddingLeft: "5px",
-							paddingRight: "5px",
-						}}
-						onClick={() => addSignup(id, isOpen)}
-					>
-						<PlusOutlined />
-					</Button>
-				) : null,
+			render: (_, { id, performers, isOpen }) => (
+				<div style={{ marginLeft: "10px", marginRight: "10px" }}>
+					{performers
+						.map((performer) => performer.user.id)
+						.includes(user.id) ? (
+						<Button
+							size="small"
+							style={{
+								paddingLeft: "5px",
+								paddingRight: "5px",
+							}}
+							type="primary"
+							onClick={() => removeSignup(id, isOpen)}
+							disabled={!isOpen}
+						>
+							<StarFilled />
+						</Button>
+					) : isOpen ? (
+						<Button
+							size="small"
+							style={{
+								paddingLeft: "5px",
+								paddingRight: "5px",
+							}}
+							onClick={() => addSignup(id, isOpen)}
+						>
+							<PlusOutlined />
+						</Button>
+					) : null}
+				</div>
+			),
 			width: "2%",
 		},
 		{
@@ -298,40 +313,49 @@ const ShowsTable = ({ user, showClosed }) => {
 			title: "Performance Roster",
 			dataIndex: "performers",
 			key: "performers",
-			render: (performers, { point }) => (
-				<Space>
-					{performers
-						.slice()
-						.sort((a, b) => a.user.firstName.localeCompare(b.user.firstName))
-						.map((performer) => (
-							<Tooltip
-								title={`${performer.user.firstName} ${performer.user.lastName}`}
-								placement="bottom"
-								trigger="click"
-								key={performer.user.id}
-							>
-								{performer.user.id === point?.user.id ? (
-									<Badge
-										count={
-											<StarTwoTone
-												style={{
-													fontSize: "0.8em",
-												}}
-											/>
-										}
-									>
+			render: (performers, { lions, point }) => (
+				<div style={{ display: "flex", justifyContent: "space-between" }}>
+					<Space>
+						{performers
+							.slice()
+							.sort((a, b) => a.user.firstName.localeCompare(b.user.firstName))
+							.map((performer) => (
+								<Tooltip
+									title={`${performer.user.firstName} ${performer.user.lastName}`}
+									placement="bottom"
+									trigger="click"
+									key={performer.user.id}
+								>
+									{performer.user.id === point?.user.id ? (
+										<Badge
+											count={
+												<StarTwoTone
+													style={{
+														fontSize: "0.8em",
+													}}
+												/>
+											}
+										>
+											<Tag style={{ marginRight: "0px", cursor: "pointer" }}>
+												{performer.user.firstName}
+											</Tag>
+										</Badge>
+									) : (
 										<Tag style={{ marginRight: "0px", cursor: "pointer" }}>
 											{performer.user.firstName}
 										</Tag>
-									</Badge>
-								) : (
-									<Tag style={{ marginRight: "0px", cursor: "pointer" }}>
-										{performer.user.firstName}
-									</Tag>
-								)}
-							</Tooltip>
-						))}
-				</Space>
+									)}
+								</Tooltip>
+							))}
+					</Space>
+					<Progress
+						type="circle"
+						percent={Math.round((performers.length / (lions * 2 + 2)) * 100)}
+						format={() => `${performers.length}/${lions * 2 + 2}`}
+						width={32}
+						style={{ marginLeft: "auto", marginRight: "10px" }}
+					/>
+				</div>
 			),
 		},
 		{
@@ -364,6 +388,7 @@ const ShowsTable = ({ user, showClosed }) => {
 									) : null
 								}
 								style={{ cursor: "pointer" }}
+								color="blue"
 								onClick={() => {
 									if (contact.phone) {
 										navigator.clipboard.writeText(contact.phone);
@@ -374,7 +399,7 @@ const ShowsTable = ({ user, showClosed }) => {
 									}
 								}}
 							>
-								{contact.firstName} {contact.lastName}
+								{contact.firstName}
 							</Tag>
 						</Tooltip>
 					</>
@@ -397,6 +422,7 @@ const ShowsTable = ({ user, showClosed }) => {
 			columns={columns}
 			dataSource={showClosed ? shows : shows.filter((show) => show.isOpen)}
 			rowKey="id"
+			size="middle"
 		/>
 	);
 };

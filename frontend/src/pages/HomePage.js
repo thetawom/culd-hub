@@ -52,7 +52,7 @@ const HomePage = () => {
 					/>
 				) : (
 					<>
-						<Space>
+						<Space split={<Divider type="vertical" />}>
 							<Typography.Title level={2} style={{ marginBottom: "0.3em" }}>
 								{`Welcome, ${user.firstName}!`}
 							</Typography.Title>
@@ -60,7 +60,6 @@ const HomePage = () => {
 								checkedChildren="Hide"
 								unCheckedChildren="Show"
 								defaultChecked
-								style={{ marginLeft: "10px" }}
 								onClick={(checked) => setShowClosed(!checked)}
 							/>
 						</Space>
