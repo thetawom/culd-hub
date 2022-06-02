@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { message, Badge, Button, Space, Spin, Table, Tag, Tooltip } from "antd";
 import {
 	PlusOutlined,
-	CarTwoTone,
+	CompassTwoTone,
 	PhoneTwoTone,
 	StarFilled,
 	StarTwoTone,
@@ -45,6 +45,8 @@ const GET_SHOWS_QUERY = gql`
 				lastName
 				phone
 			}
+			isCampus
+			isOpen
 		}
 	}
 `;
@@ -119,12 +121,18 @@ const ShowsTable = ({ user }) => {
 		},
 	});
 
-	let addSignup = (id) => {
-		createRole({
-			variables: {
-				showId: id,
-			},
-		});
+	let addSignup = (id, isOpen) => {
+		if (isOpen) {
+			createRole({
+				variables: {
+					showId: id,
+				},
+			});
+		} else {
+			message.error(
+				"At this point, the roster has been finalized. Please contact an E-Board member to be added to the roster."
+			);
+		}
 	};
 
 	let [deleteRole] = useAuthMutation(DELETE_ROLE_MUTATION, {
@@ -149,19 +157,25 @@ const ShowsTable = ({ user }) => {
 		},
 	});
 
-	let removeSignup = (id) => {
-		deleteRole({
-			variables: {
-				showId: id,
-			},
-		});
+	let removeSignup = (id, isOpen) => {
+		if (isOpen) {
+			deleteRole({
+				variables: {
+					showId: id,
+				},
+			});
+		} else {
+			message.error(
+				"Please contact an E-Board member to be removed from this roster."
+			);
+		}
 	};
 
 	const columns = [
 		{
 			title: "",
 			key: "check",
-			render: (_, { id, performers }) =>
+			render: (_, { id, performers, isOpen }) =>
 				performers.map((performer) => performer.user.id).includes(user.id) ? (
 					<Button
 						size="small"
@@ -170,37 +184,37 @@ const ShowsTable = ({ user }) => {
 							paddingRight: "5px",
 						}}
 						type="primary"
-						onClick={() => removeSignup(id)}
+						onClick={() => removeSignup(id, isOpen)}
+						disabled={!isOpen}
 					>
 						<StarFilled />
 					</Button>
-				) : (
-					<div style={{ textAlign: "center" }}>
-						<Button
-							size="small"
-							style={{
-								paddingLeft: "5px",
-								paddingRight: "5px",
-							}}
-							onClick={() => addSignup(id)}
-						>
-							<PlusOutlined />
-						</Button>
-					</div>
-				),
+				) : isOpen ? (
+					<Button
+						size="small"
+						style={{
+							paddingLeft: "5px",
+							paddingRight: "5px",
+						}}
+						onClick={() => addSignup(id, isOpen)}
+					>
+						<PlusOutlined />
+					</Button>
+				) : null,
 			width: "2%",
 		},
 		{
 			title: "Priority",
 			dataIndex: "priority",
 			key: "priority",
-			render: (priority) => {
-				let [color, text] =
-					priority === "A_1"
-						? ["geekblue", "FULL"]
-						: priority === "A_2"
-						? ["green", "NORMAL"]
-						: ["red", "URGENT"];
+			render: (priority, { isOpen }) => {
+				let [color, text] = !isOpen
+					? ["purple", "CLOSED"]
+					: priority === "A_1"
+					? ["geekblue", "FULL"]
+					: priority === "A_2"
+					? ["green", "NORMAL"]
+					: ["red", "URGENT"];
 				return (
 					<Tag
 						color={color}
@@ -227,7 +241,7 @@ const ShowsTable = ({ user }) => {
 							placement="bottom"
 							style={{ textAlign: "center" }}
 						>
-							<CarTwoTone
+							<CompassTwoTone
 								style={{ marginLeft: "10px" }}
 								onClick={() => {
 									navigator.clipboard.writeText(address);

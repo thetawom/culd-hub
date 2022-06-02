@@ -17,12 +17,16 @@ class ShowAdmin(admin.ModelAdmin):
 
     list_display = [
         "name",
+        "priority",
         "day_of_week",
         "date",
         "format_time",
         "lions",
+        "num_performers",
         "rounds",
         "address",
+        "is_published",
+        "is_open",
     ]
     empty_value_display = "TBD"
 

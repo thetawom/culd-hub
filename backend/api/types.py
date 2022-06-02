@@ -31,6 +31,7 @@ class ShowType(DjangoObjectType):
             "performers",
             "is_campus",
             "priority",
+            "is_open",
         )
 
 

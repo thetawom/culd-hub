@@ -58,6 +58,16 @@ class Show(models.Model):
     )
 
     is_campus = models.BooleanField(verbose_name="On Campus", default=False)
+    is_published = models.BooleanField(
+        verbose_name="Published",
+        help_text="Whether or not show is visible to users",
+        default=False,
+    )
+    is_open = models.BooleanField(
+        verbose_name="Open",
+        help_text="Whether or not show is open for sign-ups",
+        default=True,
+    )
     priority = models.PositiveSmallIntegerField(
         choices=SHOW_PRIORITY_CHOICES, default=2
     )
@@ -79,11 +89,15 @@ class Show(models.Model):
 
     @admin.display(description="Times", ordering="time")
     def show_times(self):
-        if self.round_set.count() == 0:
+        if self.rounds.count() == 0:
             return None
         return " · ".join(
-            [round.time.strftime("%-I:%M %p") for round in self.round_set.all()]
+            [round.time.strftime("%-I:%M %p") for round in self.rounds.all()]
         )
+
+    @admin.display(description="Performers")
+    def num_performers(self):
+        return self.performers.count()
 
     def __str__(self):
         return self.name

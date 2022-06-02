@@ -31,7 +31,7 @@ class Query(graphene.ObjectType):
 
     @login_required
     def resolve_shows(root, info, **kwargs):
-        return Show.objects.all()
+        return Show.objects.filter(is_published=True)
 
     @login_required
     def resolve_me(root, info, **kwargs):
