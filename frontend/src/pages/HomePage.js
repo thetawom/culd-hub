@@ -1,10 +1,11 @@
 import { gql } from "@apollo/client";
 import React, { useContext, useState } from "react";
-import { Switch, Divider, Layout, Spin, Typography, Space } from "antd";
+import { Switch, Divider, Layout, Typography, Segmented } from "antd";
 import AuthContext from "../context/AuthContext";
 import useAuthQuery from "../utils/useAuthQuery";
 import Header from "../components/Header";
 import ShowsTable from "../components/ShowsTable";
+import Loader from "../components/Loader";
 
 const GET_ME_QUERY = gql`
 	{
@@ -28,7 +29,7 @@ const HomePage = () => {
 		onError: () => logoutUser(),
 	});
 
-	let [showClosed, setShowClosed] = useState(false);
+	let [openFilter, setOpenFilter] = useState("Open");
 
 	return (
 		<Layout style={{ minHeight: "100vh" }}>
@@ -41,30 +42,23 @@ const HomePage = () => {
 				}}
 			>
 				{loading ? (
-					<Spin
-						style={{
-							position: "absolute",
-							top: "50vh",
-							left: "50vw",
-							transform: "translate(-50%, -50%)",
-						}}
-						size="large"
-					/>
+					<Loader />
 				) : (
 					<>
-						<Space split={<Divider type="vertical" />}>
-							<Typography.Title level={2} style={{ marginBottom: "0.3em" }}>
+						<div style={{ display: "flex", justifyContent: "space-between" }}>
+							<Typography.Title level={2} style={{ marginBottom: "0em" }}>
 								{`Welcome, ${user.firstName}!`}
 							</Typography.Title>
-							<Switch
-								checkedChildren="Hide"
-								unCheckedChildren="Show"
-								defaultChecked
-								onClick={(checked) => setShowClosed(!checked)}
-							/>
-						</Space>
-						<Divider style={{ marginTop: "0.2", marginBottom: "1.2em" }} />
-						<ShowsTable user={user} showClosed={showClosed} />
+							<div style={{ marginTop: "auto" }}>
+								<Segmented
+									options={["Open", "Closed", "All"]}
+									value={openFilter}
+									onChange={setOpenFilter}
+								/>
+							</div>
+						</div>
+						<Divider style={{ marginTop: "0.8em", marginBottom: "1.2em" }} />
+						<ShowsTable user={user} openFilter={openFilter} />
 					</>
 				)}
 			</Layout.Content>

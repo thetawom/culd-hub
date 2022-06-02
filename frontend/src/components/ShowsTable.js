@@ -1,28 +1,18 @@
 import React, { useContext, useState } from "react";
-import {
-	message,
-	Badge,
-	Button,
-	Space,
-	Spin,
-	Table,
-	Tag,
-	Tooltip,
-	Progress,
-} from "antd";
+import { message, Button, Space, Table, Tag, Tooltip, Progress } from "antd";
 import {
 	PlusOutlined,
 	CompassTwoTone,
 	PhoneTwoTone,
 	MailTwoTone,
 	StarFilled,
-	StarTwoTone,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { gql } from "@apollo/client";
 import useAuthMutation from "../utils/useAuthMutation";
 import AuthContext from "../context/AuthContext";
 import useAuthQuery from "../utils/useAuthQuery";
+import Loader from "./Loader";
 
 var customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
@@ -104,7 +94,7 @@ export const DELETE_ROLE_MUTATION = gql`
 	}
 `;
 
-const ShowsTable = ({ user, showClosed }) => {
+const ShowsTable = ({ user, openFilter }) => {
 	let { logoutUser } = useContext(AuthContext);
 
 	let [shows, setShows] = useState([]);
@@ -223,7 +213,17 @@ const ShowsTable = ({ user, showClosed }) => {
 			width: "2%",
 		},
 		{
-			title: "Priority",
+			title: (
+				<span
+					style={{
+						textAlign: "center",
+						width: "100%",
+						display: "inline-block",
+					}}
+				>
+					Priority
+				</span>
+			),
 			dataIndex: "priority",
 			key: "priority",
 			render: (priority, { isOpen }) => {
@@ -280,7 +280,7 @@ const ShowsTable = ({ user, showClosed }) => {
 			sorter: (a, b) => a.date.localeCompare(b.date),
 		},
 		{
-			title: "Time(s)",
+			title: "Time",
 			dataIndex: "rounds",
 			key: "rounds",
 			render: (rounds) =>
@@ -292,11 +292,20 @@ const ShowsTable = ({ user, showClosed }) => {
 			sorter: (a, b) => a.time.localeCompare(b.time),
 		},
 		{
-			title: "Lions",
+			title: (
+				<span
+					style={{
+						textAlign: "center",
+						width: "100%",
+						display: "inline-block",
+					}}
+				>
+					Lions
+				</span>
+			),
 			dataIndex: "lions",
 			key: "lions",
-			width: "3%",
-			sorter: (a, b) => a.lions - b.lions,
+			width: "5%",
 			render: (lions) => (
 				<span
 					style={{
@@ -309,55 +318,7 @@ const ShowsTable = ({ user, showClosed }) => {
 				</span>
 			),
 		},
-		{
-			title: "Performance Roster",
-			dataIndex: "performers",
-			key: "performers",
-			render: (performers, { lions, point }) => (
-				<div style={{ display: "flex", justifyContent: "space-between" }}>
-					<Space>
-						{performers
-							.slice()
-							.sort((a, b) => a.user.firstName.localeCompare(b.user.firstName))
-							.map((performer) => (
-								<Tooltip
-									title={`${performer.user.firstName} ${performer.user.lastName}`}
-									placement="bottom"
-									trigger="click"
-									key={performer.user.id}
-								>
-									{performer.user.id === point?.user.id ? (
-										<Badge
-											count={
-												<StarTwoTone
-													style={{
-														fontSize: "0.8em",
-													}}
-												/>
-											}
-										>
-											<Tag style={{ marginRight: "0px", cursor: "pointer" }}>
-												{performer.user.firstName}
-											</Tag>
-										</Badge>
-									) : (
-										<Tag style={{ marginRight: "0px", cursor: "pointer" }}>
-											{performer.user.firstName}
-										</Tag>
-									)}
-								</Tooltip>
-							))}
-					</Space>
-					<Progress
-						type="circle"
-						percent={Math.round((performers.length / (lions * 2 + 2)) * 100)}
-						format={() => `${performers.length}/${lions * 2 + 2}`}
-						width={32}
-						style={{ marginLeft: "auto", marginRight: "10px" }}
-					/>
-				</div>
-			),
-		},
+
 		{
 			title: "Contact",
 			dataIndex: "contact",
@@ -399,28 +360,70 @@ const ShowsTable = ({ user, showClosed }) => {
 									}
 								}}
 							>
-								{contact.firstName}
+								{contact.firstName} {contact.lastName}
 							</Tag>
 						</Tooltip>
 					</>
 				),
 		},
+		{
+			title: "Tentative Roster",
+			dataIndex: "performers",
+			key: "performers",
+			render: (performers, { lions, point }) => (
+				<div style={{ display: "flex", justifyContent: "space-between" }}>
+					<Space>
+						{performers
+							.slice()
+							.sort((a, b) => {
+								return a.user.id === point?.user.id
+									? -1
+									: b.user.id === point?.user.id
+									? 1
+									: a.user.firstName.localeCompare(b.user.firstName);
+							})
+							.map((performer) => (
+								<Tooltip
+									title={`${performer.user.firstName} ${performer.user.lastName}`}
+									placement="bottom"
+									trigger="click"
+									key={performer.user.id}
+								>
+									<Tag
+										style={{ marginRight: "0px", cursor: "pointer" }}
+										color={
+											performer.user.id === point?.user.id ? "volcano" : null
+										}
+									>
+										{performer.user.firstName}
+									</Tag>
+								</Tooltip>
+							))}
+					</Space>
+					<Progress
+						type="circle"
+						percent={Math.round((performers.length / (lions * 2 + 2)) * 100)}
+						format={() => `${performers.length}/${lions * 2 + 2}`}
+						width={32}
+						style={{ marginLeft: "auto", marginRight: "10px" }}
+					/>
+				</div>
+			),
+		},
 	];
 
 	return loading ? (
-		<Spin
-			style={{
-				position: "absolute",
-				top: "50vh",
-				left: "50vw",
-				transform: "translate(-50%, -50%)",
-			}}
-			size="large"
-		/>
+		<Loader />
 	) : (
 		<Table
 			columns={columns}
-			dataSource={showClosed ? shows : shows.filter((show) => show.isOpen)}
+			dataSource={
+				openFilter === "All"
+					? shows
+					: openFilter === "Open"
+					? shows.filter((show) => show.isOpen)
+					: shows.filter((show) => !show.isOpen)
+			}
 			rowKey="id"
 			size="middle"
 		/>
