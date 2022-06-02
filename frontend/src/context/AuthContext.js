@@ -116,12 +116,12 @@ export const AuthProvider = ({ children }) => {
 				uri: "http://localhost:8000/graphql/",
 			});
 
-			const authLink = setContext((_, { headers }) => {
+			const authLink = setContext(async (_, { headers }) => {
 				const exp = jwt_decode(authTokens.access).exp;
 				const isExpired = dayjs.unix(exp).diff(dayjs()) < 1;
 
 				if (isExpired) {
-					refreshToken({
+					await refreshToken({
 						variables: {
 							refreshToken: authTokens.refresh,
 						},

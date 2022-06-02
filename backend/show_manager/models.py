@@ -40,7 +40,10 @@ class Show(models.Model):
     name = models.CharField(max_length=60)
     date = models.DateField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True, editable=False)
-    address = models.CharField(max_length=80, blank=True)
+    address = models.CharField(
+        max_length=80, blank=True, help_text="Venue name or room number if on campus"
+    )
+    is_campus = models.BooleanField(verbose_name="On Campus", default=False)
     lions = models.PositiveSmallIntegerField(null=True, blank=True)
 
     point = models.ForeignKey(
@@ -51,13 +54,16 @@ class Show(models.Model):
         blank=True,
     )
     contact = models.ForeignKey(
-        "Contact", on_delete=models.PROTECT, related_name="shows", null=True, blank=True
+        "Contact",
+        on_delete=models.SET_NULL,
+        related_name="shows",
+        null=True,
+        blank=True,
     )
     performers = models.ManyToManyField(
         "Member", through="Role", related_name="performed_shows"
     )
 
-    is_campus = models.BooleanField(verbose_name="On Campus", default=False)
     is_published = models.BooleanField(
         verbose_name="Published",
         help_text="Whether or not show is visible to users",

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 import React, { useContext, useState } from "react";
-import { Divider, Layout, Spin, Typography } from "antd";
+import { Switch, Divider, Layout, Spin, Typography, Space } from "antd";
 import AuthContext from "../context/AuthContext";
 import useAuthQuery from "../utils/useAuthQuery";
 import Header from "../components/Header";
@@ -23,11 +23,12 @@ const HomePage = () => {
 
 	let { loading } = useAuthQuery(GET_ME_QUERY, {
 		onCompleted: ({ me }) => {
-			console.log(me);
 			setUser(me);
 		},
 		onError: () => logoutUser(),
 	});
+
+	let [showClosed, setShowClosed] = useState(false);
 
 	return (
 		<Layout style={{ minHeight: "100vh" }}>
@@ -51,11 +52,20 @@ const HomePage = () => {
 					/>
 				) : (
 					<>
-						<Typography.Title level={2} style={{ marginBottom: "0.3em" }}>
-							{`Welcome, ${user.firstName}!`}
-						</Typography.Title>
-						<Divider style={{ marginTop: "1.5em", marginBottom: "2em" }} />
-						<ShowsTable user={user} />
+						<Space>
+							<Typography.Title level={2} style={{ marginBottom: "0.3em" }}>
+								{`Welcome, ${user.firstName}!`}
+							</Typography.Title>
+							<Switch
+								checkedChildren="Hide"
+								unCheckedChildren="Show"
+								defaultChecked
+								style={{ marginLeft: "10px" }}
+								onClick={(checked) => setShowClosed(!checked)}
+							/>
+						</Space>
+						<Divider style={{ marginTop: "0.2", marginBottom: "1.2em" }} />
+						<ShowsTable user={user} showClosed={showClosed} />
 					</>
 				)}
 			</Layout.Content>

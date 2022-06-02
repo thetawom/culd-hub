@@ -4,6 +4,7 @@ import {
 	PlusOutlined,
 	CompassTwoTone,
 	PhoneTwoTone,
+	MailTwoTone,
 	StarFilled,
 	StarTwoTone,
 } from "@ant-design/icons";
@@ -24,6 +25,7 @@ const GET_SHOWS_QUERY = gql`
 			priority
 			date
 			rounds {
+				id
 				time
 			}
 			address
@@ -46,6 +48,7 @@ const GET_SHOWS_QUERY = gql`
 				firstName
 				lastName
 				phone
+				email
 			}
 			isCampus
 			isOpen
@@ -91,14 +94,13 @@ export const DELETE_ROLE_MUTATION = gql`
 	}
 `;
 
-const ShowsTable = ({ user }) => {
+const ShowsTable = ({ user, showClosed }) => {
 	let { logoutUser } = useContext(AuthContext);
 
 	let [shows, setShows] = useState([]);
 
 	let { loading } = useAuthQuery(GET_SHOWS_QUERY, {
 		onCompleted: ({ shows }) => {
-			console.log(shows);
 			setShows(shows);
 		},
 		onError: () => logoutUser(),
@@ -267,8 +269,10 @@ const ShowsTable = ({ user }) => {
 			dataIndex: "rounds",
 			key: "rounds",
 			render: (rounds) =>
-				rounds.map(({ time }) => (
-					<div>{time ? dayjs(time, "HH:mm:ss").format("h:mm A") : ""}</div>
+				rounds.map(({ id, time }) => (
+					<div key={id}>
+						{time ? dayjs(time, "HH:mm:ss").format("h:mm A") : ""}
+					</div>
 				)),
 			sorter: (a, b) => a.time.localeCompare(b.time),
 		},
@@ -304,6 +308,7 @@ const ShowsTable = ({ user }) => {
 								title={`${performer.user.firstName} ${performer.user.lastName}`}
 								placement="bottom"
 								trigger="click"
+								key={performer.user.id}
 							>
 								{performer.user.id === point?.user.id ? (
 									<Badge
@@ -337,19 +342,36 @@ const ShowsTable = ({ user }) => {
 				contact && (
 					<>
 						<Tooltip
-							title={contact.phone.replace(
-								/(\+1)(\d{3})(\d{3})(\d{4})/,
-								"($2) $3-$4"
-							)}
+							title={
+								contact.phone
+									? contact.phone.replace(
+											/(\+1)(\d{3})(\d{3})(\d{4})/,
+											"($2) $3-$4"
+									  )
+									: contact.email
+									? contact.email
+									: null
+							}
 							placement="bottom"
 							style={{ textAlign: "center" }}
 						>
 							<Tag
-								icon={<PhoneTwoTone />}
+								icon={
+									contact.phone ? (
+										<PhoneTwoTone />
+									) : contact.email ? (
+										<MailTwoTone />
+									) : null
+								}
 								style={{ cursor: "pointer" }}
 								onClick={() => {
-									navigator.clipboard.writeText(contact.phone);
-									message.info("Phone number copied to clipboard");
+									if (contact.phone) {
+										navigator.clipboard.writeText(contact.phone);
+										message.info("Phone number copied to clipboard");
+									} else if (contact.email) {
+										navigator.clipboard.writeText(contact.email);
+										message.info("Email address copied to clipboard");
+									}
 								}}
 							>
 								{contact.firstName} {contact.lastName}
@@ -373,9 +395,8 @@ const ShowsTable = ({ user }) => {
 	) : (
 		<Table
 			columns={columns}
-			dataSource={shows}
+			dataSource={showClosed ? shows : shows.filter((show) => show.isOpen)}
 			rowKey="id"
-			pagination={{ pageSize: 10 }}
 		/>
 	);
 };
