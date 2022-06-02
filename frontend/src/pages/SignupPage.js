@@ -79,7 +79,9 @@ const SignupPage = () => {
 
 	const toTitleCase = (str) =>
 		str &&
-		(str[0].toUpperCase() + str.substr(1).toLowerCase()).replace(" ", "");
+		str.toLowerCase().replace(/^(.)|\s(.)/g, function ($1) {
+			return $1.toUpperCase();
+		});
 
 	let subtitle = (
 		<>

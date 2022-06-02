@@ -379,7 +379,7 @@ const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 			key: "performers",
 			render: (performers, { lions, point }) => (
 				<div style={{ display: "flex", justifyContent: "space-between" }}>
-					<Space>
+					<Space wrap>
 						{performers
 							.slice()
 							.sort((a, b) => {
@@ -410,12 +410,19 @@ const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 					<Progress
 						type="circle"
 						percent={Math.round((performers.length / (lions * 2 + 2)) * 100)}
-						format={() => `${performers.length}/${lions * 2 + 2}`}
+						format={() => `${performers.length}`}
 						width={32}
-						style={{ marginLeft: "auto", marginRight: "10px" }}
+						style={{
+							marginLeft: "auto",
+							marginRight: "10px",
+							marginTop: "auto",
+							marginBottom: "auto",
+							paddingLeft: "10px",
+						}}
 					/>
 				</div>
 			),
+			width: "35%",
 		},
 	];
 
