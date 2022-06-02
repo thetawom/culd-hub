@@ -4,8 +4,8 @@ import {
 	PlusOutlined,
 	CarTwoTone,
 	PhoneTwoTone,
-	FireOutlined,
 	StarFilled,
+	StarTwoTone,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { gql } from "@apollo/client";
@@ -218,24 +218,22 @@ const ShowsTable = ({ user }) => {
 			dataIndex: "name",
 			key: "name",
 			render: (name, { address }) => {
+				let index = address.search(/(?:^|\D)(\d{5})(?!\d)/g);
 				return (
 					<>
 						<span style={{ fontSize: "1.05em" }}>{name}</span>
 						<Tooltip
-							title={address}
+							title={index < 0 ? address : address.substring(0, index)}
 							placement="bottom"
 							style={{ textAlign: "center" }}
 						>
-							<a
-								href={`https://www.google.com/maps/search/?api=1&query=${address.replace(
-									" ",
-									"+"
-								)}`}
-								target="_blank"
-								rel="noreferrer"
-							>
-								<CarTwoTone style={{ marginLeft: "10px" }} />
-							</a>
+							<CarTwoTone
+								style={{ marginLeft: "10px" }}
+								onClick={() => {
+									navigator.clipboard.writeText(address);
+									message.info("Address copied to clipboard");
+								}}
+							/>
 						</Tooltip>
 					</>
 				);
@@ -291,9 +289,8 @@ const ShowsTable = ({ user }) => {
 								{performer.user.id === point?.user.id ? (
 									<Badge
 										count={
-											<FireOutlined
+											<StarTwoTone
 												style={{
-													color: "#f5222d",
 													fontSize: "0.8em",
 												}}
 											/>
