@@ -1,6 +1,15 @@
 import { gql } from "@apollo/client";
 import React, { useContext, useState } from "react";
-import { Switch, Divider, Layout, Typography, Segmented } from "antd";
+import {
+	Divider,
+	Layout,
+	Typography,
+	Segmented,
+	Button,
+	Space,
+	Tooltip,
+} from "antd";
+import { SyncOutlined } from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 import useAuthQuery from "../utils/useAuthQuery";
 import Header from "../components/Header";
@@ -31,6 +40,8 @@ const HomePage = () => {
 
 	let [openFilter, setOpenFilter] = useState("Open");
 
+	let [refreshed, setRefreshed] = useState(false);
+
 	return (
 		<Layout style={{ minHeight: "100vh" }}>
 			<Header />
@@ -49,16 +60,26 @@ const HomePage = () => {
 							<Typography.Title level={2} style={{ marginBottom: "0em" }}>
 								{`Welcome, ${user.firstName}!`}
 							</Typography.Title>
-							<div style={{ marginTop: "auto" }}>
+							<Space style={{ marginTop: "auto" }}>
+								<Tooltip title="Refetch shows" placement="bottom">
+									<Button onClick={() => setRefreshed(false)}>
+										<SyncOutlined />
+									</Button>
+								</Tooltip>
 								<Segmented
 									options={["Open", "Closed", "All"]}
 									value={openFilter}
 									onChange={setOpenFilter}
 								/>
-							</div>
+							</Space>
 						</div>
 						<Divider style={{ marginTop: "0.8em", marginBottom: "1.2em" }} />
-						<ShowsTable user={user} openFilter={openFilter} />
+						<ShowsTable
+							user={user}
+							openFilter={openFilter}
+							refreshed={refreshed}
+							setRefreshed={setRefreshed}
+						/>
 					</>
 				)}
 			</Layout.Content>

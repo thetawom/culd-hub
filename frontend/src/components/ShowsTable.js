@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { message, Button, Space, Table, Tag, Tooltip, Progress } from "antd";
 import {
 	PlusOutlined,
@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import { gql } from "@apollo/client";
 import useAuthMutation from "../utils/useAuthMutation";
 import AuthContext from "../context/AuthContext";
-import useAuthQuery from "../utils/useAuthQuery";
+import useAuthLazyQuery from "../utils/useAuthLazyQuery";
 import Loader from "./Loader";
 
 var customParseFormat = require("dayjs/plugin/customParseFormat");
@@ -94,17 +94,24 @@ export const DELETE_ROLE_MUTATION = gql`
 	}
 `;
 
-const ShowsTable = ({ user, openFilter }) => {
+const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 	let { logoutUser } = useContext(AuthContext);
 
 	let [shows, setShows] = useState([]);
 
-	let { loading } = useAuthQuery(GET_SHOWS_QUERY, {
+	let [getShows] = useAuthLazyQuery(GET_SHOWS_QUERY, {
 		onCompleted: ({ shows }) => {
 			setShows(shows);
+			setRefreshed(true);
 		},
 		onError: () => logoutUser(),
+		fetchPolicy: "network-only",
+		nextFetchPolicy: "network-only",
 	});
+
+	useEffect(() => {
+		getShows();
+	}, [refreshed, getShows]);
 
 	let [createRole] = useAuthMutation(CREATE_ROLE_MUTATION, {
 		onCompleted: ({ createRole }) => {
@@ -412,9 +419,7 @@ const ShowsTable = ({ user, openFilter }) => {
 		},
 	];
 
-	return loading ? (
-		<Loader />
-	) : (
+	return refreshed ? (
 		<Table
 			columns={columns}
 			dataSource={
@@ -427,6 +432,8 @@ const ShowsTable = ({ user, openFilter }) => {
 			rowKey="id"
 			size="middle"
 		/>
+	) : (
+		<Loader />
 	);
 };
 
