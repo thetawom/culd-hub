@@ -1,6 +1,6 @@
 #! /bin/bash
 
-rm **/migrations/*_initial.py
+rm **/migrations/0*.py
 rm *.sqlite3
 python manage.py makemigrations
 python manage.py migrate

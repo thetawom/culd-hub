@@ -5,15 +5,33 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 User = get_user_model()
 
+SCHOOL_CHOICES = (
+    ("C", "CC"),
+    ("S", "SEAS"),
+    ("B", "BC"),
+    ("G", "GS"),
+    ("O", "Other"),
+)
+
+CLASS_YEAR_CHOICES = (
+    ("FR", "Freshman"),
+    ("SP", "Sophomore"),
+    ("JR", "Junior"),
+    ("SR", "Senior"),
+    ("GR", "Graduate"),
+    ("AL", "Alumni"),
+    ("OT", "Other"),
+)
+
 MEMBERSHIP_CHOICES = (
     ("G", "General Member"),
     ("B", "Executive Board Member"),
 )
 
 SHOW_PRIORITY_CHOICES = (
-    (1, "Full"),
-    (2, "Regular"),
-    (3, "Urgent"),
+    ("F", "Full"),
+    ("N", "Normal"),
+    ("U", "Urgent"),
 )
 
 PERFORMANCE_ROLE_CHOICES = (
@@ -31,6 +49,10 @@ class Member(models.Model):
         User, on_delete=models.CASCADE, null=True, related_name="member"
     )
     membership = models.CharField(max_length=1, choices=MEMBERSHIP_CHOICES, default="G")
+    school = models.CharField(max_length=1, choices=SCHOOL_CHOICES, blank=True)
+    class_year = models.CharField(
+        verbose_name="Class Year", max_length=2, choices=CLASS_YEAR_CHOICES, blank=True
+    )
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -74,8 +96,8 @@ class Show(models.Model):
         help_text="Whether or not show is open for sign-ups",
         default=True,
     )
-    priority = models.PositiveSmallIntegerField(
-        choices=SHOW_PRIORITY_CHOICES, default=2
+    priority = models.CharField(
+        max_length=1, choices=SHOW_PRIORITY_CHOICES, default="N"
     )
 
     class Meta:

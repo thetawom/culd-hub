@@ -78,9 +78,9 @@ const ShowsTable = ({ user }) => {
 			render: (priority, { isOpen }) => {
 				let [color, text] = !isOpen
 					? ["purple", "CLOSED"]
-					: priority === "A_1"
+					: priority === "F"
 					? ["geekblue", "FULL"]
-					: priority === "A_2"
+					: priority === "N"
 					? ["green", "NORMAL"]
 					: ["red", "URGENT"];
 				return (

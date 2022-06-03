@@ -37,6 +37,8 @@ class MemberAdmin(admin.ModelAdmin):
     list_display = [
         "user",
         "membership",
+        "school",
+        "class_year",
     ]
 
 
