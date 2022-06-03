@@ -1,6 +1,7 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
+import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import PrivateRoutes from "./utils/PrivateRoutes";
@@ -18,6 +19,7 @@ function App() {
 				<Routes>
 					<Route element={<PrivateRoutes />}>
 						<Route path="/" exact element={<HomePage />} />
+						<Route path="profile/" element={<ProfilePage />} />
 					</Route>
 					<Route path="login/" element={<LoginPage />} />
 					<Route path="signup/" element={<SignupPage />} />

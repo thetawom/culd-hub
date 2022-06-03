@@ -219,7 +219,7 @@ const ShowsTable = ({ user }) => {
 			title: (
 				<span>
 					{"Tentative Roster"}
-					<Tooltip title={"tooltip"} placement="right">
+					<Tooltip title="Final confirmations via Slack" placement="right">
 						<InfoCircleTwoTone
 							style={{ marginLeft: "6px", fontSize: "0.85em" }}
 						/>
