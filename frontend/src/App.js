@@ -5,8 +5,13 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import { AuthProvider } from "./context/AuthContext";
+import { message } from "antd";
 
 function App() {
+	message.config({
+		duration: 1.5,
+	});
+
 	return (
 		<div className="App">
 			<AuthProvider>

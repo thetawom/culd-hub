@@ -1,4 +1,5 @@
 import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import React from "react";
 
 const Loader = () => {
@@ -10,7 +11,14 @@ const Loader = () => {
 				left: "50vw",
 				transform: "translate(-50%, -50%)",
 			}}
-			size="large"
+			indicator={
+				<LoadingOutlined
+					style={{
+						fontSize: 60,
+					}}
+					spin
+				/>
+			}
 		/>
 	);
 };

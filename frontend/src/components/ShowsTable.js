@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { message, Button, Space, Table, Tag, Tooltip, Progress } from "antd";
 import {
 	PlusOutlined,
@@ -6,181 +6,23 @@ import {
 	PhoneTwoTone,
 	MailTwoTone,
 	StarFilled,
+	InfoCircleTwoTone,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { gql } from "@apollo/client";
-import useAuthMutation from "../utils/useAuthMutation";
-import AuthContext from "../context/AuthContext";
-import useAuthLazyQuery from "../utils/useAuthLazyQuery";
+import ShowsTableContext from "../context/ShowsTableContext";
 import Loader from "./Loader";
 
 var customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
-const GET_SHOWS_QUERY = gql`
-	{
-		shows {
-			id
-			name
-			priority
-			date
-			rounds {
-				id
-				time
-			}
-			address
-			lions
-			performers {
-				user {
-					id
-					firstName
-					lastName
-				}
-			}
-			point {
-				user {
-					id
-					firstName
-					lastName
-				}
-			}
-			contact {
-				firstName
-				lastName
-				phone
-				email
-			}
-			isCampus
-			isOpen
-		}
-	}
-`;
-
-export const CREATE_ROLE_MUTATION = gql`
-	mutation CreateRole($showId: ID!) {
-		createRole(showId: $showId) {
-			role {
-				show {
-					id
-					name
-				}
-				performer {
-					user {
-						id
-						firstName
-						lastName
-					}
-				}
-			}
-		}
-	}
-`;
-
-export const DELETE_ROLE_MUTATION = gql`
-	mutation DeleteRole($showId: ID!) {
-		deleteRole(showId: $showId) {
-			role {
-				show {
-					id
-					name
-				}
-				performer {
-					user {
-						id
-					}
-				}
-			}
-		}
-	}
-`;
-
-const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
-	let { logoutUser } = useContext(AuthContext);
-
-	let [shows, setShows] = useState([]);
-
-	let [getShows] = useAuthLazyQuery(GET_SHOWS_QUERY, {
-		onCompleted: ({ shows }) => {
-			setShows(shows);
-			setRefreshed(true);
-		},
-		onError: () => logoutUser(),
-		fetchPolicy: "network-only",
-		nextFetchPolicy: "network-only",
-	});
-
-	useEffect(() => {
-		getShows();
-	}, [refreshed, getShows]);
-
-	let [createRole] = useAuthMutation(CREATE_ROLE_MUTATION, {
-		onCompleted: ({ createRole }) => {
-			setShows(
-				shows.map((show) =>
-					show.id === createRole.role.show.id
-						? {
-								...show,
-								performers: [...show.performers, createRole.role.performer],
-						  }
-						: { ...show }
-				)
-			);
-			message.success(`Signed up for ${createRole.role.show.name}`);
-		},
-		onError: (error) => {
-			console.log(error.message);
-		},
-	});
-
-	let addSignup = (id, isOpen) => {
-		if (isOpen) {
-			createRole({
-				variables: {
-					showId: id,
-				},
-			});
-		} else {
-			message.error(
-				"At this point, the roster has been finalized. Please contact an E-Board member to be added to the roster."
-			);
-		}
-	};
-
-	let [deleteRole] = useAuthMutation(DELETE_ROLE_MUTATION, {
-		onCompleted: ({ deleteRole }) => {
-			setShows(
-				shows.map((show) =>
-					show.id === deleteRole.role.show.id
-						? {
-								...show,
-								performers: show.performers.filter(
-									(performer) =>
-										performer.user.id !== deleteRole.role.performer.user.id
-								),
-						  }
-						: { ...show }
-				)
-			);
-			message.success(`Removed from ${deleteRole.role.show.name}`);
-		},
-		onError: (error) => {
-			console.log(error.message);
-		},
-	});
-
-	let removeSignup = (id, isOpen) => {
-		if (isOpen) {
-			deleteRole({
-				variables: {
-					showId: id,
-				},
-			});
-		} else {
-			message.error(
-				"Please contact an E-Board member to be removed from this roster."
-			);
-		}
-	};
+const ShowsTable = ({ user }) => {
+	let {
+		shows,
+		openFilter,
+		needsRefresh,
+		addToShowRoster,
+		removeFromShowRoster,
+	} = useContext(ShowsTableContext);
 
 	const columns = [
 		{
@@ -198,7 +40,7 @@ const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 								paddingRight: "5px",
 							}}
 							type="primary"
-							onClick={() => removeSignup(id, isOpen)}
+							onClick={() => removeFromShowRoster(id)}
 							disabled={!isOpen}
 						>
 							<StarFilled />
@@ -210,7 +52,7 @@ const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 								paddingLeft: "5px",
 								paddingRight: "5px",
 							}}
-							onClick={() => addSignup(id, isOpen)}
+							onClick={() => addToShowRoster(id)}
 						>
 							<PlusOutlined />
 						</Button>
@@ -254,7 +96,7 @@ const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 			width: "4%",
 		},
 		{
-			title: "Performance",
+			title: "Show Name",
 			dataIndex: "name",
 			key: "name",
 			render: (name, { address }) => {
@@ -374,7 +216,16 @@ const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 				),
 		},
 		{
-			title: "Tentative Roster",
+			title: (
+				<span>
+					{"Tentative Roster"}
+					<Tooltip title={"tooltip"} placement="right">
+						<InfoCircleTwoTone
+							style={{ marginLeft: "6px", fontSize: "0.85em" }}
+						/>
+					</Tooltip>
+				</span>
+			),
 			dataIndex: "performers",
 			key: "performers",
 			render: (performers, { lions, point }) => (
@@ -426,7 +277,9 @@ const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 		},
 	];
 
-	return refreshed ? (
+	return needsRefresh ? (
+		<Loader />
+	) : (
 		<Table
 			columns={columns}
 			dataSource={
@@ -439,8 +292,6 @@ const ShowsTable = ({ user, openFilter, refreshed, setRefreshed }) => {
 			rowKey="id"
 			size="middle"
 		/>
-	) : (
-		<Loader />
 	);
 };
 
