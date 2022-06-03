@@ -1,42 +1,14 @@
-import { gql } from "@apollo/client";
-import React, { useContext, useState } from "react";
-import { Layout } from "antd";
-import AuthContext from "../context/AuthContext";
-import useAuthQuery from "../utils/useAuthQuery";
+import React, { useContext } from "react";
+import { Layout, Typography } from "antd";
+import UserContext from "../context/UserContext";
 import Header from "../components/Header";
-import Loader from "../components/Loader";
-
-const GET_ME_QUERY = gql`
-	{
-		me {
-			id
-			firstName
-			lastName
-			member {
-				school
-				classYear
-			}
-		}
-	}
-`;
 
 const ProfilePage = () => {
-	let { logoutUser } = useContext(AuthContext);
-
-	let [user, setUser] = useState(null);
-
-	let { loading } = useAuthQuery(GET_ME_QUERY, {
-		onCompleted: ({ me }) => {
-			setUser(me);
-		},
-		onError: () => logoutUser(),
-	});
+	let { user } = useContext(UserContext);
 
 	return (
 		<Layout style={{ minHeight: "100vh" }}>
-			<Header
-				newUser={!loading && (!user?.member.school || !user?.member.classYear)}
-			/>
+			<Header newUser={!user.member.school || !user.member.classYear} />
 			<Layout.Content
 				style={{
 					width: "90%",
@@ -44,11 +16,9 @@ const ProfilePage = () => {
 					padding: "30px",
 				}}
 			>
-				{loading ? (
-					<Loader />
-				) : (
-					<div>{`This is ${user.firstName}'s profile page.`}</div>
-				)}
+				<Typography.Title level={2} style={{ marginBottom: "0em" }}>
+					{`Welcome, ${user.firstName}!`}
+				</Typography.Title>
 			</Layout.Content>
 		</Layout>
 	);
