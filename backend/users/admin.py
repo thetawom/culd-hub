@@ -45,7 +45,13 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
-    list_display = ("email", "first_name", "last_name", "board", "is_staff")
+    list_display = (
+        "email",
+        "first_name",
+        "last_name",
+        "board",
+        "is_staff",
+    )
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
 
