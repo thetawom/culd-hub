@@ -1,10 +1,15 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { Layout, Menu } from "antd";
-import { HomeFilled, SettingFilled, LogoutOutlined } from "@ant-design/icons";
+import { Layout, Menu, Tooltip } from "antd";
+import {
+	HomeFilled,
+	UserOutlined,
+	SettingFilled,
+	LogoutOutlined,
+} from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 
-const Header = () => {
+const Header = ({ newUser }) => {
 	let { authTokens, logoutUser } = useContext(AuthContext);
 
 	const onClick = (e) => {
@@ -18,6 +23,22 @@ const Header = () => {
 			label: <Link to="/">Home</Link>,
 			key: "home",
 			icon: <HomeFilled />,
+		},
+		{
+			label: (
+				<a href="/profile/">
+					<Tooltip
+						title="Complete your member profile."
+						placement="bottomRight"
+						visible={newUser}
+						color="#eb2f96cf"
+					>
+						Profile
+					</Tooltip>
+				</a>
+			),
+			key: "profile",
+			icon: <UserOutlined />,
 		},
 		{
 			label: <a href="/admin/">Admin</a>,

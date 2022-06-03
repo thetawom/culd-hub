@@ -49,9 +49,15 @@ class Member(models.Model):
         User, on_delete=models.CASCADE, null=True, related_name="member"
     )
     membership = models.CharField(max_length=1, choices=MEMBERSHIP_CHOICES, default="G")
-    school = models.CharField(max_length=1, choices=SCHOOL_CHOICES, blank=True)
+    school = models.CharField(
+        max_length=1, choices=SCHOOL_CHOICES, blank=True, null=True
+    )
     class_year = models.CharField(
-        verbose_name="Class Year", max_length=2, choices=CLASS_YEAR_CHOICES, blank=True
+        verbose_name="Class Year",
+        max_length=2,
+        choices=CLASS_YEAR_CHOICES,
+        blank=True,
+        null=True,
     )
 
     def __str__(self):

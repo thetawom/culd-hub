@@ -12,7 +12,15 @@ class UserType(DjangoObjectType):
 class MemberType(DjangoObjectType):
     class Meta:
         model = Member
-        fields = ("id", "user", "membership", "performed_shows", "pointed_shows")
+        fields = (
+            "id",
+            "user",
+            "membership",
+            "school",
+            "class_year",
+            "performed_shows",
+            "pointed_shows",
+        )
 
 
 class ShowType(DjangoObjectType):
