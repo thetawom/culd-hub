@@ -12,6 +12,7 @@ import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import { AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL } from "../constants";
 import { message } from "antd";
+import { UserProvider } from "./UserContext";
 
 const AuthContext = createContext();
 
@@ -157,6 +158,8 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	return (
-		<AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+		<AuthContext.Provider value={contextData}>
+			<UserProvider>{children}</UserProvider>
+		</AuthContext.Provider>
 	);
 };
