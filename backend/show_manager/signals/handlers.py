@@ -18,3 +18,8 @@ def update_show_time(sender, instance, **kwargs):
     rounds = instance.show.rounds.all()
     instance.show.time = min([round.time for round in rounds]) if rounds else None
     instance.show.save()
+
+
+@receiver(post_delete, sender=Member)
+def delete_user_for_member(sender, instance, **kwargs):
+    User.objects.filter(id=instance.user.id).delete()
