@@ -26,7 +26,7 @@ const Header = ({ newUser }) => {
 		},
 		{
 			label: (
-				<a href="/profile/">
+				<Link to="/profile/">
 					<Tooltip
 						title="Complete your member profile."
 						placement="bottomRight"
@@ -35,7 +35,7 @@ const Header = ({ newUser }) => {
 					>
 						Profile
 					</Tooltip>
-				</a>
+				</Link>
 			),
 			key: "profile",
 			icon: <UserOutlined />,

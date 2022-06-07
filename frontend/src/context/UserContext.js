@@ -40,7 +40,7 @@ export const UserProvider = ({ children }) => {
 
 	return (
 		<UserContext.Provider value={contextData}>
-			{loading ? <Loader /> : <>{children}</>}
+			{loading || !user ? <Loader /> : <>{children}</>}
 		</UserContext.Provider>
 	);
 };
