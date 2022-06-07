@@ -18,6 +18,8 @@ const GET_ME_QUERY = gql`
 				school
 				classYear
 			}
+			email
+			phone
 		}
 	}
 `;

@@ -8,9 +8,12 @@ import {
 	LogoutOutlined,
 } from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
+import UserContext from "../context/UserContext";
 
 const Header = ({ newUser }) => {
 	let { authTokens, logoutUser } = useContext(AuthContext);
+
+	let { user } = useContext(UserContext);
 
 	const onClick = (e) => {
 		if (e.key === "logout") {
@@ -25,31 +28,31 @@ const Header = ({ newUser }) => {
 			icon: <HomeFilled />,
 		},
 		{
+			label: <a href="/admin/">Admin</a>,
+			key: "admin",
+			icon: <SettingFilled />,
+		},
+		user && {
 			label: (
 				<Link to="/profile/">
 					<Tooltip
-						title="Complete your member profile."
+						title="Complete your member profile"
 						placement="bottomRight"
 						visible={newUser}
-						color="#eb2f96cf"
+						color="#eb2f96"
 					>
-						Profile
+						{user.firstName} {user.lastName}
 					</Tooltip>
 				</Link>
 			),
 			key: "profile",
 			icon: <UserOutlined />,
-		},
-		{
-			label: <a href="/admin/">Admin</a>,
-			key: "admin",
-			icon: <SettingFilled />,
+			style: { marginLeft: "auto" },
 		},
 		authTokens && {
 			label: <Link to="/">Logout</Link>,
 			key: "logout",
 			icon: <LogoutOutlined />,
-			style: { marginLeft: "auto" },
 		},
 	];
 
