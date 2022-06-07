@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Layout, Typography, Divider, Space, Input } from "antd";
+import { Layout, Typography, Divider, Space, Input, Select } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import UserContext from "../context/UserContext";
 import Header from "../components/Header";
@@ -30,10 +30,29 @@ const ProfilePage = () => {
 				<Divider style={{ marginTop: "0.8em", marginBottom: "1.2em" }} />
 				<Space style={{ width: "100%" }} direction="vertical">
 					<ProfileItem
+						title="Full Name"
+						value={`${user.firstName} ${user.lastName}`}
+						input={
+							<Input.Group compact style={{ width: "calc(100% - 50px)" }}>
+								<Input
+									placeholder="First name"
+									defaultValue={user.firstName}
+									style={{ width: "50%" }}
+								/>
+								<Input
+									placeholder="Last name"
+									defaultValue={user.lastName}
+									style={{ width: "50%" }}
+								/>
+							</Input.Group>
+						}
+					/>
+					<ProfileItem
 						title="Email Address"
 						value={user.email}
 						input={
 							<Input
+								placeholder="Email address"
 								defaultValue={user.email}
 								style={{ width: "calc(100% - 50px)" }}
 							/>
@@ -44,9 +63,29 @@ const ProfilePage = () => {
 						value={user.phone || "Not set"}
 						input={
 							<Input
+								placeholder="Phone number"
 								defaultValue={user.phone}
 								style={{ width: "calc(100% - 50px)" }}
 							/>
+						}
+					/>
+					<ProfileItem
+						title="Class Year"
+						value={user.member.classYear || "Not set"}
+						input={
+							<Select
+								placeholder="Class year"
+								defaultValue={user.member.classYear}
+								style={{ width: "calc(100% - 50px)" }}
+							>
+								<Select.Option value="FR">Freshman</Select.Option>
+								<Select.Option value="SP">Sophomore</Select.Option>
+								<Select.Option value="JR">Junior</Select.Option>
+								<Select.Option value="SR">Senior</Select.Option>
+								<Select.Option value="GR">Graduate</Select.Option>
+								<Select.Option value="AL">Alumni</Select.Option>
+								<Select.Option value="OT">Other</Select.Option>
+							</Select>
 						}
 					/>
 				</Space>
