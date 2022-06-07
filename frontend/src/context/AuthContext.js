@@ -7,7 +7,7 @@ import {
 	useMutation,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import { AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL } from "../constants";
@@ -41,6 +41,7 @@ export const REFRESH_TOKEN_MUTATION = gql`
 
 export const AuthProvider = ({ children }) => {
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	let [invalidCredentials, setInvalidCredentials] = useState(false);
 
@@ -64,7 +65,7 @@ export const AuthProvider = ({ children }) => {
 			});
 			localStorage.setItem(AUTH_TOKEN, tokenAuth.token);
 			localStorage.setItem(REFRESH_TOKEN, tokenAuth.refreshToken);
-			navigate("/");
+			navigate(location.state?.from || "/");
 		},
 		onError: (error) => {
 			if (error.message === "Please enter valid credentials") {
