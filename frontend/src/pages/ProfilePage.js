@@ -8,7 +8,7 @@ const ProfilePage = () => {
 
 	return (
 		<Layout style={{ minHeight: "100vh" }}>
-			<Header newUser={!user.member.school || !user.member.classYear} />
+			<Header />
 			<Layout.Content
 				style={{
 					width: "90%",
