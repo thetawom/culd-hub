@@ -1,6 +1,6 @@
-import React, {createContext, useContext, useEffect, useState} from "react";
-import {message} from "antd";
-import {gql} from "@apollo/client";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { message } from "antd";
+import { gql } from "@apollo/client";
 import useAuthMutation from "../utils/useAuthMutation";
 import AuthContext from "../context/AuthContext";
 import useAuthLazyQuery from "../utils/useAuthLazyQuery";
@@ -12,6 +12,7 @@ const GET_SHOWS_QUERY = gql`
 			name
 			priority
 			date
+			time
 			rounds {
 				id
 				time
@@ -82,83 +83,106 @@ export const DELETE_ROLE_MUTATION = gql`
 	}
 `;
 
-const ShowsTableContext = createContext(undefined);
+const ShowsTableContext = createContext();
 
 export default ShowsTableContext;
 
-export const ShowsTableProvider = ({children}) => {
-    let {logoutUser} = useContext(AuthContext);
+export const ShowsTableProvider = ({ children }) => {
+	let { logoutUser } = useContext(AuthContext);
 
-    let [shows, setShows] = useState([]);
+	let [shows, setShows] = useState([]);
 
-    let [openFilter, setOpenFilter] = useState("Open");
-    let [needsRefresh, setNeedsRefresh] = useState(true);
+	let [openFilter, setOpenFilter] = useState("Open");
+	let [needsRefresh, setNeedsRefresh] = useState(true);
 
-    let [getShows] = useAuthLazyQuery(GET_SHOWS_QUERY, {
-        onCompleted: ({shows}) => {
-            setShows(shows);
-            setNeedsRefresh(false);
-        }, onError: () => logoutUser(), fetchPolicy: "network-only", nextFetchPolicy: "network-only",
-    });
+	let [getShows] = useAuthLazyQuery(GET_SHOWS_QUERY, {
+		onCompleted: ({ shows }) => {
+			setShows(shows);
+			setNeedsRefresh(false);
+		},
+		onError: () => logoutUser(),
+		fetchPolicy: "network-only",
+		nextFetchPolicy: "network-only",
+	});
 
-    useEffect(() => {
-        getShows();
-    }, [needsRefresh, getShows]);
+	useEffect(() => {
+		getShows();
+	}, [needsRefresh, getShows]);
 
-    let [createRole] = useAuthMutation(CREATE_ROLE_MUTATION, {
-        onCompleted: ({createRole}) => {
-            setShows(shows.map((show) => show.id === createRole.role.show.id ? {
-                ...show, performers: [...show.performers, createRole.role.performer],
-            } : {...show}));
-            message.success(`Signed up for ${createRole.role.show.name}`);
-        }, onError: (error) => {
-            console.log(error.message);
-        },
-    });
+	let [createRole] = useAuthMutation(CREATE_ROLE_MUTATION, {
+		onCompleted: ({ createRole }) => {
+			setShows(
+				shows.map((show) =>
+					show.id === createRole.role.show.id
+						? {
+								...show,
+								performers: [...show.performers, createRole.role.performer],
+						  }
+						: { ...show }
+				)
+			);
+			message.success(`Signed up for ${createRole.role.show.name}`);
+		},
+		onError: (error) => {
+			console.log(error.message);
+		},
+	});
 
-    let addToShowRoster = (id) => {
-        if (shows.find((show) => show.id === id).isOpen) {
-            createRole({
-                variables: {
-                    showId: id,
-                },
-            });
-        }
-    };
+	let addToShowRoster = (id) => {
+		if (shows.find((show) => show.id === id).isOpen) {
+			createRole({
+				variables: {
+					showId: id,
+				},
+			});
+		}
+	};
 
-    let [deleteRole] = useAuthMutation(DELETE_ROLE_MUTATION, {
-        onCompleted: ({deleteRole}) => {
-            setShows(shows.map((show) => show.id === deleteRole.role.show.id ? {
-                ...show,
-                performers: show.performers.filter((performer) => performer.user.id !== deleteRole.role.performer.user.id),
-            } : {...show}));
-            message.success(`Removed from ${deleteRole.role.show.name}`);
-        }, onError: (error) => {
-            console.log(error.message);
-        },
-    });
+	let [deleteRole] = useAuthMutation(DELETE_ROLE_MUTATION, {
+		onCompleted: ({ deleteRole }) => {
+			setShows(
+				shows.map((show) =>
+					show.id === deleteRole.role.show.id
+						? {
+								...show,
+								performers: show.performers.filter(
+									(performer) =>
+										performer.user.id !== deleteRole.role.performer.user.id
+								),
+						  }
+						: { ...show }
+				)
+			);
+			message.success(`Removed from ${deleteRole.role.show.name}`);
+		},
+		onError: (error) => {
+			console.log(error.message);
+		},
+	});
 
-    let removeFromShowRoster = (id) => {
-        if (shows.find((show) => show.id === id).isOpen) {
-            deleteRole({
-                variables: {
-                    showId: id,
-                },
-            });
-        }
-    };
+	let removeFromShowRoster = (id) => {
+		if (shows.find((show) => show.id === id).isOpen) {
+			deleteRole({
+				variables: {
+					showId: id,
+				},
+			});
+		}
+	};
 
-    let contextData = {
-        shows: shows,
-        openFilter: openFilter,
-        needsRefresh: needsRefresh,
-        setOpenFilter: setOpenFilter,
-        setNeedsRefresh: setNeedsRefresh,
-        addToShowRoster: addToShowRoster,
-        removeFromShowRoster: removeFromShowRoster,
-    };
+	let contextData = {
+		shows: shows,
+		openFilter: openFilter,
+		needsRefresh: needsRefresh,
+		setOpenFilter: setOpenFilter,
+		setNeedsRefresh: setNeedsRefresh,
+		addToShowRoster: addToShowRoster,
+		removeFromShowRoster: removeFromShowRoster,
+	};
 
-    return (<ShowsTableContext.Provider value={contextData}>
-        {children}
-    </ShowsTableContext.Provider>);
+	return (
+		<ShowsTableContext.Provider value={contextData}>
+			{children}
+		</ShowsTableContext.Provider>
+	);
 };
