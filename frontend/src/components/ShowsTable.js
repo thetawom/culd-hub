@@ -12,12 +12,13 @@ import dayjs from "dayjs";
 import ShowsTableContext from "../context/ShowsTableContext";
 import Loader from "./Loader";
 
-var customParseFormat = require("dayjs/plugin/customParseFormat");
+let customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
 const ShowsTable = ({user}) => {
     let {
         shows,
+        showPriorityChoices,
         openFilter,
         needsRefresh,
         addToShowRoster,
@@ -76,20 +77,13 @@ const ShowsTable = ({user}) => {
             dataIndex: "priority",
             key: "priority",
             render: (priority, {isOpen}) => {
-                let [color, text] = !isOpen
-                    ? ["purple", "CLOSED"]
-                    : priority === "F"
-                        ? ["geekblue", "FULL"]
-                        : priority === "N"
-                            ? ["green", "NORMAL"]
-                            : ["red", "URGENT"];
                 return (
                     <Tag
-                        color={color}
+                        color={!isOpen ? "purple" : priority === "F" ? "geekblue" : priority === "N" ? "green" : "red"}
                         key={priority}
                         style={{width: "5.5em", textAlign: "center"}}
                     >
-                        {text}
+                        {(!isOpen ? "closed" : showPriorityChoices[priority] ?? priority).toUpperCase()}
                     </Tag>
                 );
             },
