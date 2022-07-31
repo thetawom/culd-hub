@@ -1,4 +1,5 @@
 import graphene
+from graphql_jwt.decorators import login_required
 
 from show_manager.models import Show, Member, Role
 from users.models import User
@@ -58,3 +59,27 @@ class DeleteRoleMutation(graphene.Mutation):
         )
         role_instance.delete()
         return DeleteRoleMutation(role=role_instance)
+
+
+class EditUserMutation(graphene.Mutation):
+    user = graphene.Field(UserType)
+
+    class Arguments:
+        first_name = graphene.String()
+        last_name = graphene.String()
+        email = graphene.String()
+        phone = graphene.String()
+        school = graphene.String()
+        class_year = graphene.String()
+
+    @staticmethod
+    @login_required
+    def mutate(root, info, **kwargs):
+        user_instance = User.objects.get(pk=info.context.user.pk)
+        for prop in kwargs:
+            if hasattr(user_instance, prop):
+                setattr(user_instance, prop, kwargs[prop])
+            elif hasattr(user_instance.member, prop):
+                setattr(user_instance.member, prop, kwargs[prop])
+        user_instance.save()
+        return EditUserMutation(user=user_instance)

@@ -6,7 +6,7 @@ from graphql_jwt.refresh_token.signals import refresh_token_rotated
 
 from show_manager.models import Member, Show
 from users.models import User
-from .mutations import CreateUserMutation, CreateRoleMutation, DeleteRoleMutation
+from .mutations import CreateUserMutation, CreateRoleMutation, DeleteRoleMutation, EditUserMutation
 from .types import UserType, MemberType, ShowType
 
 
@@ -47,6 +47,7 @@ class Mutation(graphene.ObjectType):
     create_user = CreateUserMutation.Field()
     create_role = CreateRoleMutation.Field()
     delete_role = DeleteRoleMutation.Field()
+    edit_user = EditUserMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
