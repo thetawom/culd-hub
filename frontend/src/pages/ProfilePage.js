@@ -1,14 +1,33 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import {Divider, Input, Layout, Select, Space, Typography} from "antd";
 import {UserOutlined} from "@ant-design/icons";
 import UserContext from "../context/UserContext";
 import Header from "../components/Header";
 import ProfileItem from "../components/ProfileItem";
+import {gql} from "@apollo/client";
+import Loader from "../components/Loader";
+import useAuthQuery from "../utils/useAuthQuery";
+
+
+const GET_CLASS_YEAR_CHOICES_QUERY = gql`
+	{
+		classYearChoices
+	}
+`;
 
 const ProfilePage = () => {
     let {user} = useContext(UserContext);
+    let [classYearChoices, setClassYearChoices] = useState(null);
 
-    return (
+    let {classYearChoicesLoading} = useAuthQuery(GET_CLASS_YEAR_CHOICES_QUERY, {
+        onCompleted: ({classYearChoices}) => {
+            setClassYearChoices(JSON.parse(classYearChoices));
+        },
+    });
+
+    return classYearChoicesLoading || !classYearChoices ? (
+        <Loader/>
+    ) : (
         <Layout style={{minHeight: "100vh"}}>
             <Header/>
             <Layout.Content
@@ -72,19 +91,18 @@ const ProfilePage = () => {
                     <ProfileItem
                         title="Class Year"
                         value={user.member.classYear || "Not set"}
+                        choices={classYearChoices}
                         input={
                             <Select
                                 placeholder="Class year"
-                                defaultValue={user.member.classYear}
+                                defaultValue={classYearChoices ? classYearChoices[user.member.classYear] : user.member.classYear}
                                 style={{width: "calc(100% - 50px)"}}
                             >
-                                <Select.Option value="FR">Freshman</Select.Option>
-                                <Select.Option value="SP">Sophomore</Select.Option>
-                                <Select.Option value="JR">Junior</Select.Option>
-                                <Select.Option value="SR">Senior</Select.Option>
-                                <Select.Option value="GR">Graduate</Select.Option>
-                                <Select.Option value="AL">Alumni</Select.Option>
-                                <Select.Option value="OT">Other</Select.Option>
+                                <>
+                                    {Object.entries(classYearChoices).map(([key, value]) =>
+                                        <Select.Option key={key} value={key}>{value.toString()}</Select.Option>
+                                    )}
+                                </>
                             </Select>
                         }
                     />
