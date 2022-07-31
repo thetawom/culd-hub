@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Button, Card, Input} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 
-const ProfileItem = ({title, value, input}) => {
+const ProfileItem = ({title, value, input, choices}) => {
     let [editing, setEditing] = useState(false);
 
     return (
@@ -38,7 +38,7 @@ const ProfileItem = ({title, value, input}) => {
                                 </Button>
                             </Input.Group>
                         ) : (
-                            value
+                            choices ? choices[value] : value
                         )
                     }
                     style={{width: "100%"}}
