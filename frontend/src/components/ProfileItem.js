@@ -38,7 +38,7 @@ const ProfileItem = ({title, value, input, choices}) => {
                                 </Button>
                             </Input.Group>
                         ) : (
-                            choices ? choices[value] : value
+                            choices ? choices[value] ?? value : value
                         )
                     }
                     style={{width: "100%"}}

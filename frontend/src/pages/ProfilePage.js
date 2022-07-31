@@ -9,6 +9,12 @@ import Loader from "../components/Loader";
 import useAuthQuery from "../utils/useAuthQuery";
 
 
+const GET_SCHOOL_CHOICES_QUERY = gql`
+	{
+		schoolChoices
+	}
+`;
+
 const GET_CLASS_YEAR_CHOICES_QUERY = gql`
 	{
 		classYearChoices
@@ -17,7 +23,14 @@ const GET_CLASS_YEAR_CHOICES_QUERY = gql`
 
 const ProfilePage = () => {
     let {user} = useContext(UserContext);
+    let [schoolChoices, setSchoolChoices] = useState(null);
     let [classYearChoices, setClassYearChoices] = useState(null);
+
+    let {schoolChoicesLoading} = useAuthQuery(GET_SCHOOL_CHOICES_QUERY, {
+        onCompleted: ({schoolChoices}) => {
+            setSchoolChoices(JSON.parse(schoolChoices));
+        },
+    });
 
     let {classYearChoicesLoading} = useAuthQuery(GET_CLASS_YEAR_CHOICES_QUERY, {
         onCompleted: ({classYearChoices}) => {
@@ -25,7 +38,8 @@ const ProfilePage = () => {
         },
     });
 
-    return classYearChoicesLoading || !classYearChoices ? (
+    return classYearChoicesLoading || !classYearChoices ||
+    schoolChoicesLoading || !schoolChoices ? (
         <Loader/>
     ) : (
         <Layout style={{minHeight: "100vh"}}>
@@ -89,13 +103,35 @@ const ProfilePage = () => {
                         }
                     />
                     <ProfileItem
+                        title="School"
+                        value={user.member.school || "Not set"}
+                        choices={schoolChoices}
+                        input={
+                            <Select
+                                placeholder="School"
+                                defaultValue={schoolChoices ?
+                                    schoolChoices[user.member.school] ?? user.member.school
+                                    : user.member.school}
+                                style={{width: "calc(100% - 50px)"}}
+                            >
+                                <>
+                                    {Object.entries(schoolChoices).map(([key, value]) =>
+                                        <Select.Option key={key} value={key}>{value.toString()}</Select.Option>
+                                    )}
+                                </>
+                            </Select>
+                        }
+                    />
+                    <ProfileItem
                         title="Class Year"
                         value={user.member.classYear || "Not set"}
                         choices={classYearChoices}
                         input={
                             <Select
                                 placeholder="Class year"
-                                defaultValue={classYearChoices ? classYearChoices[user.member.classYear] : user.member.classYear}
+                                defaultValue={classYearChoices ?
+                                    classYearChoices[user.member.classYear] ?? user.member.school
+                                    : user.member.classYear}
                                 style={{width: "calc(100% - 50px)"}}
                             >
                                 <>
