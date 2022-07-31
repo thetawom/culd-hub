@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import {AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL} from "../constants";
 import {message} from "antd";
 
-const AuthContext = createContext();
+const AuthContext = createContext(undefined);
 
 export default AuthContext;
 

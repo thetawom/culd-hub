@@ -4,7 +4,7 @@ import Loader from "../components/Loader";
 import useAuthQuery from "../utils/useAuthQuery";
 import AuthContext from "./AuthContext";
 
-const UserContext = createContext();
+const UserContext = createContext(undefined);
 
 export default UserContext;
 
