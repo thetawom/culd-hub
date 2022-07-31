@@ -82,7 +82,7 @@ export const DELETE_ROLE_MUTATION = gql`
 	}
 `;
 
-const ShowsTableContext = createContext();
+const ShowsTableContext = createContext(undefined);
 
 export default ShowsTableContext;
 
