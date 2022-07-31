@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Show, Round, Member, Contact, Role
 
 
@@ -11,7 +12,8 @@ class RoleInlineAdmin(admin.TabularInline):
 
 
 class ShowAdmin(admin.ModelAdmin):
-    def rounds(self, show):
+    @staticmethod
+    def rounds(show):
         count = show.rounds.count()
         return count if count > 0 else None
 

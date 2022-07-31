@@ -1,6 +1,7 @@
 import graphene
-from users.models import User
+
 from show_manager.models import Show, Member, Role
+from users.models import User
 from .types import RoleType, UserType
 
 

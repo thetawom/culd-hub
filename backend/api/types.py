@@ -1,6 +1,7 @@
 from graphene_django import DjangoObjectType
-from users.models import User
+
 from show_manager.models import Member, Show, Round, Contact, Role
+from users.models import User
 
 
 class UserType(DjangoObjectType):

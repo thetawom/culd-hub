@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
-import React, { createContext, useContext, useState } from "react";
+import {gql} from "@apollo/client";
+import React, {createContext, useContext, useState} from "react";
 import Loader from "../components/Loader";
 import useAuthQuery from "../utils/useAuthQuery";
 import AuthContext from "./AuthContext";
@@ -24,25 +24,25 @@ const GET_ME_QUERY = gql`
 	}
 `;
 
-export const UserProvider = ({ children }) => {
-	let { logoutUser } = useContext(AuthContext);
+export const UserProvider = ({children}) => {
+    let {logoutUser} = useContext(AuthContext);
 
-	let [user, setUser] = useState(null);
+    let [user, setUser] = useState(null);
 
-	let { loading } = useAuthQuery(GET_ME_QUERY, {
-		onCompleted: ({ me }) => {
-			setUser(me);
-		},
-		onError: () => logoutUser(),
-	});
+    let {loading} = useAuthQuery(GET_ME_QUERY, {
+        onCompleted: ({me}) => {
+            setUser(me);
+        },
+        onError: () => logoutUser(),
+    });
 
-	let contextData = {
-		user: user,
-	};
+    let contextData = {
+        user: user,
+    };
 
-	return (
-		<UserContext.Provider value={contextData}>
-			{loading || !user ? <Loader /> : <>{children}</>}
-		</UserContext.Provider>
-	);
+    return (
+        <UserContext.Provider value={contextData}>
+            {loading || !user ? <Loader/> : <>{children}</>}
+        </UserContext.Provider>
+    );
 };
