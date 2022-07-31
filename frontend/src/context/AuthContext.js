@@ -1,17 +1,11 @@
-import { createContext, useEffect, useState } from "react";
-import {
-	ApolloClient,
-	createHttpLink,
-	gql,
-	InMemoryCache,
-	useMutation,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { useLocation, useNavigate } from "react-router-dom";
+import {createContext, useEffect, useState} from "react";
+import {ApolloClient, createHttpLink, gql, InMemoryCache, useMutation,} from "@apollo/client";
+import {setContext} from "@apollo/client/link/context";
+import {useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
-import { AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL } from "../constants";
-import { message } from "antd";
+import {AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL} from "../constants";
+import {message} from "antd";
 
 const AuthContext = createContext();
 
@@ -39,125 +33,125 @@ export const REFRESH_TOKEN_MUTATION = gql`
 	}
 `;
 
-export const AuthProvider = ({ children }) => {
-	const navigate = useNavigate();
-	const location = useLocation();
+export const AuthProvider = ({children}) => {
+    const navigate = useNavigate();
+    const location = useLocation();
 
-	let [invalidCredentials, setInvalidCredentials] = useState(false);
+    let [invalidCredentials, setInvalidCredentials] = useState(false);
 
-	let [authTokens, setAuthTokens] = useState(() =>
-		localStorage.getItem(AUTH_TOKEN) && localStorage.getItem(REFRESH_TOKEN)
-			? {
-					access: localStorage.getItem(AUTH_TOKEN),
-					refresh: localStorage.getItem(REFRESH_TOKEN),
-			  }
-			: null
-	);
+    let [authTokens, setAuthTokens] = useState(() =>
+        localStorage.getItem(AUTH_TOKEN) && localStorage.getItem(REFRESH_TOKEN)
+            ? {
+                access: localStorage.getItem(AUTH_TOKEN),
+                refresh: localStorage.getItem(REFRESH_TOKEN),
+            }
+            : null
+    );
 
-	let [client, setClient] = useState(null);
+    let [client, setClient] = useState(null);
 
-	let [tokenAuth] = useMutation(TOKEN_AUTH_MUTATION, {
-		onCompleted: ({ tokenAuth }) => {
-			setInvalidCredentials(false);
-			setAuthTokens({
-				access: tokenAuth.token,
-				refresh: tokenAuth.refreshToken,
-			});
-			localStorage.setItem(AUTH_TOKEN, tokenAuth.token);
-			localStorage.setItem(REFRESH_TOKEN, tokenAuth.refreshToken);
-			navigate(location.state?.from || "/");
-		},
-		onError: (error) => {
-			if (error.message === "Please enter valid credentials") {
-				console.log(error.message);
-				setInvalidCredentials(true);
-			} else {
-				message.error(error.message);
-			}
-		},
-	});
+    let [tokenAuth] = useMutation(TOKEN_AUTH_MUTATION, {
+        onCompleted: ({tokenAuth}) => {
+            setInvalidCredentials(false);
+            setAuthTokens({
+                access: tokenAuth.token,
+                refresh: tokenAuth.refreshToken,
+            });
+            localStorage.setItem(AUTH_TOKEN, tokenAuth.token);
+            localStorage.setItem(REFRESH_TOKEN, tokenAuth.refreshToken);
+            navigate(location.state?.from || "/");
+        },
+        onError: (error) => {
+            if (error.message === "Please enter valid credentials") {
+                console.log(error.message);
+                setInvalidCredentials(true);
+            } else {
+                message.error(error.message);
+            }
+        },
+    });
 
-	let loginUser = ({ email, password }) => {
-		localStorage.setItem(REMEMBER_EMAIL, email);
-		tokenAuth({
-			variables: {
-				email: email,
-				password: password,
-			},
-		});
-	};
+    let loginUser = ({email, password}) => {
+        localStorage.setItem(REMEMBER_EMAIL, email);
+        tokenAuth({
+            variables: {
+                email: email,
+                password: password,
+            },
+        });
+    };
 
-	let logoutUser = () => {
-		setAuthTokens(null);
-		localStorage.removeItem(AUTH_TOKEN);
-		localStorage.removeItem(REFRESH_TOKEN);
-		navigate("/login");
-	};
+    let logoutUser = () => {
+        setAuthTokens(null);
+        localStorage.removeItem(AUTH_TOKEN);
+        localStorage.removeItem(REFRESH_TOKEN);
+        navigate("/login");
+    };
 
-	let [refreshToken] = useMutation(REFRESH_TOKEN_MUTATION, {
-		onCompleted: ({ refreshToken }) => {
-			setAuthTokens({
-				access: refreshToken.token,
-				refresh: refreshToken.refreshToken,
-			});
-			localStorage.setItem(AUTH_TOKEN, refreshToken.token);
-			localStorage.setItem(REFRESH_TOKEN, refreshToken.refreshToken);
-		},
-		onError: (error) => {
-			console.log(error.message);
-			setAuthTokens(null);
-			localStorage.removeItem(AUTH_TOKEN);
-			localStorage.removeItem(REFRESH_TOKEN);
-		},
-	});
+    let [refreshToken] = useMutation(REFRESH_TOKEN_MUTATION, {
+        onCompleted: ({refreshToken}) => {
+            setAuthTokens({
+                access: refreshToken.token,
+                refresh: refreshToken.refreshToken,
+            });
+            localStorage.setItem(AUTH_TOKEN, refreshToken.token);
+            localStorage.setItem(REFRESH_TOKEN, refreshToken.refreshToken);
+        },
+        onError: (error) => {
+            console.log(error.message);
+            setAuthTokens(null);
+            localStorage.removeItem(AUTH_TOKEN);
+            localStorage.removeItem(REFRESH_TOKEN);
+        },
+    });
 
-	useEffect(() => {
-		if (authTokens) {
-			const httpLink = createHttpLink({
-				uri: "http://localhost:8000/graphql/",
-			});
+    useEffect(() => {
+        if (authTokens) {
+            const httpLink = createHttpLink({
+                uri: "http://localhost:8000/graphql/",
+            });
 
-			const authLink = setContext(async (_, { headers }) => {
-				const exp = jwt_decode(authTokens.access).exp;
-				const isExpired = dayjs.unix(exp).diff(dayjs()) < 1;
+            const authLink = setContext(async (_, {headers}) => {
+                const exp = jwt_decode(authTokens.access).exp;
+                const isExpired = dayjs.unix(exp).diff(dayjs()) < 1;
 
-				if (isExpired) {
-					await refreshToken({
-						variables: {
-							refreshToken: authTokens.refresh,
-						},
-					});
-				}
+                if (isExpired) {
+                    await refreshToken({
+                        variables: {
+                            refreshToken: authTokens.refresh,
+                        },
+                    });
+                }
 
-				return {
-					headers: {
-						...headers,
-						authorization: authTokens ? `JWT ${authTokens.access}` : "",
-					},
-				};
-			});
+                return {
+                    headers: {
+                        ...headers,
+                        authorization: authTokens ? `JWT ${authTokens.access}` : "",
+                    },
+                };
+            });
 
-			setClient(
-				new ApolloClient({
-					link: authLink.concat(httpLink),
-					cache: new InMemoryCache(),
-				})
-			);
-		} else {
-			setClient(null);
-		}
-	}, [authTokens, refreshToken]);
+            setClient(
+                new ApolloClient({
+                    link: authLink.concat(httpLink),
+                    cache: new InMemoryCache(),
+                })
+            );
+        } else {
+            setClient(null);
+        }
+    }, [authTokens, refreshToken]);
 
-	let contextData = {
-		authTokens: authTokens,
-		client: client,
-		invalidCredentials: invalidCredentials,
-		loginUser: loginUser,
-		logoutUser: logoutUser,
-		setInvalidCredentials: setInvalidCredentials,
-	};
+    let contextData = {
+        authTokens: authTokens,
+        client: client,
+        invalidCredentials: invalidCredentials,
+        loginUser: loginUser,
+        logoutUser: logoutUser,
+        setInvalidCredentials: setInvalidCredentials,
+    };
 
-	return (
-		<AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
-	);
+    return (
+        <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+    );
 };

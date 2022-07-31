@@ -1,9 +1,8 @@
-from django.db import models
 from django.contrib import admin
-from django.contrib.auth import get_user_model
+from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
-User = get_user_model()
+from users.models import User
 
 SCHOOL_CHOICES = (
     ("C", "CC"),
@@ -61,7 +60,7 @@ class Member(models.Model):
     )
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
+        return self.user.get_full_name()
 
 
 class Show(models.Model):
@@ -126,7 +125,7 @@ class Show(models.Model):
         if self.rounds.count() == 0:
             return None
         return " · ".join(
-            [round.time.strftime("%-I:%M %p") for round in self.rounds.all()]
+            [r.time.strftime("%-I:%M %p") for r in self.rounds.all()]
         )
 
     @admin.display(description="Performers")
@@ -161,7 +160,7 @@ class Role(models.Model):
         unique_together = [["show", "performer"]]
 
     def __str__(self):
-        return f"{self.show.name} ({self.performer.user.first_name} {self.performer.user.last_name})"
+        return f"{self.show.name} ({self.performer.user.get_full_name()})"
 
 
 class Contact(models.Model):
