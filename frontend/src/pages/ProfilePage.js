@@ -45,6 +45,7 @@ const ProfilePage = () => {
         <Layout style={{minHeight: "100vh"}}>
             <Header/>
             <Layout.Content
+                id="profile-page"
                 style={{
                     width: "40%",
                     margin: "auto",
@@ -67,16 +68,11 @@ const ProfilePage = () => {
                         value={`${user.firstName} ${user.lastName}`}
                         input={
                             <Input.Group compact style={{width: "calc(100% - 50px)"}}>
-                                <Form.Item name="firstName" initialValue={user.firstName}>
-                                    <Input
-                                        placeholder="First name"
-                                        style={{width: "50%"}}
-                                    /></Form.Item>
-                                <Form.Item name="lastName" initialValue={user.lastName}>
-                                    <Input
-                                        placeholder="Last name"
-                                        style={{width: "50%"}}
-                                    />
+                                <Form.Item name="firstName" initialValue={user.firstName} noStyle>
+                                    <Input placeholder="First name" style={{width: "50%"}}/>
+                                </Form.Item>
+                                <Form.Item name="lastName" initialValue={user.lastName} noStyle>
+                                    <Input placeholder="Last name" style={{width: "50%"}}/>
                                 </Form.Item>
                             </Input.Group>
                         }
@@ -85,11 +81,8 @@ const ProfilePage = () => {
                         title="Email Address"
                         value={user.email}
                         input={
-                            <Form.Item name="email" initialValue={user.email}>
-                                <Input
-                                    placeholder="Email address"
-                                    style={{width: "calc(100% - 50px)"}}
-                                />
+                            <Form.Item name="email" initialValue={user.email} noStyle>
+                                <Input placeholder="Email address" style={{width: "calc(100% - 50px)"}}/>
                             </Form.Item>
                         }
                     />
@@ -97,11 +90,8 @@ const ProfilePage = () => {
                         title="Phone Number"
                         value={user.phone || "Not set"}
                         input={
-                            <Form.Item name="phone" initialValue={user.phone}>
-                                <Input
-                                    placeholder="Phone number"
-                                    style={{width: "calc(100% - 50px)"}}
-                                />
+                            <Form.Item name="phone" initialValue={user.phone} noStyle>
+                                <Input placeholder="Phone number" style={{width: "calc(100% - 50px)"}}/>
                             </Form.Item>
                         }
                     />
@@ -110,11 +100,8 @@ const ProfilePage = () => {
                         value={user.member.school || "Not set"}
                         choices={schoolChoices}
                         input={
-                            <Form.Item name="school" initialValue={user.member.school}>
-                                <Select
-                                    placeholder="School"
-                                    style={{width: "calc(100% - 50px)"}}
-                                >
+                            <Form.Item name="school" initialValue={user.member.school} noStyle>
+                                <Select placeholder="School" style={{width: "calc(100% - 50px)"}}>
                                     <>
                                         {Object.entries(schoolChoices).map(([key, value]) =>
                                             <Select.Option key={key} value={key}>{value.toString()}</Select.Option>
@@ -129,11 +116,8 @@ const ProfilePage = () => {
                         value={user.member.classYear || "Not set"}
                         choices={classYearChoices}
                         input={
-                            <Form.Item name="classYear" initialValue={user.member.classYear}>
-                                <Select
-                                    placeholder="Class year"
-                                    style={{width: "calc(100% - 50px)"}}
-                                >
+                            <Form.Item name="classYear" initialValue={user.member.classYear} noStyle>
+                                <Select placeholder="Class year" style={{width: "calc(100% - 50px)"}}>
                                     <>
                                         {Object.entries(classYearChoices).map(([key, value]) =>
                                             <Select.Option key={key} value={key}>{value.toString()}</Select.Option>

@@ -57,15 +57,11 @@ const ProfileItem = ({title, value, input, choices}) => {
         >
             <Card.Meta
                 title={title}
-                description={editing ? (<Form onFinish={onSubmit}>
+                description={editing ? (<Form onFinish={onSubmit} style={{width: "100%"}}>
                     <Input.Group compact style={{width: "100%"}}>
                         {input}
-                        <Form.Item>
-                            <Button
-                                type="primary"
-                                htmlType="submit"
-                                style={{width: "50px"}}
-                            >
+                        <Form.Item noStyle>
+                            <Button type="primary" htmlType="submit" style={{width: "50px"}}>
                                 <CheckOutlined/>
                             </Button>
                         </Form.Item>

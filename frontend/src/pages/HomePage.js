@@ -14,6 +14,7 @@ const HomePage = () => {
         <Layout style={{minHeight: "100vh"}}>
             <Header newUser={!user.member.school || !user.member.classYear}/>
             <Layout.Content
+                id="shows-page"
                 style={{
                     width: "90%",
                     margin: "auto",
