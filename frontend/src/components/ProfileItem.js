@@ -1,10 +1,9 @@
 import React, {useState} from "react";
-import {Button, Card, Input} from "antd";
+import {Button, Card, Form, Input} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
-import { gql } from "@apollo/client";
-import { Mutation } from '@apollo/react-components';
+import {gql} from "@apollo/client";
 
-const EDIT_USER = gql`
+const EDIT_USER_MUTATION = gql`
   mutation EditUser (
     $email: String!
     $firstName: String!
@@ -37,61 +36,51 @@ const EDIT_USER = gql`
 
 const ProfileItem = ({title, value, input, choices}) => {
     let [editing, setEditing] = useState(false);
-    console.log("Title: " + title, "Value: " + value, "Choices: " + choices)
 
-    return (
-        <Mutation mutation={EDIT_USER}>
-            {editUser => (
-                <Card
-                hoverable
-                onClick={() => {
-                    if (!editing) {
-                        setEditing(true);
-                    }
+    const onSubmit = (values) => {
+        setEditing(false);
+        console.log("Setting", values);
+    }
+
+    return (<Card
+        hoverable
+        onClick={() => {
+            if (!editing) {
+                setEditing(true);
+            }
+        }}
+    >
+        <div
+            style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+            }}
+        >
+            <Card.Meta
+                title={title}
+                description={editing ? (<Form onFinish={onSubmit}>
+                    <Input.Group compact style={{width: "100%"}}>
+                        {input}
+                        <Form.Item>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                style={{width: "50px"}}
+                            >
+                                <CheckOutlined/>
+                            </Button>
+                        </Form.Item>
+                    </Input.Group>
+                </Form>) : (choices ? choices[value] ?? value : value)}
+                style={{width: "100%"}}
+            />
+            {!editing && (<EditTwoTone
+                style={{
+                    fontSize: "1.8em",
                 }}
-            >
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                    }}
-                >
-                    <Card.Meta
-                        title={title}
-                        description={
-                            editing ? (
-                                <Input.Group compact style={{width: "100%"}}>
-                                    {input}
-                                    <Button
-                                        type="primary"
-                                        style={{width: "50px"}}
-                                        onClick={() => {
-                                            setEditing(false);
-                                        }}
-                                    >
-                                        <CheckOutlined/>
-                                    </Button>
-                                </Input.Group>
-                            ) : (
-                                choices ? choices[value] ?? value : value
-                            )
-                        }
-                        style={{width: "100%"}}
-                    />
-                    {!editing && (
-                        <EditTwoTone
-                            style={{
-                                fontSize: "1.8em",
-                            }}
-                        />
-                    )}
-                </div>
-            </Card>
-            )}
-            
-        </Mutation>
-    );
-};
+            />)}
+        </div>
+    </Card>);
+}
+
 
 export default ProfileItem;
