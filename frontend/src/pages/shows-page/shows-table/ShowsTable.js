@@ -9,8 +9,8 @@ import {
     StarFilled,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import ShowsTableContext from "../context/ShowsTableContext";
-import Loader from "./Loader";
+import ShowsTableContext from "./ShowsTableContext";
+import Loader from "../../../components/Loader";
 
 let customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);

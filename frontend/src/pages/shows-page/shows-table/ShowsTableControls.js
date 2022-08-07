@@ -1,7 +1,7 @@
 import React, {useContext} from "react";
 import {Button, Segmented, Space, Tooltip} from "antd";
 import {SyncOutlined} from "@ant-design/icons";
-import ShowsTableContext from "../context/ShowsTableContext";
+import ShowsTableContext from "./ShowsTableContext";
 
 const ShowsTableControls = () => {
     let {openFilter, setOpenFilter, setNeedsRefresh} =

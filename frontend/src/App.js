@@ -1,7 +1,7 @@
 import "./App.css";
 import {Routes, Route} from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import ProfilePage from "./pages/ProfilePage";
+import ShowsPage from "./pages/shows-page/ShowsPage";
+import ProfilePage from "./pages/profile-page/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import PrivateRoutes from "./utils/PrivateRoutes";
@@ -17,7 +17,7 @@ function App() {
             <AuthProvider>
                 <Routes>
                     <Route element={<PrivateRoutes/>}>
-                        <Route path="/" exact element={<HomePage/>}/>
+                        <Route path="/" exact element={<ShowsPage/>}/>
                         <Route path="profile/" element={<ProfilePage/>}/>
                     </Route>
                     <Route path="login/" element={<LoginPage/>}/>

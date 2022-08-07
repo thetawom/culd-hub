@@ -1,13 +1,13 @@
 import React, {useContext} from "react";
 import {Divider, Layout, Typography} from "antd";
 import {AppstoreAddOutlined} from "@ant-design/icons";
-import UserContext from "../context/UserContext";
-import Header from "../components/Header";
-import ShowsTable from "../components/ShowsTable";
-import {ShowsTableProvider} from "../context/ShowsTableContext";
-import ShowsTableControls from "../components/ShowsTableControls";
+import UserContext from "../../context/UserContext";
+import Header from "../../components/Header";
+import ShowsTable from "./shows-table/ShowsTable";
+import {ShowsTableProvider} from "./shows-table/ShowsTableContext";
+import ShowsTableControls from "./shows-table/ShowsTableControls";
 
-const HomePage = () => {
+const ShowsPage = () => {
     let {user} = useContext(UserContext);
 
     return (
@@ -42,4 +42,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default ShowsPage;

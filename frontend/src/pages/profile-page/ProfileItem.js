@@ -35,6 +35,7 @@ const EDIT_USER_MUTATION = gql`
 `;
 
 const ProfileItem = ({title, value, input, choices}) => {
+    const [form] = Form.useForm();
     let [editing, setEditing] = useState(false);
 
     const onSubmit = (values) => {
@@ -57,13 +58,14 @@ const ProfileItem = ({title, value, input, choices}) => {
         >
             <Card.Meta
                 title={title}
-                description={editing ? (<Form onFinish={onSubmit} style={{width: "100%"}}>
+                description={editing ? (<Form form={form} onFinish={onSubmit} style={{width: "100%"}}>
                     <Input.Group compact style={{width: "100%"}}>
                         {input}
-                        <Form.Item noStyle>
-                            <Button type="primary" htmlType="submit" style={{width: "50px"}}>
+                        <Form.Item shouldUpdate noStyle>
+                            {() => <Button type="primary" htmlType="submit" style={{width: "50px"}}
+                                           disabled={!!form.getFieldsError().filter(({errors}) => errors.length).length}>
                                 <CheckOutlined/>
-                            </Button>
+                            </Button>}
                         </Form.Item>
                     </Input.Group>
                 </Form>) : (choices ? choices[value] ?? value : value)}

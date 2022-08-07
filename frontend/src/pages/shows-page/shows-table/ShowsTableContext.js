@@ -1,10 +1,10 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {message} from "antd";
 import {gql} from "@apollo/client";
-import useAuthMutation from "../utils/useAuthMutation";
-import AuthContext from "../context/AuthContext";
-import useAuthLazyQuery from "../utils/useAuthLazyQuery";
-import useAuthQuery from "../utils/useAuthQuery";
+import useAuthMutation from "../../../utils/hooks/useAuthMutation";
+import AuthContext from "../../../context/AuthContext";
+import useAuthLazyQuery from "../../../utils/hooks/useAuthLazyQuery";
+import useAuthQuery from "../../../utils/hooks/useAuthQuery";
 
 const GET_SHOWS_QUERY = gql`
 	{

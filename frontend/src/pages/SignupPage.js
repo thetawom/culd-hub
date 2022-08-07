@@ -5,6 +5,8 @@ import {LockOutlined, MailOutlined, PhoneOutlined, UserOutlined,} from "@ant-des
 import AuthBox from "../components/AuthBox";
 import {gql, useMutation} from "@apollo/client";
 import {REMEMBER_EMAIL} from "../constants";
+import {emailValidationRules, firstNameValidationRules, lastNameValidationRules, phoneValidationRules} from "../utils/user-field-validation";
+import {toLowerCase, toTitleCase} from "../utils/text-utils";
 
 export const CREATE_USER_MUTATION = gql`
 	mutation CreateUser(
@@ -70,14 +72,6 @@ const SignupPage = () => {
         });
     };
 
-    const toLowerCase = (str) => (str || "").toLowerCase();
-
-    const toTitleCase = (str) =>
-        str &&
-        str.toLowerCase().replace(/^(.)|\s(.)/g, function ($1) {
-            return $1.toUpperCase();
-        });
-
     let subtitle = (
         <>
             Already have an account?{" "}
@@ -102,9 +96,7 @@ const SignupPage = () => {
                     <Input.Group compact>
                         <Form.Item
                             name="firstName"
-                            rules={[
-                                {required: true, message: "Please enter your first name."},
-                            ]}
+                            rules={firstNameValidationRules}
                             normalize={toTitleCase}
                             noStyle
                         >
@@ -116,9 +108,7 @@ const SignupPage = () => {
                         </Form.Item>
                         <Form.Item
                             name="lastName"
-                            rules={[
-                                {required: true, message: "Please enter your last name."},
-                            ]}
+                            rules={lastNameValidationRules}
                             normalize={toTitleCase}
                             noStyle
                         >
@@ -128,10 +118,7 @@ const SignupPage = () => {
                 </Form.Item>
                 <Form.Item
                     name="email"
-                    rules={[
-                        {type: "email", message: "This is not a valid email address."},
-                        {required: true, message: "Please enter your email address."},
-                    ]}
+                    rules={emailValidationRules}
                     validateStatus={invalidEmail ? "error" : ""}
                     hasFeedback={invalidEmail}
                     onChange={onChange}
@@ -141,14 +128,7 @@ const SignupPage = () => {
                 </Form.Item>
                 <Form.Item
                     name="phone"
-                    rules={[
-                        {
-                            pattern: new RegExp(
-                                /(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/g
-                            ),
-                            message: "This is not a valid phone number.",
-                        },
-                    ]}
+                    rules={phoneValidationRules}
                 >
                     <Input placeholder="Phone number" prefix={<PhoneOutlined/>}/>
                 </Form.Item>

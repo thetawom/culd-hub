@@ -1,12 +1,14 @@
 import React, {useContext, useState} from "react";
 import {Divider, Form, Input, Layout, Select, Space, Typography} from "antd";
 import {SmileOutlined} from "@ant-design/icons";
-import UserContext from "../context/UserContext";
-import Header from "../components/Header";
-import ProfileItem from "../components/ProfileItem";
+import UserContext from "../../context/UserContext";
+import Header from "../../components/Header";
+import ProfileItem from "./ProfileItem";
 import {gql} from "@apollo/client";
-import Loader from "../components/Loader";
-import useAuthQuery from "../utils/useAuthQuery";
+import Loader from "../../components/Loader";
+import useAuthQuery from "../../utils/hooks/useAuthQuery";
+import {firstNameValidationRules, lastNameValidationRules, emailValidationRules, phoneValidationRules} from "../../utils/user-field-validation";
+import {toLowerCase, toTitleCase} from "../../utils/text-utils";
 
 
 const GET_SCHOOL_CHOICES_QUERY = gql`
@@ -88,10 +90,20 @@ const ProfilePage = () => {
                         value={`${user.firstName} ${user.lastName}`}
                         input={
                             <Input.Group compact style={{width: "calc(100% - 50px)"}}>
-                                <Form.Item name="firstName" initialValue={user.firstName} noStyle>
+                                <Form.Item
+                                    name="firstName"
+                                    initialValue={user.firstName}
+                                    rules={firstNameValidationRules}
+                                    normalize={toTitleCase}
+                                    noStyle>
                                     <Input placeholder="First name" style={{width: "50%"}}/>
                                 </Form.Item>
-                                <Form.Item name="lastName" initialValue={user.lastName} noStyle>
+                                <Form.Item
+                                    name="lastName"
+                                    initialValue={user.lastName}
+                                    rules={lastNameValidationRules}
+                                    normalize={toTitleCase}
+                                    noStyle>
                                     <Input placeholder="Last name" style={{width: "50%"}}/>
                                 </Form.Item>
                             </Input.Group>
@@ -101,7 +113,12 @@ const ProfilePage = () => {
                         title="Email Address"
                         value={user.email}
                         input={
-                            <Form.Item name="email" initialValue={user.email} noStyle>
+                            <Form.Item
+                                name="email"
+                                initialValue={user.email}
+                                rules={emailValidationRules}
+                                normalize={toLowerCase}
+                                noStyle>
                                 <Input placeholder="Email address" style={{width: "calc(100% - 50px)"}}/>
                             </Form.Item>
                         }
@@ -110,7 +127,11 @@ const ProfilePage = () => {
                         title="Phone Number"
                         value={user.phone || "Not set"}
                         input={
-                            <Form.Item name="phone" initialValue={user.phone} noStyle>
+                            <Form.Item
+                                name="phone"
+                                initialValue={user.phone}
+                                rules={phoneValidationRules}
+                                noStyle>
                                 <Input placeholder="Phone number" style={{width: "calc(100% - 50px)"}}/>
                             </Form.Item>
                         }
