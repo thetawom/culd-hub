@@ -1,6 +1,6 @@
 import React, {useContext, useState} from "react";
 import {Divider, Form, Input, Layout, Select, Space, Typography} from "antd";
-import {UserOutlined} from "@ant-design/icons";
+import {SmileOutlined} from "@ant-design/icons";
 import UserContext from "../context/UserContext";
 import Header from "../components/Header";
 import ProfileItem from "../components/ProfileItem";
@@ -21,10 +21,17 @@ const GET_CLASS_YEAR_CHOICES_QUERY = gql`
 	}
 `;
 
+const GET_MEMBERSHIP_CHOICES_QUERY = gql`
+    {
+        membershipChoices
+    }
+`;
+
 const ProfilePage = () => {
     let {user} = useContext(UserContext);
     let [schoolChoices, setSchoolChoices] = useState(null);
     let [classYearChoices, setClassYearChoices] = useState(null);
+    let [membershipChoices, setMembershipChoices] = useState(null);
 
     let {schoolChoicesLoading} = useAuthQuery(GET_SCHOOL_CHOICES_QUERY, {
         onCompleted: ({schoolChoices}) => {
@@ -37,6 +44,14 @@ const ProfilePage = () => {
             setClassYearChoices(JSON.parse(classYearChoices));
         },
     });
+
+    let {membershipChoicesLoading} = useAuthQuery(GET_MEMBERSHIP_CHOICES_QUERY, {
+        onCompleted: ({membershipChoices}) => {
+            setMembershipChoices(JSON.parse(membershipChoices));
+        },
+    });
+
+    console.log(user.member);
 
     return classYearChoicesLoading || !classYearChoices ||
     schoolChoicesLoading || !schoolChoices ? (
@@ -52,15 +67,20 @@ const ProfilePage = () => {
                     padding: "30px",
                 }}
             >
-                <Typography.Title level={2} style={{marginBottom: "0em"}}>
-                    <UserOutlined
-                        style={{
-                            fontSize: "0.9em",
-                            marginRight: "0.4em",
-                        }}
-                    />
-                    Your Member Profile
-                </Typography.Title>
+                <Space align="baseline" style={{width: "100%", justifyContent: "space-between"}}>
+                    <Typography.Title level={2} style={{marginBottom: "0em"}}>
+                        <SmileOutlined
+                            style={{
+                                fontSize: "0.9em",
+                                marginRight: "0.4em",
+                            }}
+                        />
+                        Member Profile
+                    </Typography.Title>
+                    <Typography style={{color: "gray"}}>
+                        {membershipChoices ? membershipChoices[user.member.membership] : ""}
+                    </Typography>
+                </Space>
                 <Divider style={{marginTop: "0.8em", marginBottom: "1.2em"}}/>
                 <Space style={{width: "100%"}} direction="vertical">
                     <ProfileItem

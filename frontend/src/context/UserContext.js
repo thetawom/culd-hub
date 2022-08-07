@@ -17,6 +17,7 @@ const GET_ME_QUERY = gql`
 			member {
 				school
 				classYear
+				membership
 			}
 			email
 			phone
