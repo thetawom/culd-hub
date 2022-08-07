@@ -1,7 +1,7 @@
 import {gql} from "@apollo/client";
 import React, {createContext, useContext, useState} from "react";
 import Loader from "../components/Loader";
-import useAuthQuery from "../utils/useAuthQuery";
+import useAuthQuery from "../utils/hooks/useAuthQuery";
 import AuthContext from "./AuthContext";
 
 const UserContext = createContext(undefined);
