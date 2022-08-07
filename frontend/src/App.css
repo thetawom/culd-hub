@@ -1,1 +1,5 @@
 @import "~antd/dist/antd.css";
+
+#profile-page .ant-form-item {
+    margin-bottom: 0;
+}

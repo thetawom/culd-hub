@@ -63,9 +63,9 @@ const SignupPage = () => {
             variables: {
                 email: values.email,
                 password: values.password,
-                firstName: values.first_name,
-                lastName: values.last_name,
-                phone: values.phone_number ? values.phone_number : "",
+                firstName: values.firstName,
+                lastName: values.lastName,
+                phone: values.phone ? values.phone : "",
             },
         });
     };
@@ -101,7 +101,7 @@ const SignupPage = () => {
                 <Form.Item>
                     <Input.Group compact>
                         <Form.Item
-                            name="first_name"
+                            name="firstName"
                             rules={[
                                 {required: true, message: "Please enter your first name."},
                             ]}
@@ -115,7 +115,7 @@ const SignupPage = () => {
                             />
                         </Form.Item>
                         <Form.Item
-                            name="last_name"
+                            name="lastName"
                             rules={[
                                 {required: true, message: "Please enter your last name."},
                             ]}
@@ -140,7 +140,7 @@ const SignupPage = () => {
                     <Input prefix={<MailOutlined/>} placeholder="Email address"/>
                 </Form.Item>
                 <Form.Item
-                    name="phone_number"
+                    name="phone"
                     rules={[
                         {
                             pattern: new RegExp(
@@ -190,7 +190,7 @@ const SignupPage = () => {
                             htmlType="submit"
                             disabled={
                                 !form.isFieldsTouched(
-                                    ["first_name", "last_name", "email", "password", "confirm"],
+                                    ["firstName", "lastName", "email", "password", "confirm"],
                                     true
                                 ) ||
                                 !!form.getFieldsError().filter(({errors}) => errors.length)
