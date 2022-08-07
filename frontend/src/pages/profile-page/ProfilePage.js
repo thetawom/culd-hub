@@ -1,6 +1,13 @@
 import React, {useContext, useState} from "react";
 import {Divider, Form, Input, Layout, Select, Space, Typography} from "antd";
-import {SmileOutlined} from "@ant-design/icons";
+import {
+    BookOutlined,
+    CalendarOutlined,
+    MailOutlined,
+    PhoneOutlined,
+    SmileOutlined,
+    UserOutlined
+} from "@ant-design/icons";
 import UserContext from "../../context/UserContext";
 import Header from "../../components/Header";
 import ProfileItem from "./ProfileItem";
@@ -96,7 +103,7 @@ const ProfilePage = () => {
                                     rules={firstNameValidationRules}
                                     normalize={toTitleCase}
                                     noStyle>
-                                    <Input placeholder="First name" style={{width: "50%"}}/>
+                                    <Input placeholder="First name" style={{width: "50%"}} prefix={<UserOutlined/>}/>
                                 </Form.Item>
                                 <Form.Item
                                     name="lastName"
@@ -119,7 +126,7 @@ const ProfilePage = () => {
                                 rules={emailValidationRules}
                                 normalize={toLowerCase}
                                 noStyle>
-                                <Input placeholder="Email address" style={{width: "calc(100% - 50px)"}}/>
+                                <Input placeholder="Email address" style={{width: "calc(100% - 50px)"}} prefix={<MailOutlined/>}/>
                             </Form.Item>
                         }
                     />
@@ -132,7 +139,7 @@ const ProfilePage = () => {
                                 initialValue={user.phone}
                                 rules={phoneValidationRules}
                                 noStyle>
-                                <Input placeholder="Phone number" style={{width: "calc(100% - 50px)"}}/>
+                                <Input placeholder="Phone number" style={{width: "calc(100% - 50px)"}} prefix={<PhoneOutlined/>}/>
                             </Form.Item>
                         }
                     />
