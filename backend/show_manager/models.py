@@ -5,10 +5,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 from users.models import User
 
 SCHOOL_CHOICES = (
-    ("C", "CC"),
-    ("S", "SEAS"),
-    ("B", "BC"),
-    ("G", "GS"),
+    ("C", "Columbia College"),
+    ("S", "School of Engineering and Applied Science"),
+    ("B", "Barnard College"),
+    ("G", "School of General Studies"),
     ("O", "Other"),
 )
 
