@@ -1,5 +1,7 @@
 # Columbia University Lion Dance App
 
+[![codecov](https://codecov.io/gh/ew2664/culd-app/branch/main/graph/badge.svg?token=XU966851SF)](https://codecov.io/gh/ew2664/culd-app)
+
 ## Quick Start
 
 This project uses a Django backend with a React.js frontend.

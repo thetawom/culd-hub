@@ -9,6 +9,7 @@ User = get_user_model()
 
 @receiver(post_save, sender=User)
 def create_member_for_user(sender, instance, created, **kwargs):
+    del sender, kwargs
     if created:
         Member.objects.create(user=instance)
 
@@ -16,11 +17,13 @@ def create_member_for_user(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Round)
 @receiver(post_delete, sender=Round)
 def update_show_time(sender, instance, **kwargs):
+    del sender, kwargs
     rounds = instance.show.rounds.all()
-    instance.show.time = min([r.time for r in rounds]) if rounds else None
+    instance.show.time = min(r.time for r in rounds) if rounds else None
     instance.show.save()
 
 
 @receiver(post_delete, sender=Member)
 def delete_user_for_member(sender, instance, **kwargs):
+    del sender, kwargs
     User.objects.filter(id=instance.user.id).delete()
