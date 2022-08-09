@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "users.apps.UsersConfig",
     "show_manager.apps.ShowManagerConfig",
+    "coverage",
 ]
 
 MIDDLEWARE = [
