@@ -10,5 +10,6 @@ class TestUserModel(TestCase):
         self.last_name = "Valli"
 
     def test_create_user(self):
-        user = User.objects.create(email=self.email, first_name=self.first_name, last_name=self.last_name)
+        user = User.objects.create(email=self.email, first_name=self.first_name,
+                                   last_name=self.last_name)
         self.assertEqual(str(user), "Frankie Valli")

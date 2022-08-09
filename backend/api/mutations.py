@@ -76,10 +76,10 @@ class EditUserMutation(graphene.Mutation):
     @login_required
     def mutate(root, info, **kwargs):
         user_instance = User.objects.get(pk=info.context.user.pk)
-        for prop in kwargs:
-            if hasattr(user_instance, prop):
-                setattr(user_instance, prop, kwargs[prop])
-            elif hasattr(user_instance.member, prop):
-                setattr(user_instance.member, prop, kwargs[prop])
+        for key, value in kwargs.items():
+            if hasattr(user_instance, key):
+                setattr(user_instance, key, value)
+            elif hasattr(user_instance.member, key):
+                setattr(user_instance.member, key, value)
         user_instance.save()
         return EditUserMutation(user=user_instance)

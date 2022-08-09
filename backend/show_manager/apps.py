@@ -7,4 +7,4 @@ class ShowManagerConfig(AppConfig):
     verbose_name = "Show Manager"
 
     def ready(self):
-        import show_manager.signals.handlers  # noqa
+        import show_manager.signals.handlers

@@ -6,15 +6,17 @@ from django.dispatch import receiver
 from graphql_jwt.decorators import login_required, staff_member_required
 from graphql_jwt.refresh_token.signals import refresh_token_rotated
 
-from show_manager.models import Member, Show, SCHOOL_CHOICES, CLASS_YEAR_CHOICES, MEMBERSHIP_CHOICES, \
+from show_manager.models import Member, Show, SCHOOL_CHOICES, \
+    CLASS_YEAR_CHOICES, MEMBERSHIP_CHOICES, \
     SHOW_PRIORITY_CHOICES, PERFORMANCE_ROLE_CHOICES
 from users.models import User
-from .mutations import CreateUserMutation, CreateRoleMutation, DeleteRoleMutation, EditUserMutation
+from .mutations import CreateUserMutation, CreateRoleMutation, \
+    DeleteRoleMutation, EditUserMutation
 from .types import UserType, MemberType, ShowType
 
 
 @receiver(refresh_token_rotated)
-def revoke_refresh_token(sender, request, refresh_token, **kwargs):
+def revoke_refresh_token(_sender, request, refresh_token, **_kwargs):
     refresh_token.revoke(request)
 
 
