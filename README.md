@@ -1,18 +1,89 @@
-# Columbia University Lion Dance App
+<a name="readme-top"></a>
 
-[![codecov](https://codecov.io/gh/ew2664/culd-app/branch/main/graph/badge.svg?token=XU966851SF)](https://codecov.io/gh/ew2664/culd-app)
+<div align="right">
 
-## Quick Start
+  <a href="https://app.codecov.io/gh/ew2664/culd-app">![Coverage][coverage-shield]</a>
 
-This project uses a Django backend with a React.js frontend.
-Make sure that you have both Python 3 and Node.js installed on your machine.
+</div>
 
-Install the required Python dependencies for the backend by running
-`pip install -r requirements.txt` in the `backend` directory.
 
-To set up the SQLite database, run Django migrations, and load in the dummy data, you can run the shell script ```backend/loaddb.sh```.
-Alternatively, once the backend server is started (see below), you can log into the Django admin site to enter dummy data yourself.
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/ew2664/culd-app">
+    <img src="frontend/src/assets/logo.png" alt="Logo" width="200" height="200">
+  </a>
 
-To start the backend server, in the `backend` directory run `python manage.py runserver`.
+<h3 align="center">CU Lion Dance App</h3>
 
-To start the frontend server, in the `frontend` directory run `npm start`.
+  <p align="center">
+    Show Management Software for Columbia University Lion Dance
+    <br />
+    <a href="https://github.com/ew2664/culd-app"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/ew2664/culd-app">View Demo</a>
+    ·
+    <a href="https://github.com/ew2664/culd-app/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/ew2664/culd-app/issues">Request Feature</a>
+  </p>
+</div>
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+This is a custom show management web application for Columbia University Lion Dance, began in the summer of 2022. Every year, CU Lion Dance receives dozens of performance bookings, each of which requires careful planning and coordination of logistics. Previously, a Google Sheets setup was used for members to register for shows, but this grew increasingly cumbersome with scale and became hard to maintain. Even with Apps Script, it was also not fully customizable to the needs of members. From there, the CULD App was born.
+
+[![Django][Django]][Django-url]
+[![React][React.js]][React-url]
+[![Postgres][Postgres]][Postgres-url]
+[![Apollo-GraphQL][Apollo-GraphQL]][Apollo-GraphQL-url]
+[![Ant-Design][Ant-Design]][Ant-Design-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+To get a local copy up and running follow these simple steps.
+
+### Prerequisites
+You will need to have Python and Node.js installed to run this project.
+
+### Installation
+
+1. Install the required Python dependencies for the backend.
+  ```sh
+  pip install -r requirements.txt
+  ```
+2. Create the SQLite database and run Django migrations with this shell script.
+  ```sh
+  backend/loaddb.sh
+  ```
+3. Start the backend server.
+  ```sh
+  python backend/manage.py runserver
+  ```
+4. Start the frontend server.
+  ```sh
+  cd frontend && npm start
+  ```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+  
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://github.com/Ileriayo/markdown-badges -->
+[coverage-shield]: https://img.shields.io/codecov/c/github/ew2664/culd-app?style=for-the-badge&token=XU966851SF
+[coverage-url]: https://codecov.io/gh/ew2664/culd-app
+[product-screenshot]: images/screenshot.png
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Postgres]: https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white
+[Postgres-url]: https://www.postgresql.org/
+[Django]: https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white
+[Django-url]: https://www.djangoproject.com/
+[Ant-Design]: https://img.shields.io/badge/-AntDesign-%230170FE?style=for-the-badge&logo=ant-design&logoColor=white
+[Ant-Design-url]: https://ant.design/
+[Apollo-GraphQL]: https://img.shields.io/badge/-ApolloGraphQL-311C87?style=for-the-badge&logo=apollo-graphql
+[Apollo-GraphQL-url]: https://www.apollographql.com/
