@@ -124,9 +124,7 @@ class Show(models.Model):
     def show_times(self):
         if self.rounds.count() == 0:
             return None
-        return " · ".join(
-            [r.time.strftime("%-I:%M %p") for r in self.rounds.all()]
-        )
+        return " · ".join([r.time.strftime("%-I:%M %p") for r in self.rounds.all()])
 
     @admin.display(description="Performers")
     def num_performers(self):

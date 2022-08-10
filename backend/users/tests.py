@@ -12,9 +12,12 @@ class TestUserModel(TestCase):
         self.password = "OhWhatANight"
 
     def test_create_user(self):
-        user = User.objects.create(email=self.email, password=self.password,
-                                   first_name=self.first_name,
-                                   last_name=self.last_name)
+        user = User.objects.create(
+            email=self.email,
+            password=self.password,
+            first_name=self.first_name,
+            last_name=self.last_name,
+        )
         self.assertEqual(str(user), "Frankie Valli")
 
     def test_create_user_invalid_email_error(self):
@@ -24,10 +27,12 @@ class TestUserModel(TestCase):
             User.objects.create(email="abc", password=self.password)
 
     def test_create_superuser(self):
-        superuser = User.objects.create_superuser(email=self.email,
-                                                  password=self.password,
-                                                  first_name=self.first_name,
-                                                  last_name=self.last_name)
+        superuser = User.objects.create_superuser(
+            email=self.email,
+            password=self.password,
+            first_name=self.first_name,
+            last_name=self.last_name,
+        )
         self.assertEqual(str(superuser), "Frankie Valli")
         self.assertTrue(superuser.is_staff)
         self.assertTrue(superuser.is_superuser)
@@ -35,10 +40,10 @@ class TestUserModel(TestCase):
 
     def test_create_superuser_error(self):
         with self.assertRaises(ValueError):
-            User.objects.create_superuser(email=self.email,
-                                          password=self.password,
-                                          is_superuser=False)
+            User.objects.create_superuser(
+                email=self.email, password=self.password, is_superuser=False
+            )
         with self.assertRaises(ValueError):
-            User.objects.create_superuser(email=self.email,
-                                          password=self.password,
-                                          is_staff=False)
+            User.objects.create_superuser(
+                email=self.email, password=self.password, is_staff=False
+            )
