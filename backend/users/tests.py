@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.contrib.admin.sites import AdminSite
 
+from .admin import UserAdmin
 from .models import User
 
 
@@ -47,3 +49,21 @@ class TestUserModel(TestCase):
             User.objects.create_superuser(
                 email=self.email, password=self.password, is_staff=False
             )
+
+
+class TestUserAdmin(TestCase):
+    def setUp(self):
+        self.site = AdminSite()
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            email="frankiev@gmail.com",
+            password="OhWhatANight",
+            first_name="Frankie",
+            last_name="Valli",
+        )
+
+    def test_admin_board(self):
+        self.user.member.membership = "B"
+        self.assertTrue(UserAdmin(User, self.site).board(self.user))

@@ -2,9 +2,11 @@ import datetime
 
 from django.db.utils import IntegrityError
 from django.test import TestCase
+from django.contrib.admin.sites import AdminSite
 
 from users.models import User
 from .models import Member, Show, Round, Role, Contact
+from .admin import ShowAdmin
 
 
 class TestMemberModel(TestCase):
@@ -136,3 +138,21 @@ class TestContactModel(TestCase):
     def test_create_contact(self):
         contact = Contact.objects.create(first_name="Tom", last_name="Hanks")
         self.assertEqual(str(contact), "Tom Hanks")
+
+
+class TestShowAdmin(TestCase):
+    def setUp(self):
+        self.site = AdminSite()
+        self.show = Show.objects.create(name="National Hot Dog Day")
+        self.times = [
+            datetime.time(12, 30, 15),
+            datetime.time(7, 45, 0),
+            datetime.time(19, 15, 0),
+        ]
+
+    def test_admin_board(self):
+        show_admin = ShowAdmin(Show, self.site)
+        self.assertIsNone(show_admin.rounds(self.show))
+        for time in self.times:
+            Round.objects.create(show=self.show, time=time)
+        self.assertEqual(show_admin.rounds(self.show), len(self.times))
