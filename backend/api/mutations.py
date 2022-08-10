@@ -18,11 +18,13 @@ class CreateUserMutation(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, first_name, last_name, email, password, phone=""):
-        user_instance = User.objects.create_user(email=email,
-                                                 password=password,
-                                                 first_name=first_name,
-                                                 last_name=last_name,
-                                                 phone=phone)
+        user_instance = User.objects.create_user(
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+        )
         return CreateUserMutation(user=user_instance)
 
 
