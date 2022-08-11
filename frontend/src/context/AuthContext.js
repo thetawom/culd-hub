@@ -108,7 +108,7 @@ export const AuthProvider = ({children}) => {
     useEffect(() => {
         if (authTokens) {
             const httpLink = createHttpLink({
-                uri: "http://localhost:8000/graphql/",
+                uri: "/graphql/",
             });
 
             const authLink = setContext(async (_, {headers}) => {

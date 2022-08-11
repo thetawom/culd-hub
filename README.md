@@ -6,6 +6,7 @@
 
 </div>
 
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -37,11 +38,13 @@ This is a custom show management web application for Columbia University Lion Da
 
 <div align="center">
 
-  [![Django][Django]][Django-url]
-  [![React][React.js]][React-url]
-  [![Postgres][Postgres]][Postgres-url]
-  [![Apollo-GraphQL][Apollo-GraphQL]][Apollo-GraphQL-url]
-  [![Ant-Design][Ant-Design]][Ant-Design-url]
+    [![Django][Django]][Django-url]
+    [![React][React.js]][React-url]
+    [![Postgres][Postgres]][Postgres-url]
+    [![Apollo-GraphQL][Apollo-GraphQL]][Apollo-GraphQL-url]
+    [![Ant-Design][Ant-Design]][Ant-Design-url]
+    [![Docker][Docker]][Docker-url]
+    [![Heroku][Heroku]][Heroku-url]
 
 </div>
 
@@ -63,10 +66,10 @@ You will need to have Python and Node.js installed to run this project.
   cd backend
   pip install -r requirements.txt
   ```
-2. Create the SQLite database and run Django migrations with this shell script.
+2. Set up the local SQLite database with dummy data.
   ```sh
-  chmod u+x loaddb.sh
-  ./loaddb.sh
+  chmod u+x scripts/loaddb.sh
+  scripts/loaddb.sh
   ```
 3. Start the backend server.
   ```sh
@@ -77,6 +80,12 @@ You will need to have Python and Node.js installed to run this project.
   cd frontend
   npm start
   ```
+
+### Local Deployment (with Docker)
+```sh
+docker-compose up --build
+```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
   
 <!-- MARKDOWN LINKS & IMAGES -->
@@ -94,3 +103,7 @@ You will need to have Python and Node.js installed to run this project.
 [Ant-Design-url]: https://ant.design/
 [Apollo-GraphQL]: https://img.shields.io/badge/-ApolloGraphQL-311C87?style=for-the-badge&logo=apollo-graphql
 [Apollo-GraphQL-url]: https://www.apollographql.com/
+[Docker]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
+[Docker-url]: https://www.docker.com/
+[Heroku]: https://img.shields.io/badge/heroku-%23430098.svg?style=for-the-badge&logo=heroku&logoColor=white
+[Heroku-url]: https://www.heroku.com/
