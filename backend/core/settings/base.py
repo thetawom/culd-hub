@@ -140,3 +140,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 PHONENUMBER_DEFAULT_REGION = "US"
+
+CSRF_TRUSTED_ORIGINS = ['https://culd-hub.herokuapp.com/admin/']
