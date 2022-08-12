@@ -2,7 +2,7 @@
 
 <div align="right">
 
-  <a href="https://app.codecov.io/gh/ew2664/culd-app">![Coverage][coverage-shield]</a>
+  [![Coverage][coverage-shield]][coverage-url]</a>
 
 </div>
 
@@ -19,7 +19,7 @@
   <p align="center">
     Show Management Software for Columbia University Lion Dance
     <br />
-    <a href="https://github.com/ew2664/culd-app"><strong>Explore the docs »</strong></a>
+    <a href="#getting-started"><strong>Get started »</strong></a>
     <br />
     <br />
     <a href="https://github.com/ew2664/culd-app">View Demo</a>
@@ -54,6 +54,7 @@ This is a custom show management web application for Columbia University Lion Da
 
 <!-- GETTING STARTED -->
 ## Getting Started
+<a name="getting-started"></a>
 
 ### Prerequisites
 
@@ -120,7 +121,7 @@ Navigate to http://localhost:3000/ to see the results.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://github.com/Ileriayo/markdown-badges -->
 [coverage-shield]: https://img.shields.io/codecov/c/github/ew2664/culd-app?style=flat-square&token=XU966851SF
-[coverage-url]: https://codecov.io/gh/ew2664/culd-app
+[coverage-url]: https://app.codecov.io/gh/ew2664/culd-app
 [product-screenshot]: images/screenshot.png
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
