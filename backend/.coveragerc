@@ -3,3 +3,4 @@ branch = True
 omit =
     manage.py
     */migrations/*
+    core/settings/*

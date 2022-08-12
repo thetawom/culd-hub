@@ -57,7 +57,6 @@ class Query(graphene.ObjectType):
         return Member.objects.all()
 
     @staticmethod
-    @login_required
     def resolve_shows(root, info, **kwargs):
         return Show.objects.filter(is_published=True)
 
