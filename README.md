@@ -22,7 +22,7 @@
     <a href="#getting-started"><strong>Get started »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/ew2664/culd-app">View Demo</a>
+    <a href="https://culd-hub.herokuapp.com/">View Site</a>
     ·
     <a href="https://github.com/ew2664/culd-app/issues">Report Bug</a>
     ·
