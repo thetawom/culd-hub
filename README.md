@@ -112,7 +112,7 @@ chmod u+x entrypoint-dev.sh
 ```
 In a separate shell, move to the frontend directory and start the frontend server.
 ```sh
-cd frontend && npm start
+cd frontend && yarn start
 ```
 Navigate to http://localhost:3000/ to see the results.
 
