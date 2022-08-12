@@ -75,7 +75,7 @@ cd backend && pip install -r requirements.txt
 ```
 Install the required Node.js dependencies for the frontend.
 ```sh
-cd ../frontend && npm install
+cd ../frontend && yarn
 ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
