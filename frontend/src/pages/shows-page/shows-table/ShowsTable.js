@@ -307,6 +307,14 @@ const ShowsTable = ({user}) => {
         });
     }
 
+    const isPerforming = (show) => {
+        for (var performer of show.performers) {
+            if (performer.user.id == user.id)
+                return true;
+        }
+        return false;
+    }
+
     return needsRefresh ? (
         <Loader/>
     ) : (
@@ -315,6 +323,8 @@ const ShowsTable = ({user}) => {
             dataSource={
                 openFilter === "All"
                     ? shows
+                    : openFilter === "Mine"
+                    ? shows.filter((show) => isPerforming(show))
                     : openFilter === "Open"
                         ? shows.filter((show) => show.isOpen)
                         : shows.filter((show) => !show.isOpen)
