@@ -12,7 +12,7 @@ const ShowsPage = () => {
 
     return (
         <Layout style={{minHeight: "100vh"}}>
-            <Header newUser={!user.member.school || !user.member.classYear}/>
+            <Header newUserTooltip/>
             <Layout.Content
                 id="shows-page"
                 style={{

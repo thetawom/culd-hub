@@ -5,10 +5,10 @@ import {HomeFilled, LogoutOutlined, SettingFilled, UserOutlined,} from "@ant-des
 import AuthContext from "../context/AuthContext";
 import UserContext from "../context/UserContext";
 
-const Header = ({newUser}) => {
+const Header = ({newUserTooltip}) => {
     let {authTokens, logoutUser} = useContext(AuthContext);
 
-    let {user} = useContext(UserContext);
+    let {user, isNewUser} = useContext(UserContext);
 
     const onClick = (e) => {
         if (e.key === "logout") {
@@ -33,7 +33,7 @@ const Header = ({newUser}) => {
                     <Tooltip
                         title="Complete your member profile"
                         placement="bottomRight"
-                        visible={newUser}
+                        visible={newUserTooltip && isNewUser}
                         color="#eb2f96"
                     >
                         {user.firstName} {user.lastName}
