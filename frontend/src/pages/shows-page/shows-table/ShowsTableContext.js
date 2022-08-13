@@ -100,7 +100,7 @@ export const ShowsTableProvider = ({children}) => {
     let [shows, setShows] = useState([]);
 
     let [showPriorityChoices, setShowPriorityChoices] = useState(null);
-    let {showPriorityChoicesLoading} = useAuthQuery(GET_SHOW_PRIORITY_CHOICES_QUERY, {
+    useAuthQuery(GET_SHOW_PRIORITY_CHOICES_QUERY, {
         onCompleted: ({showPriorityChoices}) => {
             setShowPriorityChoices(JSON.parse(showPriorityChoices));
         },
