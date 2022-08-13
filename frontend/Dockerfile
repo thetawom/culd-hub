@@ -4,7 +4,7 @@ FROM node:18-alpine
 WORKDIR /app/
 
 # Install dependencies
-COPY package.json package-lock.json /app/
+COPY package.json yarn.lock /app/
 
 RUN yarn
 
