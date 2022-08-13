@@ -26,7 +26,7 @@ from .types import UserType, MemberType, ShowType
 
 
 @receiver(refresh_token_rotated)
-def revoke_refresh_token(_sender, request, refresh_token, **_kwargs):
+def revoke_refresh_token(sender, request, refresh_token, **kwargs):
     refresh_token.revoke(request)
 
 
