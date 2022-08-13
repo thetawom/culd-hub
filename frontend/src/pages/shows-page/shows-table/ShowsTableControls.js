@@ -15,7 +15,7 @@ const ShowsTableControls = () => {
                 </Button>
             </Tooltip>
             <Segmented
-                options={["Open", "Closed", "All"]}
+                options={["Open", "Closed", "Mine", "All"]}
                 value={openFilter}
                 onChange={setOpenFilter}
             />
