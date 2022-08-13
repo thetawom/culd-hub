@@ -1,4 +1,6 @@
 import graphene
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 from graphql_jwt.decorators import login_required
 
 from show_manager.models import Show, Member, Role
@@ -83,3 +85,17 @@ class EditUserMutation(graphene.Mutation):
         user_instance.save()
         user_instance.member.save()
         return EditUserMutation(user=user_instance)
+
+
+class LogoutUserMutation(graphene.Mutation):
+    ok = graphene.Boolean()
+    id = graphene.ID()
+
+    @staticmethod
+    @login_required
+    def mutate(root, info, **kwargs):
+        user_id = info.context.user.pk
+        for session in Session.objects.filter(expire_date__gte=timezone.now()):
+            if str(user_id) == session.get_decoded().get("_auth_user_id"):
+                session.delete()
+        return LogoutUserMutation(id=user_id, ok=True)

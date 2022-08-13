@@ -21,6 +21,7 @@ from .mutations import (
     CreateRoleMutation,
     DeleteRoleMutation,
     EditUserMutation,
+    LogoutUserMutation,
 )
 from .types import UserType, MemberType, ShowType
 
@@ -96,6 +97,8 @@ class Mutation(graphene.ObjectType):
     create_role = CreateRoleMutation.Field()
     delete_role = DeleteRoleMutation.Field()
     edit_user = EditUserMutation.Field()
+
+    logout_user = LogoutUserMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
