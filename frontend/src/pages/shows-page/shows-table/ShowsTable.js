@@ -1,5 +1,5 @@
-import React, {useContext} from "react";
-import {Button, message, Progress, Space, Table, Tag, Tooltip} from "antd";
+import React, {useContext, useState} from "react";
+import {Badge, Button, Descriptions, message, Modal, Progress, Space, Table, Tag, Tooltip} from "antd";
 import {
     CompassTwoTone,
     InfoCircleTwoTone,
@@ -24,6 +24,7 @@ const ShowsTable = ({user}) => {
         addToShowRoster,
         removeFromShowRoster,
     } = useContext(ShowsTableContext);
+    const [visible, setVisible] = useState(false);
 
     const columns = [
         {
@@ -271,6 +272,42 @@ const ShowsTable = ({user}) => {
         },
     ];
 
+    const getInfo = (data) => {
+        Modal.info({
+            // title: data.name,
+            content: (
+                <Descriptions title={data.name} layout="vertical" bordered>
+                    <Descriptions.Item label="Address">{data.address}</Descriptions.Item>
+                    <Descriptions.Item label="Date">{data.date}</Descriptions.Item>
+                    <Descriptions.Item label="Time">{data.time ? dayjs(data.time, "HH:mm:ss").format("h:mm A") : ""}</Descriptions.Item>
+                    <Descriptions.Item label="Contact Information">
+                        {data.contact && "Name: " + data.contact.firstName + " " + data.contact.lastName} 
+                        <br />
+                        {data.contact && data.contact.phone && "Phone Number: " + data.contact.phone} 
+                        <br />
+                        {data.contact && data.contact.email && "Email: " + data.contact.email} 
+                        <br />
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Point Person">
+                        {data.point.user.firstName + " " + data.point.user.lastName}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Number of Lions">
+                        {data.lions}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Tentative Roster" id="performers">
+                        {data.performers.map(function(item, i) {
+                            return <div key={i}>{item.user.firstName + " " + item.user.lastName}</div>
+                        })}
+                    </Descriptions.Item>
+                </Descriptions>
+            ),
+            visible: {visible},
+            style: { top: 0, height: '83vh' },
+            width: '100%',
+            onOk() {setVisible(false)},
+        });
+    }
+
     return needsRefresh ? (
         <Loader/>
     ) : (
@@ -285,6 +322,15 @@ const ShowsTable = ({user}) => {
             }
             rowKey="id"
             size="middle"
+            onRow={(record) => {
+                return {
+                    onClick: event => {
+                        console.log(record)
+                        setVisible(true)
+                        getInfo(record)
+                    }
+                }
+            }}
         />
     );
 };
