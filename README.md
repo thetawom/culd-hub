@@ -2,6 +2,8 @@
 
 <div align="right">
 
+  [![Issues][issues-shield]][issues-url]
+  [![Build][build-shield]][build-url]
   [![Coverage][coverage-shield]][coverage-url]</a>
 
 </div>
@@ -120,8 +122,12 @@ Navigate to http://localhost:3000/ to see the results.
   
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://github.com/Ileriayo/markdown-badges -->
+[build-shield]: https://img.shields.io/github/workflow/status/ew2664/culd-hub/Django%20CI?style=flat-square
+[build-url]: https://github.com/ew2664/culd-hub/actions/workflows/django.yml
 [coverage-shield]: https://img.shields.io/codecov/c/github/ew2664/culd-app?style=flat-square&token=XU966851SF
 [coverage-url]: https://app.codecov.io/gh/ew2664/culd-app
+[issues-shield]: https://img.shields.io/github/issues/ew2664/culd-hub.svg?style=flat-square
+[issues-url]: https://github.com/ew2664/culd-hub/issues
 [product-screenshot]: images/screenshot.png
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
