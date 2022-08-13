@@ -1,9 +1,8 @@
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import {Button, Card, Form, Input, message} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 import {gql} from "@apollo/client";
 import useAuthMutation from "../../utils/hooks/useAuthMutation";
-import UserContext from "../../context/UserContext";
 
 const EDIT_USER_MUTATION = gql`
     mutation EditUser (
