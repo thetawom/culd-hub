@@ -33,6 +33,14 @@ export const REFRESH_TOKEN_MUTATION = gql`
 	}
 `;
 
+export const LOGOUT_USER_MUTATION = gql`
+    mutation LogoutUser {
+        logoutUser {
+            ok
+        }
+    }
+`
+
 export const AuthProvider = ({children}) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -71,6 +79,8 @@ export const AuthProvider = ({children}) => {
         },
     });
 
+    let [logoutUserMutation] = useMutation(LOGOUT_USER_MUTATION);
+
     let loginUser = ({email, password}) => {
         localStorage.setItem(REMEMBER_EMAIL, email);
         tokenAuth({
@@ -85,6 +95,7 @@ export const AuthProvider = ({children}) => {
         setAuthTokens(null);
         localStorage.removeItem(AUTH_TOKEN);
         localStorage.removeItem(REFRESH_TOKEN);
+        logoutUserMutation();
         navigate("/login");
     };
 
