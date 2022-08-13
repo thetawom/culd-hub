@@ -100,15 +100,19 @@ const ShowsTable = ({user}) => {
                     <>
                         <span style={{fontSize: "1.05em"}}>{name}</span>
                         <Tooltip
-                            title={index < 0 ? address : address.substring(0, index)}
+                            title="More Info"
                             placement="bottom"
                             style={{textAlign: "center"}}
                         >
-                            <CompassTwoTone
+                            <InfoCircleTwoTone
                                 style={{marginLeft: "10px"}}
                                 onClick={() => {
-                                    navigator.clipboard.writeText(address);
-                                    message.info("Address copied to clipboard");
+                                    for (var show of shows) {
+                                        if (show.name == name) {
+                                            setVisible(true);
+                                            getInfo(show);
+                                        }
+                                    }
                                 }}
                             />
                         </Tooltip>
@@ -331,14 +335,6 @@ const ShowsTable = ({user}) => {
             }
             rowKey="id"
             size="middle"
-            onRow={(record) => {
-                return {
-                    onClick: event => {
-                        setVisible(true)
-                        getInfo(record)
-                    }
-                }
-            }}
         />
     );
 };
