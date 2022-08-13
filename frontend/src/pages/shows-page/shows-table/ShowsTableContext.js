@@ -113,7 +113,10 @@ export const ShowsTableProvider = ({children}) => {
         onCompleted: ({shows}) => {
             setShows(shows);
             setNeedsRefresh(false);
-        }, onError: () => logoutUser(), fetchPolicy: "network-only", nextFetchPolicy: "network-only",
+        },
+        onError: () => logoutUser(),
+        fetchPolicy: "network-only",
+        nextFetchPolicy: "network-only",
     });
 
     useEffect(() => {
@@ -123,7 +126,8 @@ export const ShowsTableProvider = ({children}) => {
     let [createRole] = useAuthMutation(CREATE_ROLE_MUTATION, {
         onCompleted: ({createRole}) => {
             setShows(shows.map((show) => show.id === createRole.role.show.id ? {
-                ...show, performers: [...show.performers, createRole.role.performer],
+                ...show,
+                performers: [...show.performers, createRole.role.performer],
             } : {...show}));
             message.success(`Signed up for ${createRole.role.show.name}`);
         }, onError: (error) => {

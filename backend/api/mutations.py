@@ -81,4 +81,5 @@ class EditUserMutation(graphene.Mutation):
             elif hasattr(user_instance.member, key):
                 setattr(user_instance.member, key, value)
         user_instance.save()
+        user_instance.member.save()
         return EditUserMutation(user=user_instance)

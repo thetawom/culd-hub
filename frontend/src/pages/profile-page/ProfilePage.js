@@ -1,8 +1,6 @@
 import React, {useContext, useState} from "react";
 import {Divider, Form, Input, Layout, Select, Space, Typography} from "antd";
 import {
-    BookOutlined,
-    CalendarOutlined,
     MailOutlined,
     PhoneOutlined,
     SmileOutlined,
@@ -14,7 +12,12 @@ import ProfileItem from "./ProfileItem";
 import {gql} from "@apollo/client";
 import Loader from "../../components/Loader";
 import useAuthQuery from "../../utils/hooks/useAuthQuery";
-import {firstNameValidationRules, lastNameValidationRules, emailValidationRules, phoneValidationRules} from "../../utils/user-field-validation";
+import {
+    firstNameValidationRules,
+    lastNameValidationRules,
+    emailValidationRules,
+    phoneValidationRules
+} from "../../utils/user-field-validation";
 import {toLowerCase, toTitleCase} from "../../utils/text-utils";
 
 
@@ -60,28 +63,21 @@ const ProfilePage = () => {
         },
     });
 
-    console.log(user.member);
-
-    return classYearChoicesLoading || !classYearChoices ||
-    schoolChoicesLoading || !schoolChoices ? (
-        <Loader/>
-    ) : (
-        <Layout style={{minHeight: "100vh"}}>
+    return classYearChoicesLoading || !classYearChoices || schoolChoicesLoading || !schoolChoices || membershipChoicesLoading || !membershipChoices ? (
+        <Loader/>) : (<Layout style={{minHeight: "100vh"}}>
             <Header/>
             <Layout.Content
                 id="profile-page"
                 style={{
-                    width: "40%",
-                    margin: "auto",
-                    padding: "30px",
+                    width: "40%", margin: "auto", padding: "30px",
                 }}
             >
-                <Space align="baseline" style={{width: "100%", justifyContent: "space-between"}}>
+                <Space align="baseline"
+                       style={{width: "100%", justifyContent: "space-between"}}>
                     <Typography.Title level={2} style={{marginBottom: "0em"}}>
                         <SmileOutlined
                             style={{
-                                fontSize: "0.9em",
-                                marginRight: "0.4em",
+                                fontSize: "0.9em", marginRight: "0.4em",
                             }}
                         />
                         Member Profile
@@ -94,91 +90,99 @@ const ProfilePage = () => {
                 <Space style={{width: "100%"}} direction="vertical">
                     <ProfileItem
                         title="Full Name"
-                        value={`${user.firstName} ${user.lastName}`}
-                        input={
-                            <Input.Group compact style={{width: "calc(100% - 50px)"}}>
-                                <Form.Item
-                                    name="firstName"
-                                    initialValue={user.firstName}
-                                    rules={firstNameValidationRules}
-                                    normalize={toTitleCase}
-                                    noStyle>
-                                    <Input placeholder="First name" style={{width: "50%"}} prefix={<UserOutlined/>}/>
-                                </Form.Item>
-                                <Form.Item
-                                    name="lastName"
-                                    initialValue={user.lastName}
-                                    rules={lastNameValidationRules}
-                                    normalize={toTitleCase}
-                                    noStyle>
-                                    <Input placeholder="Last name" style={{width: "50%"}}/>
-                                </Form.Item>
-                            </Input.Group>
-                        }
+                        values={{firstName: user.firstName, lastName: user.lastName}}
+                        display={values => `${values.firstName} ${values.lastName}`}
+                        input={<Input.Group compact
+                                            style={{width: "calc(100% - 50px)"}}>
+                            <Form.Item
+                                name="firstName"
+                                initialValue={user.firstName}
+                                rules={firstNameValidationRules}
+                                normalize={toTitleCase}
+                                noStyle>
+                                <Input placeholder="First name"
+                                       style={{width: "50%"}}
+                                       prefix={<UserOutlined/>}/>
+                            </Form.Item>
+                            <Form.Item
+                                name="lastName"
+                                initialValue={user.lastName}
+                                rules={lastNameValidationRules}
+                                normalize={toTitleCase}
+                                noStyle>
+                                <Input placeholder="Last name"
+                                       style={{width: "50%"}}/>
+                            </Form.Item>
+                        </Input.Group>}
                     />
                     <ProfileItem
                         title="Email Address"
-                        value={user.email}
-                        input={
-                            <Form.Item
-                                name="email"
-                                initialValue={user.email}
-                                rules={emailValidationRules}
-                                normalize={toLowerCase}
-                                noStyle>
-                                <Input placeholder="Email address" style={{width: "calc(100% - 50px)"}} prefix={<MailOutlined/>}/>
-                            </Form.Item>
-                        }
+                        values={{email: user.email}}
+                        display={values => values.email}
+                        input={<Form.Item
+                            name="email"
+                            initialValue={user.email}
+                            rules={emailValidationRules}
+                            normalize={toLowerCase}
+                            noStyle>
+                            <Input placeholder="Email address"
+                                   style={{width: "calc(100% - 50px)"}}
+                                   prefix={<MailOutlined/>}/>
+                        </Form.Item>}
                     />
                     <ProfileItem
                         title="Phone Number"
-                        value={user.phone || "Not set"}
-                        input={
-                            <Form.Item
-                                name="phone"
-                                initialValue={user.phone}
-                                rules={phoneValidationRules}
-                                noStyle>
-                                <Input placeholder="Phone number" style={{width: "calc(100% - 50px)"}} prefix={<PhoneOutlined/>}/>
-                            </Form.Item>
-                        }
+                        values={{phone: user.phone}}
+                        display={values => values.phone || "Not set"}
+                        input={<Form.Item
+                            name="phone"
+                            initialValue={user.phone}
+                            rules={phoneValidationRules}
+                            noStyle>
+                            <Input placeholder="Phone number"
+                                   style={{width: "calc(100% - 50px)"}}
+                                   prefix={<PhoneOutlined/>}/>
+                        </Form.Item>}
                     />
                     <ProfileItem
                         title="School"
-                        value={user.member.school || "Not set"}
+                        values={{school: user.member.school}}
+                        display={values => values.school || "Not set"}
                         choices={schoolChoices}
-                        input={
-                            <Form.Item name="school" initialValue={user.member.school} noStyle>
-                                <Select placeholder="School" style={{width: "calc(100% - 50px)"}}>
-                                    <>
-                                        {Object.entries(schoolChoices).map(([key, value]) =>
-                                            <Select.Option key={key} value={key}>{value.toString()}</Select.Option>
-                                        )}
-                                    </>
-                                </Select>
-                            </Form.Item>
-                        }
+                        input={<Form.Item name="school"
+                                          initialValue={user.member.school}
+                                          noStyle>
+                            <Select placeholder="School"
+                                    style={{width: "calc(100% - 50px)"}}>
+                                <>
+                                    {Object.entries(schoolChoices).map(([key, value]) =>
+                                        <Select.Option key={key}
+                                                       value={key}>{value.toString()}</Select.Option>)}
+                                </>
+                            </Select>
+                        </Form.Item>}
                     />
                     <ProfileItem
                         title="Class Year"
-                        value={user.member.classYear || "Not set"}
+                        values={{classYear: user.member.classYear}}
+                        display={values => values.classYear || "Not set"}
                         choices={classYearChoices}
-                        input={
-                            <Form.Item name="classYear" initialValue={user.member.classYear} noStyle>
-                                <Select placeholder="Class year" style={{width: "calc(100% - 50px)"}}>
-                                    <>
-                                        {Object.entries(classYearChoices).map(([key, value]) =>
-                                            <Select.Option key={key} value={key}>{value.toString()}</Select.Option>
-                                        )}
-                                    </>
-                                </Select>
-                            </Form.Item>
-                        }
+                        input={<Form.Item name="classYear"
+                                          initialValue={user.member.classYear}
+                                          noStyle>
+                            <Select placeholder="Class year"
+                                    style={{width: "calc(100% - 50px)"}}>
+                                <>
+                                    {Object.entries(classYearChoices).map(([key, value]) =>
+                                        <Select.Option key={key}
+                                                       value={key}>{value.toString()}</Select.Option>)}
+                                </>
+                            </Select>
+                        </Form.Item>}
                     />
                 </Space>
             </Layout.Content>
-        </Layout>
-    );
+        </Layout>);
 };
 
 export default ProfilePage;
