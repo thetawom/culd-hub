@@ -31,15 +31,23 @@ export const UserProvider = ({children}) => {
 
     let [user, setUser] = useState(null);
 
+    let [isNewUser, setNewUser] = useState(false);
+
+    const checkIsNewUser = (user) => {
+        return !user.phone || !user.member.school || !user.member.classYear;
+    }
+
     let {loading} = useAuthQuery(GET_ME_QUERY, {
         onCompleted: ({me}) => {
             setUser(me);
+            setNewUser(checkIsNewUser(me));
         },
         onError: () => logoutUser(),
     });
 
     let contextData = {
         user: user,
+        isNewUser: isNewUser,
     };
 
     return (
