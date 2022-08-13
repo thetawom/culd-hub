@@ -274,28 +274,27 @@ const ShowsTable = ({user}) => {
 
     const getInfo = (data) => {
         Modal.info({
-            // title: data.name,
             content: (
                 <Descriptions title={data.name} layout="vertical" bordered>
-                    <Descriptions.Item label="Address">{data.address}</Descriptions.Item>
-                    <Descriptions.Item label="Date">{data.date}</Descriptions.Item>
+                    <Descriptions.Item label="Address">{data.address ? data.address : ""}</Descriptions.Item>
+                    <Descriptions.Item label="Date">{data.date ? data.date : ""}</Descriptions.Item>
                     <Descriptions.Item label="Time">{data.time ? dayjs(data.time, "HH:mm:ss").format("h:mm A") : ""}</Descriptions.Item>
                     <Descriptions.Item label="Contact Information">
-                        {data.contact && "Name: " + data.contact.firstName + " " + data.contact.lastName} 
+                        {data.contact ? "Name: " + data.contact.firstName + " " + data.contact.lastName : ""} 
                         <br />
-                        {data.contact && data.contact.phone && "Phone Number: " + data.contact.phone} 
+                        {data.contact ? data.contact.phone && "Phone Number: " + data.contact.phone : ""} 
                         <br />
-                        {data.contact && data.contact.email && "Email: " + data.contact.email} 
+                        {data.contact ? data.contact.email && "Email: " + data.contact.email : ""} 
                         <br />
                     </Descriptions.Item>
                     <Descriptions.Item label="Point Person">
-                        {data.point.user.firstName + " " + data.point.user.lastName}
+                        {data.point.user ? data.point.user.firstName + " " + data.point.user.lastName : ""}
                     </Descriptions.Item>
                     <Descriptions.Item label="Number of Lions">
-                        {data.lions}
+                        {data.lions ? data.lions : ""}
                     </Descriptions.Item>
                     <Descriptions.Item label="Tentative Roster" id="performers">
-                        {data.performers.map(function(item, i) {
+                        {data.performers && data.performers.map(function(item, i) {
                             return <div key={i}>{item.user.firstName + " " + item.user.lastName}</div>
                         })}
                     </Descriptions.Item>
@@ -325,7 +324,6 @@ const ShowsTable = ({user}) => {
             onRow={(record) => {
                 return {
                     onClick: event => {
-                        console.log(record)
                         setVisible(true)
                         getInfo(record)
                     }
