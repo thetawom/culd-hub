@@ -231,7 +231,7 @@ const ShowsTable = ({user}) => {
             if (performer.user.id === user.id) return true;
         }
         return false;
-    }
+    };
 
     return needsRefresh ? (<Loader/>) : (<Table
         columns={columns}
