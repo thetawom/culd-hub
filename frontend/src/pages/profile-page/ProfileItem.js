@@ -3,6 +3,7 @@ import {Button, Card, Form, Input, message} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 import {gql} from "@apollo/client";
 import useAuthMutation from "../../utils/hooks/useAuthMutation";
+import PropTypes from "prop-types";
 
 const EDIT_USER_MUTATION = gql`
     mutation EditUser (
@@ -105,5 +106,12 @@ const ProfileItem = ({title, values, display, input, choices}) => {
     </Card>);
 }
 
+ProfileItem.propTypes = {
+    title: PropTypes.string,
+    values: PropTypes.object,
+    display: PropTypes.func,
+    input: PropTypes.element,
+    choices: PropTypes.object,
+};
 
 export default ProfileItem;

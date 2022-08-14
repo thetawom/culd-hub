@@ -3,6 +3,7 @@ import React, {createContext, useContext, useState} from "react";
 import Loader from "../components/Loader";
 import useAuthQuery from "../utils/hooks/useAuthQuery";
 import AuthContext from "./AuthContext";
+import PropTypes from "prop-types";
 
 const UserContext = createContext(undefined);
 
@@ -56,3 +57,7 @@ export const UserProvider = ({children}) => {
         </UserContext.Provider>
     );
 };
+
+UserProvider.propTypes = {
+    children: PropTypes.element,
+}
