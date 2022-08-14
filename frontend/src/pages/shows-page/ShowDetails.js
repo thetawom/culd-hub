@@ -1,6 +1,7 @@
 import {Descriptions, Space} from "antd";
 import dayjs from "dayjs";
 import React from "react";
+import PropTypes from "prop-types";
 
 const ShowDetails = ({show}) => {
 
@@ -43,5 +44,9 @@ const ShowDetails = ({show}) => {
     </Descriptions>
 
 }
+
+ShowDetails.propTypes = {
+    show: PropTypes.object,
+};
 
 export default ShowDetails;
