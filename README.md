@@ -12,7 +12,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/eyjwu/culd-app">
+  <a href="https://github.com/ew2664/culd-app">
     <img src="frontend/src/assets/logo.png" alt="Logo" width="200" height="200">
   </a>
 
@@ -26,9 +26,9 @@
     <br />
     <a href="https://culd-hub.herokuapp.com/">View Site</a>
     ·
-    <a href="https://github.com/eyjwu/culd-app/issues">Report Bug</a>
+    <a href="https://github.com/ew2664/culd-app/issues">Report Bug</a>
     ·
-    <a href="https://github.com/eyjwu/culd-app/issues">Request Feature</a>
+    <a href="https://github.com/ew2664/culd-app/issues">Request Feature</a>
   </p>
 </div>
 
@@ -68,7 +68,7 @@ CU Lion Dance Hub requires the following to run:
 ### Installation
 Clone the repository and move to the project directory.
 ```sh
-git clone https://github.com/eyjwu/culd-hub.git
+git clone https://github.com/ew2664/culd-hub.git
 cd culd-hub
 ```
 Install the required Python dependencies for the backend.
@@ -122,12 +122,12 @@ Navigate to http://localhost:3000/ to see the results.
   
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://github.com/Ileriayo/markdown-badges -->
-[build-shield]: https://img.shields.io/github/workflow/status/eyjwu/culd-hub/Django%20CI?style=flat-square
-[build-url]: https://github.com/eyjwu/culd-hub/actions/workflows/django.yml
-[coverage-shield]: https://img.shields.io/codecov/c/github/eyjwu/culd-app?style=flat-square&token=XU966851SF
-[coverage-url]: https://app.codecov.io/gh/eyjwu/culd-app
-[issues-shield]: https://img.shields.io/github/issues/eyjwu/culd-hub.svg?style=flat-square
-[issues-url]: https://github.com/eyjwu/culd-hub/issues
+[build-shield]: https://img.shields.io/github/workflow/status/ew2664/culd-hub/Django%20CI?style=flat-square
+[build-url]: https://github.com/ew2664/culd-hub/actions/workflows/django.yml
+[coverage-shield]: https://img.shields.io/codecov/c/github/ew2664/culd-app?style=flat-square&token=XU966851SF
+[coverage-url]: https://app.codecov.io/gh/ew2664/culd-app
+[issues-shield]: https://img.shields.io/github/issues/ew2664/culd-hub.svg?style=flat-square
+[issues-url]: https://github.com/ew2664/culd-hub/issues
 [product-screenshot]: images/screenshot.png
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
