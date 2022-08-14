@@ -12,7 +12,6 @@ import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import {AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL} from "../constants";
 import {message} from "antd";
-import PropTypes from "prop-types";
 
 const AuthContext = createContext(undefined);
 
@@ -46,15 +45,20 @@ export const LOGOUT_USER_MUTATION = gql`
             ok
         }
     }
-`
+`;
 
-export const AuthProvider = ({children}) => {
+interface Props {
+    children: React.ReactNode,
+}
+
+export const AuthProvider: React.FC<Props> = ({children}) => {
+
     const navigate = useNavigate();
     const location = useLocation();
 
-    let [invalidCredentials, setInvalidCredentials] = useState(false);
+    const [invalidCredentials, setInvalidCredentials] = useState(false);
 
-    let [authTokens, setAuthTokens] = useState(() =>
+    const [authTokens, setAuthTokens] = useState(() =>
         localStorage.getItem(AUTH_TOKEN) && localStorage.getItem(REFRESH_TOKEN)
             ? {
                 access: localStorage.getItem(AUTH_TOKEN),
@@ -63,9 +67,9 @@ export const AuthProvider = ({children}) => {
             : null
     );
 
-    let [client, setClient] = useState(null);
+    const [client, setClient] = useState(null);
 
-    let [tokenAuth] = useMutation(TOKEN_AUTH_MUTATION, {
+    const [tokenAuth] = useMutation(TOKEN_AUTH_MUTATION, {
         onCompleted: ({tokenAuth}) => {
             setInvalidCredentials(false);
             setAuthTokens({
@@ -74,7 +78,8 @@ export const AuthProvider = ({children}) => {
             });
             localStorage.setItem(AUTH_TOKEN, tokenAuth.token);
             localStorage.setItem(REFRESH_TOKEN, tokenAuth.refreshToken);
-            navigate(location.state?.from || "/");
+            const state = location.state as { from: string; };
+            navigate(state?.from || "/");
         },
         onError: (error) => {
             if (error.message === "Please enter valid credentials") {
@@ -86,9 +91,14 @@ export const AuthProvider = ({children}) => {
         },
     });
 
-    let [logoutUserMutation] = useMutation(LOGOUT_USER_MUTATION);
+    const [logoutUserMutation] = useMutation(LOGOUT_USER_MUTATION);
 
-    let loginUser = ({email, password}) => {
+    interface LoginType {
+        email: string,
+        password: string
+    }
+
+    const loginUser = ({email, password}: LoginType) => {
         localStorage.setItem(REMEMBER_EMAIL, email);
         tokenAuth({
             variables: {
@@ -98,15 +108,15 @@ export const AuthProvider = ({children}) => {
         });
     };
 
-    let logoutUser = () => {
+    const logoutUser = () => {
+        logoutUserMutation();
         setAuthTokens(null);
         localStorage.removeItem(AUTH_TOKEN);
         localStorage.removeItem(REFRESH_TOKEN);
-        logoutUserMutation();
         navigate("/login");
     };
 
-    let [refreshToken] = useMutation(REFRESH_TOKEN_MUTATION, {
+    const [refreshToken] = useMutation(REFRESH_TOKEN_MUTATION, {
         onCompleted: ({refreshToken}) => {
             setAuthTokens({
                 access: refreshToken.token,
@@ -130,7 +140,9 @@ export const AuthProvider = ({children}) => {
             });
 
             const authLink = setContext(async (_, {headers}) => {
-                const exp = jwt_decode(authTokens.access).exp;
+
+                type TokenType = { exp: number; }
+                const exp = jwt_decode<TokenType>(authTokens.access).exp;
                 const isExpired = dayjs.unix(exp).diff(dayjs()) < 1;
 
                 if (isExpired) {
@@ -160,7 +172,7 @@ export const AuthProvider = ({children}) => {
         }
     }, [authTokens, refreshToken]);
 
-    let contextData = {
+    const contextData = {
         authTokens: authTokens,
         client: client,
         invalidCredentials: invalidCredentials,
@@ -174,7 +186,3 @@ export const AuthProvider = ({children}) => {
             value={contextData}>{children}</AuthContext.Provider>
     );
 };
-
-AuthProvider.propTypes = {
-    children: PropTypes.element,
-}

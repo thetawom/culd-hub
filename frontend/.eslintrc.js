@@ -31,6 +31,7 @@ module.exports = {
         }
     },
     rules: {
-        quotes: [1, "double"]
+        quotes: [1, "double"],
+        semi: [1, "always"],
     }
 };

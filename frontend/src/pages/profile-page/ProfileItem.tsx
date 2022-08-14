@@ -3,7 +3,6 @@ import {Button, Card, Form, Input, message} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 import {gql} from "@apollo/client";
 import useAuthMutation from "../../utils/hooks/useAuthMutation";
-import PropTypes from "prop-types";
 
 const EDIT_USER_MUTATION = gql`
     mutation EditUser (
@@ -38,12 +37,28 @@ const EDIT_USER_MUTATION = gql`
     }
 `;
 
-const ProfileItem = ({title, values, display, input, choices}) => {
+type StringDict = { [index: string]: string }
+
+interface Props {
+    title: string,
+    values: StringDict,
+    display: (values: StringDict) => string,
+    input: React.ReactNode,
+    choices: StringDict,
+}
+
+const ProfileItem: React.FC<Props> = ({
+                                          title,
+                                          values,
+                                          display,
+                                          input,
+                                          choices
+                                      }) => {
     const [form] = Form.useForm();
 
-    let [editing, setEditing] = useState(false);
+    const [editing, setEditing] = useState(false);
 
-    let [editUser] = useAuthMutation(EDIT_USER_MUTATION, {
+    const [editUser] = useAuthMutation(EDIT_USER_MUTATION, {
         onCompleted: () => {
             message.success(`Successfully edited your ${title.toLowerCase()}`);
         }, onError: (error) => {
@@ -51,9 +66,9 @@ const ProfileItem = ({title, values, display, input, choices}) => {
         },
     });
 
-    const onSubmit = (formValues) => {
+    const onSubmit = (formValues: StringDict) => {
         let modified = false;
-        for (let prop in formValues) {
+        for (const prop in formValues) {
             if (formValues[prop] !== values[prop]) {
                 modified = true;
                 break;
@@ -63,7 +78,7 @@ const ProfileItem = ({title, values, display, input, choices}) => {
             editUser({variables: formValues});
         }
         setEditing(false);
-    }
+    };
 
     return (<Card
         hoverable
@@ -104,14 +119,6 @@ const ProfileItem = ({title, values, display, input, choices}) => {
             />)}
         </div>
     </Card>);
-}
-
-ProfileItem.propTypes = {
-    title: PropTypes.string,
-    values: PropTypes.object,
-    display: PropTypes.func,
-    input: PropTypes.element,
-    choices: PropTypes.object,
 };
 
 export default ProfileItem;

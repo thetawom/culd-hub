@@ -65,6 +65,6 @@ AuthBox.propTypes = {
     subtitle: PropTypes.element,
     alert: PropTypes.element,
     children: PropTypes.element,
-}
+};
 
 export default AuthBox;

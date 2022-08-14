@@ -1,8 +1,8 @@
-import {useLazyQuery} from "@apollo/client";
+import {DocumentNode, LazyQueryHookOptions, useLazyQuery} from "@apollo/client";
 import {useContext} from "react";
 import AuthContext from "../../context/AuthContext";
 
-const useAuthLazyQuery = (query, args) => {
+const useAuthLazyQuery = (query: DocumentNode, args: LazyQueryHookOptions) => {
     const {client} = useContext(AuthContext);
     return useLazyQuery(query, {...args, client: client});
 };
