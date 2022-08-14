@@ -16,6 +16,7 @@ import {
 import dayjs from "dayjs";
 import ShowsTableContext from "./ShowsTableContext";
 import Loader from "../../../components/Loader";
+import {OPTIONS_ENUM} from "./ShowsTableControls";
 
 let customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
@@ -272,7 +273,15 @@ const ShowsTable = ({user}) => {
 
     return needsRefresh ? (<Loader/>) : (<Table
             columns={columns}
-            dataSource={openFilter === "All" ? shows : openFilter === "Mine" ? shows.filter((show) => isPerforming(show)) : openFilter === "Open" ? shows.filter((show) => show.isOpen) : shows.filter((show) => !show.isOpen)}
+            dataSource={
+                openFilter === OPTIONS_ENUM.ALL
+                    ? shows
+                    : openFilter === OPTIONS_ENUM.MINE
+                    ? shows.filter((show) => isPerforming(show))
+                    : openFilter === OPTIONS_ENUM.OPEN
+                        ? shows.filter((show) => show.isOpen)
+                        : shows.filter((show) => !show.isOpen)
+            }
             rowKey="id"
             size="middle"
         />);
