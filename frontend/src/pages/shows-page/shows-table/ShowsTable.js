@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext} from "react";
 import {
     Button,
     message,
@@ -233,19 +233,19 @@ const ShowsTable = ({user}) => {
     }
 
     return needsRefresh ? (<Loader/>) : (<Table
-            columns={columns}
-            dataSource={
-                openFilter === OPTIONS_ENUM.ALL
-                    ? shows
-                    : openFilter === OPTIONS_ENUM.MINE
+        columns={columns}
+        dataSource={
+            openFilter === OPTIONS_ENUM.ALL
+                ? shows
+                : openFilter === OPTIONS_ENUM.MINE
                     ? shows.filter((show) => isPerforming(show))
                     : openFilter === OPTIONS_ENUM.OPEN
                         ? shows.filter((show) => show.isOpen)
                         : shows.filter((show) => !show.isOpen)
-            }
-            rowKey="id"
-            size="middle"
-        />);
+        }
+        rowKey="id"
+        size="middle"
+    />);
 };
 
 export default ShowsTable;
