@@ -1,4 +1,4 @@
-import {createContext, useEffect, useState} from "react";
+import React, {createContext, useEffect, useState} from "react";
 import {
     ApolloClient,
     createHttpLink,
@@ -12,6 +12,7 @@ import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import {AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL} from "../constants";
 import {message} from "antd";
+import PropTypes from "prop-types";
 
 const AuthContext = createContext(undefined);
 
@@ -169,6 +170,11 @@ export const AuthProvider = ({children}) => {
     };
 
     return (
-        <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+        <AuthContext.Provider
+            value={contextData}>{children}</AuthContext.Provider>
     );
 };
+
+AuthProvider.propTypes = {
+    children: PropTypes.element,
+}
