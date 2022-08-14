@@ -21,6 +21,7 @@ import ShowsTableContext from "./ShowsTableContext";
 import ShowDetails from "../ShowDetails";
 import Loader from "../../../components/Loader";
 import {OPTIONS_ENUM} from "./ShowsTableControls";
+import PropTypes from "prop-types";
 
 let customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
@@ -100,7 +101,7 @@ const ShowsTable = ({user}) => {
                         onClick={() => {
                             Modal.info({
                                 content: <ShowDetails show={show}/>,
-                                width: '80%',
+                                width: "80%",
                             });
                         }}
                     />
@@ -246,6 +247,10 @@ const ShowsTable = ({user}) => {
         rowKey="id"
         size="middle"
     />);
+};
+
+ShowsTable.propTypes = {
+    user: PropTypes.object,
 };
 
 export default ShowsTable;

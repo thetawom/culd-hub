@@ -5,6 +5,7 @@ import useAuthMutation from "../../../utils/hooks/useAuthMutation";
 import AuthContext from "../../../context/AuthContext";
 import useAuthLazyQuery from "../../../utils/hooks/useAuthLazyQuery";
 import useAuthQuery from "../../../utils/hooks/useAuthQuery";
+import PropTypes from "prop-types";
 
 const GET_SHOWS_QUERY = gql`
 	{
@@ -181,4 +182,8 @@ export const ShowsTableProvider = ({children}) => {
     return (<ShowsTableContext.Provider value={contextData}>
         {children}
     </ShowsTableContext.Provider>);
+};
+
+ShowsTableProvider.propTypes = {
+    children: PropTypes.element,
 };

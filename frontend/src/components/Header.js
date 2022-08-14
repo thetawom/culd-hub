@@ -1,9 +1,15 @@
 import React, {useContext} from "react";
 import {Link} from "react-router-dom";
 import {Layout, Menu, Tooltip} from "antd";
-import {HomeFilled, LogoutOutlined, SettingFilled, UserOutlined,} from "@ant-design/icons";
+import {
+    HomeFilled,
+    LogoutOutlined,
+    SettingFilled,
+    UserOutlined,
+} from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 import UserContext from "../context/UserContext";
+import PropTypes from "prop-types";
 
 const Header = ({newUserTooltip}) => {
     let {authTokens, logoutUser} = useContext(AuthContext);
@@ -63,5 +69,9 @@ const Header = ({newUserTooltip}) => {
         </Layout.Header>
     );
 };
+
+Header.propTypes = {
+    newUserTooltip: PropTypes.bool,
+}
 
 export default Header;
