@@ -49,4 +49,8 @@ ShowDetails.propTypes = {
     show: PropTypes.object,
 };
 
+ShowDetails.propTypes = {
+    show: PropTypes.object,
+};
+
 export default ShowDetails;
