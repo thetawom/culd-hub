@@ -27,26 +27,40 @@ const GET_ME_QUERY = gql`
 	}
 `;
 
-export const UserProvider = ({children}) => {
-    let {logoutUser} = useContext(AuthContext);
+interface Props {
+    children: React.ReactNode,
+}
 
-    let [user, setUser] = useState(null);
+class User {
+    phone: string;
+    member: Member;
+}
 
-    let [isNewUser, setNewUser] = useState(false);
+class Member {
+    school: string;
+    classYear: string;
+}
 
-    const checkIsNewUser = (user) => {
+export const UserProvider: React.FC<Props> = ({children}) => {
+    const {logoutUser} = useContext(AuthContext);
+
+    const [user, setUser] = useState(null);
+
+    const [isNewUser, setNewUser] = useState(false);
+
+    const checkIsNewUser = (user: User) => {
         return !user.phone || !user.member.school || !user.member.classYear;
-    }
+    };
 
-    let {loading} = useAuthQuery(GET_ME_QUERY, {
-        onCompleted: ({me}) => {
+    const {loading} = useAuthQuery(GET_ME_QUERY, {
+        onCompleted: ({me}: { me: User }) => {
             setUser(me);
             setNewUser(checkIsNewUser(me));
         },
         onError: () => logoutUser(),
     });
 
-    let contextData = {
+    const contextData = {
         user: user,
         isNewUser: isNewUser,
     };
@@ -60,4 +74,4 @@ export const UserProvider = ({children}) => {
 
 UserProvider.propTypes = {
     children: PropTypes.element,
-}
+};

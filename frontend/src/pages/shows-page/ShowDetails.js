@@ -41,9 +41,9 @@ const ShowDetails = ({show}) => {
                 )}
             </Space>
         </Descriptions.Item>
-    </Descriptions>
+    </Descriptions>;
 
-}
+};
 
 ShowDetails.propTypes = {
     show: PropTypes.object,

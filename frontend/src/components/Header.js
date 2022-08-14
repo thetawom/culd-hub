@@ -72,6 +72,6 @@ const Header = ({newUserTooltip}) => {
 
 Header.propTypes = {
     newUserTooltip: PropTypes.bool,
-}
+};
 
 export default Header;
