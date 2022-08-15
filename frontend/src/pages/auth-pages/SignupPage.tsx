@@ -8,16 +8,16 @@ import {
     PhoneOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import AuthBox from "../components/AuthBox";
+import AuthBox from "./AuthBox";
 import {gql, useMutation} from "@apollo/client";
-import {REMEMBER_EMAIL} from "../constants";
+import {REMEMBER_EMAIL} from "../../constants";
 import {
     EMAIL_VALIDATION_RULES,
     FIRST_NAME_VALIDATION_RULES,
     LAST_NAME_VALIDATION_RULES,
     PHONE_VALIDATION_RULES
-} from "../utils/user-field-validation";
-import {toLowerCase, toTitleCase} from "../utils/text-utils";
+} from "../../utils/user-field-validation";
+import {toLowerCase, toTitleCase} from "../../utils/text-utils";
 
 export const CREATE_USER_MUTATION = gql`
 	mutation CreateUser(
@@ -206,12 +206,8 @@ const SignupPage = () => {
                             type="primary"
                             htmlType="submit"
                             disabled={
-                                !form.isFieldsTouched(
-                                    ["firstName", "lastName", "email", "password", "confirm"],
-                                    true
-                                ) ||
-                                !!form.getFieldsError().filter(({errors}) => errors.length)
-                                    .length
+                                !form.isFieldsTouched(["firstName", "lastName", "email", "password", "confirm"], true) ||
+                                !!form.getFieldsError().filter(({errors}) => errors.length).length
                             }
                             style={{width: "100%"}}
                         >

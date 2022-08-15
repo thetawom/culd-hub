@@ -2,13 +2,13 @@ import React, {useContext} from "react";
 import {Link} from "react-router-dom";
 import {Alert, Button, Form, Input} from "antd";
 import {LockOutlined, MailOutlined} from "@ant-design/icons";
-import AuthContext from "../context/AuthContext";
-import AuthBox from "../components/AuthBox";
-import {REMEMBER_EMAIL} from "../constants";
+import AuthContext from "../../context/AuthContext";
+import AuthBox from "./AuthBox";
+import {REMEMBER_EMAIL} from "../../constants";
 import {
     EMAIL_VALIDATION_RULES,
     PASSWORD_VALIDATION_RULES
-} from "../utils/user-field-validation";
+} from "../../utils/user-field-validation";
 
 const LoginPage: React.FC = () => {
     const {loginUser, invalidCredentials, setInvalidCredentials} =
@@ -64,7 +64,7 @@ const LoginPage: React.FC = () => {
                     <Input.Password prefix={<LockOutlined/>}
                                     placeholder="Password"/>
                 </Form.Item>
-                <Form.Item shouldUpdate>
+                <Form.Item shouldUpdate style={{marginBottom: "15px"}}>
                     {() => (
                         <Button
                             type="primary"
@@ -80,6 +80,13 @@ const LoginPage: React.FC = () => {
                         </Button>
                     )}
                 </Form.Item>
+                <Link to="/password_reset"
+                      style={{
+                          float: "right",
+                          color: "#999AAA",
+                      }}>
+                    <span>I forgot my password ...</span>
+                </Link>
             </Form>
         </AuthBox>
     );

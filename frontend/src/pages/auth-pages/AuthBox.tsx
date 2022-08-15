@@ -1,6 +1,6 @@
 import React from "react";
 import {Divider, Image, Typography} from "antd";
-import logo from "../assets/logo.png";
+import logo from "../../assets/logo.png";
 
 interface Props {
     title?: string,
