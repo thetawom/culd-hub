@@ -5,18 +5,22 @@ import {LockOutlined, MailOutlined} from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 import AuthBox from "../components/AuthBox";
 import {REMEMBER_EMAIL} from "../constants";
+import {
+    EMAIL_VALIDATION_RULES,
+    PASSWORD_VALIDATION_RULES
+} from "../utils/user-field-validation";
 
-const LoginPage = () => {
-    let {loginUser, invalidCredentials, setInvalidCredentials} =
+const LoginPage: React.FC = () => {
+    const {loginUser, invalidCredentials, setInvalidCredentials} =
         useContext(AuthContext);
 
-    let [form] = Form.useForm();
+    const [form] = Form.useForm();
 
-    let onChange = () => {
+    const onChange: (() => void) = () => {
         setInvalidCredentials(false);
     };
 
-    let subtitle = (
+    const subtitle: React.ReactNode = (
         <>
             {"Don't have an account? "}
             <Link to="/signup">
@@ -25,25 +29,23 @@ const LoginPage = () => {
         </>
     );
 
-    let alert = invalidCredentials ? (
+    const alert: React.ReactNode = invalidCredentials ? (
         <Alert type="error" message="Username or password are incorrect."
                banner/>
     ) : null;
 
     return (
         <AuthBox subtitle={subtitle} alert={alert}>
-            <Form form={form} name="login" onFinish={loginUser}>
+            <Form form={form}
+                  name="login"
+                  onFinish={loginUser}
+                  onFieldsChange={onChange}
+            >
                 <Form.Item
                     name="email"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please enter your email address."
-                        },
-                    ]}
+                    rules={EMAIL_VALIDATION_RULES}
                     validateStatus={invalidCredentials ? "error" : ""}
                     hasFeedback={invalidCredentials}
-                    onChange={onChange}
                     initialValue={
                         localStorage.getItem(REMEMBER_EMAIL)
                             ? localStorage.getItem(REMEMBER_EMAIL)
@@ -55,13 +57,9 @@ const LoginPage = () => {
                 </Form.Item>
                 <Form.Item
                     name="password"
-                    rules={[{
-                        required: true,
-                        message: "Please enter your password."
-                    }]}
+                    rules={PASSWORD_VALIDATION_RULES}
                     validateStatus={invalidCredentials ? "error" : ""}
                     hasFeedback={invalidCredentials}
-                    onChange={onChange}
                 >
                     <Input.Password prefix={<LockOutlined/>}
                                     placeholder="Password"/>

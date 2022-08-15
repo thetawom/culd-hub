@@ -1,9 +1,15 @@
 import React from "react";
 import {Divider, Image, Typography} from "antd";
 import logo from "../assets/logo.png";
-import PropTypes from "prop-types";
 
-const AuthBox = ({title, subtitle, alert, children}) => {
+interface Props {
+    title?: string,
+    subtitle?: React.ReactNode,
+    alert?: React.ReactNode,
+    children?: React.ReactNode,
+}
+
+const AuthBox: React.FC<Props> = ({title, subtitle, alert, children}) => {
     return (
         <div
             style={{
@@ -58,13 +64,6 @@ const AuthBox = ({title, subtitle, alert, children}) => {
             </div>
         </div>
     );
-};
-
-AuthBox.propTypes = {
-    title: PropTypes.string,
-    subtitle: PropTypes.element,
-    alert: PropTypes.element,
-    children: PropTypes.element,
 };
 
 export default AuthBox;

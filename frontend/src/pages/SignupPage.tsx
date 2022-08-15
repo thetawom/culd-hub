@@ -1,11 +1,22 @@
 import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {Alert, Button, Form, Input, message} from "antd";
-import {LockOutlined, MailOutlined, PhoneOutlined, UserOutlined,} from "@ant-design/icons";
+import {FieldData, NamePath} from "rc-field-form/lib/interface";
+import {
+    LockOutlined,
+    MailOutlined,
+    PhoneOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
 import AuthBox from "../components/AuthBox";
 import {gql, useMutation} from "@apollo/client";
 import {REMEMBER_EMAIL} from "../constants";
-import {emailValidationRules, firstNameValidationRules, lastNameValidationRules, phoneValidationRules} from "../utils/user-field-validation";
+import {
+    EMAIL_VALIDATION_RULES,
+    FIRST_NAME_VALIDATION_RULES,
+    LAST_NAME_VALIDATION_RULES,
+    PHONE_VALIDATION_RULES
+} from "../utils/user-field-validation";
 import {toLowerCase, toTitleCase} from "../utils/text-utils";
 
 export const CREATE_USER_MUTATION = gql`
@@ -39,13 +50,18 @@ const SignupPage = () => {
 
     const navigate = useNavigate();
 
-    let [invalidEmail, setInvalidEmail] = useState(false);
+    const [invalidEmail, setInvalidEmail] = useState(false);
 
-    let onChange = () => {
-        setInvalidEmail(false);
+    const onChange = (changedFields: FieldData[]) => {
+        for (const field of changedFields) {
+            if ((field.name as string[]).includes("email")) {
+                setInvalidEmail(false);
+                break;
+            }
+        }
     };
 
-    let [createUser] = useMutation(CREATE_USER_MUTATION, {
+    const [createUser] = useMutation(CREATE_USER_MUTATION, {
         onCompleted: ({createUser}) => {
             setInvalidEmail(false);
             localStorage.setItem(REMEMBER_EMAIL, createUser.user.email);
@@ -54,13 +70,20 @@ const SignupPage = () => {
         },
         onError: (error) => {
             console.log(error.message);
-            if (error.message.startsWith("UNIQUE constraint failed")) {
+            if (error.message.startsWith("duplicate key value")) {
                 setInvalidEmail(true);
             }
         },
     });
 
-    const onFinish = (values) => {
+    type FormValues = {
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+        phone: string;
+    }
+    const onFinish = (values: FormValues) => {
         createUser({
             variables: {
                 email: values.email,
@@ -72,7 +95,7 @@ const SignupPage = () => {
         });
     };
 
-    let subtitle = (
+    const subtitle = (
         <>
             Already have an account?{" "}
             <Link to="/login">
@@ -81,7 +104,7 @@ const SignupPage = () => {
         </>
     );
 
-    let alert = invalidEmail ? (
+    const alert = invalidEmail ? (
         <Alert
             type="error"
             message="Account with the same email already exists."
@@ -91,12 +114,17 @@ const SignupPage = () => {
 
     return (
         <AuthBox subtitle={subtitle} alert={alert}>
-            <Form form={form} name="register" onFinish={onFinish}>
+            <Form
+                form={form}
+                name="register"
+                onFinish={onFinish}
+                onFieldsChange={onChange}
+            >
                 <Form.Item>
                     <Input.Group compact>
                         <Form.Item
                             name="firstName"
-                            rules={firstNameValidationRules}
+                            rules={FIRST_NAME_VALIDATION_RULES}
                             normalize={toTitleCase}
                             noStyle
                         >
@@ -108,42 +136,51 @@ const SignupPage = () => {
                         </Form.Item>
                         <Form.Item
                             name="lastName"
-                            rules={lastNameValidationRules}
+                            rules={LAST_NAME_VALIDATION_RULES}
                             normalize={toTitleCase}
                             noStyle
                         >
-                            <Input placeholder="Last name" style={{width: "50%"}}/>
+                            <Input placeholder="Last name"
+                                   style={{width: "50%"}}/>
                         </Form.Item>
                     </Input.Group>
                 </Form.Item>
                 <Form.Item
                     name="email"
-                    rules={emailValidationRules}
+                    rules={EMAIL_VALIDATION_RULES}
                     validateStatus={invalidEmail ? "error" : ""}
                     hasFeedback={invalidEmail}
-                    onChange={onChange}
                     normalize={toLowerCase}
                 >
-                    <Input prefix={<MailOutlined/>} placeholder="Email address"/>
+                    <Input prefix={<MailOutlined/>}
+                           placeholder="Email address"/>
                 </Form.Item>
                 <Form.Item
                     name="phone"
-                    rules={phoneValidationRules}
+                    rules={PHONE_VALIDATION_RULES}
                 >
-                    <Input placeholder="Phone number" prefix={<PhoneOutlined/>}/>
+                    <Input placeholder="Phone number"
+                           prefix={<PhoneOutlined/>}/>
                 </Form.Item>
                 <Form.Item
                     name="password"
-                    rules={[{required: true, message: "Please enter your password."}]}
+                    rules={[{
+                        required: true,
+                        message: "Please enter your password."
+                    }]}
                     hasFeedback
                 >
-                    <Input.Password prefix={<LockOutlined/>} placeholder="Password"/>
+                    <Input.Password prefix={<LockOutlined/>}
+                                    placeholder="Password"/>
                 </Form.Item>
                 <Form.Item
                     name="confirm"
-                    depndencies={["password"]}
+                    dependencies={["password" as NamePath]}
                     rules={[
-                        {required: true, message: "Please confirm your password."},
+                        {
+                            required: true,
+                            message: "Please confirm your password."
+                        },
                         ({getFieldValue}) => ({
                             validator(_, value) {
                                 if (!value || getFieldValue("password") === value) {
