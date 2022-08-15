@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<Props> = ({children}) => {
                 console.log(error.message);
                 setInvalidCredentials(true);
             } else {
-                message.error(error.message);
+                message.error("Failed to connect to server");
             }
         },
     });

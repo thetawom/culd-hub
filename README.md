@@ -106,9 +106,14 @@ docker-compose down
 ### Running without Docker Compose
 Make sure you have followed the dependency installations under Getting Started.
 
-Move to the backend directory and make the database migrations.
+Move to the backend directory and clean any existing migrations.
 ```sh
 cd backend
+chmod u+x scripts/clean_migrations.sh
+scripts/clean_migrations.sh
+```
+Make and run new migrations.
+```sh
 python manage.py makemigrations
 python manage.py migrate
 ```
@@ -127,6 +132,12 @@ python manage.py runserver
 In a separate shell, move to the frontend directory and start the frontend server.
 ```sh
 cd frontend && yarn start
+```
+You may need to temporarily point the backend proxy used by your development server to your backend on port 8000. Restart the server after modifying the following in `package.json`.
+```json
+{
+  "proxy": "http://localhost:8000",
+}
 ```
 Navigate to http://localhost:3000/ to see the results.
 
