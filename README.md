@@ -106,11 +106,23 @@ docker-compose down
 ### Running without Docker Compose
 Make sure you have followed the dependency installations under Getting Started.
 
-Make backend migrations, load in dummy data, and start the backend server.
+Move to the backend directory and make the database migrations.
 ```sh
-cd backend/scripts
-chmod u+x entrypoint-dev.sh
-./entrypoint-dev.sh
+cd backend
+python manage.py makemigrations
+python manage.py migrate
+```
+Load in the mock data from `scripts/data.json`.
+```sh
+python manage.py loaddata scripts/data.json
+```
+You can also choose to enter data yourself later with the admin site. In that case, create a superuser.
+```
+python manage.py createsuperuser
+```
+Start the backend server on port 8000.
+```
+python manage.py runserver
 ```
 In a separate shell, move to the frontend directory and start the frontend server.
 ```sh
