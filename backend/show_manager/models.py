@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
+from slack import SlackBoss
 from users.models import User
 
 SCHOOL_CHOICES = (
@@ -108,6 +109,8 @@ class Show(models.Model):
 
     class Meta:
         ordering = ["date", "time"]
+
+    slack_boss = SlackBoss()
 
     @admin.display(description="Day of Week")
     def day_of_week(self):
