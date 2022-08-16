@@ -14,3 +14,9 @@ class SlackBoss(object):
 
     def create_channel(self, name):
         return self.client.conversations_create(name=name, is_private=False)
+
+    def post_message(self, channel, blocks):
+        return self.client.chat_postMessage(
+            channel=channel,
+            blocks=blocks
+        )
