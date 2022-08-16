@@ -1,8 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from datetime import datetime
 
-from ..models import Member, Round
+from ..models import Member, Round, Show
+
+from slack import SlackBoss
 
 User = get_user_model()
 
@@ -27,3 +30,41 @@ def update_show_time(sender, instance, **kwargs):
 def delete_user_for_member(sender, instance, **kwargs):
     del sender, kwargs
     User.objects.filter(id=instance.user.id).delete()
+
+@receiver(post_save, sender=Show)
+def create_channel_for_show(sender, instance, **kwargs):
+    boss = SlackBoss()
+    channel_id = Show.objects.get(name=instance.name).channel_id
+    d = datetime.strptime(str(instance.time), "%H:%M:%S")
+    d = datetime.strftime(d, "%I:%M %p")
+    if instance.is_published:
+        if channel_id == "":
+            response = boss.create_channel(instance.name.replace(" ", "-").lower())
+            instance.channel_id = response["channel"]["id"]
+            instance.save()
+            boss.post_message(instance.channel_id,
+            [{
+                "type": "section",
+                "text": {
+                    "text": "A message *with some bold text* and _some italicized text_.",
+                    "type": "mrkdwn"
+                },
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Date:* " + str(instance.date)
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Time:* " + d
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Point Person:* " + str(instance.point)
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Lions:* " + str(instance.lions)
+                    }
+                ]
+            }])
