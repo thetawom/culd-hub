@@ -65,6 +65,7 @@ class Member(models.Model):
 
 class Show(models.Model):
     name = models.CharField(max_length=60)
+    channel_id = models.CharField(max_length=60, null=False, blank=True, default="")
     date = models.DateField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True, editable=False)
     address = models.CharField(
