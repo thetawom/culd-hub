@@ -59,8 +59,8 @@ const ProfileItem: React.FC<Props> = ({
     const [editing, setEditing] = useState(false);
 
     const [editUser] = useAuthMutation(EDIT_USER_MUTATION, {
-        onCompleted: () => {
-            message.success(`Successfully edited your ${title.toLowerCase()}`);
+        onCompleted: async () => {
+            await message.success(`Successfully edited your ${title.toLowerCase()}`);
         }, onError: (error) => {
             console.log(error.message);
         },

@@ -1,77 +1,88 @@
-import React from "react";
+import React, {useState} from "react";
 import AuthBox from "./AuthBox";
-import {Alert, Button, Form, Input, message} from "antd";
+import {Alert, Button, Form, Input} from "antd";
 import {EMAIL_VALIDATION_RULES} from "../../utils/user-field-validation";
 import {toLowerCase} from "../../utils/text-utils";
 import {MailOutlined} from "@ant-design/icons";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 const ForgotPasswordPage: React.FC = () => {
 
     const [form] = Form.useForm();
 
-    const navigate = useNavigate();
+    const [email, setEmail] = useState(null);
 
     type FormValues = {
-        email: string;
-        password: string;
-        firstName: string;
-        lastName: string;
-        phone: string;
+        email: string; password: string; firstName: string; lastName: string; phone: string;
     }
     const onFinish = (values: FormValues) => {
-        message.success("Reset password email sent.");
-        navigate("/login");
+        setEmail(() => values.email);
+        submitEmail(values.email);
     };
 
-    const subtitle = (
-        <>
-            Remembered your password?{" "}
-            <Link to="/login">
-                <span style={{fontWeight: "bold"}}>Log in!</span>
-            </Link>
-        </>
-    );
+    const submitEmail = (email: string): void => {
+        console.log(email);
+    };
 
-    const alert = <Alert
-        type="info"
-        message="Enter your registered email below for instructions on resetting your password."
-        banner
-    />;
+    const subtitle = (<>
+        Remembered your password?{" "}
+        <Link to="/login">
+            <span style={{fontWeight: "bold"}}>Log in!</span>
+        </Link>
+    </>);
 
-    return (
-        <AuthBox subtitle={subtitle} alert={alert}>
-            <Form
-                form={form}
-                name="password_reset"
-                onFinish={onFinish}
-            >
-                <Form.Item
-                    name="email"
-                    rules={EMAIL_VALIDATION_RULES}
-                    normalize={toLowerCase}
-                >
-                    <Input prefix={<MailOutlined/>}
-                           placeholder="Email address"/>
-                </Form.Item>
+    return (<AuthBox subtitle={subtitle}>
+        {email ?
+            <>
+                <Alert
+                    type="success"
+                    message="If the email you entered is correct, you will receive your password reset link shortly."
+                    banner
+                    style={{marginBottom: "1.5em"}}
+                />
                 <Form.Item shouldUpdate>
-                    {() => (
-                        <Button
+                    <Button
+                        onClick={() => submitEmail(email)}
+                        style={{width: "100%"}}
+                    >
+                        Resend reset link
+                    </Button>
+                </Form.Item>
+            </> :
+            <>
+                <Alert
+                    type="info"
+                    message="Enter your registered email address below for a link to reset your password."
+                    banner
+                    style={{marginBottom: "1.5em"}}
+                />
+                <Form
+                    form={form}
+                    name="password_reset"
+                    onFinish={onFinish}
+                >
+                    <Form.Item
+                        name="email"
+                        rules={EMAIL_VALIDATION_RULES}
+                        normalize={toLowerCase}
+                    >
+                        <Input prefix={<MailOutlined/>}
+                               placeholder="Email address"/>
+                    </Form.Item>
+                    <Form.Item shouldUpdate>
+                        {() => (<Button
                             type="primary"
                             htmlType="submit"
-                            disabled={
-                                !form.isFieldsTouched(["email"], true) ||
-                                !!form.getFieldsError().filter(({errors}) => errors.length).length
-                            }
+                            disabled={!form.isFieldsTouched(["email"], true) || !!form.getFieldsError().filter(({errors}) => errors.length).length}
                             style={{width: "100%"}}
                         >
                             Reset my password
-                        </Button>
-                    )}
-                </Form.Item>
-            </Form>
-        </AuthBox>
-    );
+                        </Button>)}
+                    </Form.Item>
+                </Form>
+            </>
+        }
+    </AuthBox>);
 };
 
 export default ForgotPasswordPage;

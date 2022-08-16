@@ -1,11 +1,5 @@
 import React, {createContext, useEffect, useState} from "react";
-import {
-    ApolloClient,
-    createHttpLink,
-    gql,
-    InMemoryCache,
-    useMutation,
-} from "@apollo/client";
+import {ApolloClient, ApolloError, createHttpLink, gql, InMemoryCache, useMutation,} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
 import {useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
@@ -81,12 +75,12 @@ export const AuthProvider: React.FC<Props> = ({children}) => {
             const state = location.state as { from: string; };
             navigate(state?.from || "/");
         },
-        onError: (error) => {
+        onError: async (error: ApolloError) => {
             if (error.message === "Please enter valid credentials") {
                 console.log(error.message);
                 setInvalidCredentials(true);
             } else {
-                message.error("Failed to connect to server");
+                await message.error("Failed to connect to server");
             }
         },
     });
@@ -98,9 +92,9 @@ export const AuthProvider: React.FC<Props> = ({children}) => {
         password: string
     }
 
-    const loginUser = ({email, password}: LoginType) => {
+    const loginUser = async ({email, password}: LoginType) => {
         localStorage.setItem(REMEMBER_EMAIL, email);
-        tokenAuth({
+        await tokenAuth({
             variables: {
                 email: email,
                 password: password,
@@ -108,8 +102,8 @@ export const AuthProvider: React.FC<Props> = ({children}) => {
         });
     };
 
-    const logoutUser = () => {
-        logoutUserMutation();
+    const logoutUser = async () => {
+        await logoutUserMutation();
         setAuthTokens(null);
         localStorage.removeItem(AUTH_TOKEN);
         localStorage.removeItem(REFRESH_TOKEN);

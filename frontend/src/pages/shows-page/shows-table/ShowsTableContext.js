@@ -125,12 +125,12 @@ export const ShowsTableProvider = ({children}) => {
     }, [needsRefresh, getShows]);
 
     let [createRole] = useAuthMutation(CREATE_ROLE_MUTATION, {
-        onCompleted: ({createRole}) => {
+        onCompleted: async ({createRole}) => {
             setShows(shows.map((show) => show.id === createRole.role.show.id ? {
                 ...show,
                 performers: [...show.performers, createRole.role.performer],
             } : {...show}));
-            message.success(`Signed up for ${createRole.role.show.name}`);
+            await message.success(`Signed up for ${createRole.role.show.name}`);
         }, onError: (error) => {
             console.log(error.message);
         },
@@ -147,12 +147,12 @@ export const ShowsTableProvider = ({children}) => {
     };
 
     let [deleteRole] = useAuthMutation(DELETE_ROLE_MUTATION, {
-        onCompleted: ({deleteRole}) => {
+        onCompleted: async ({deleteRole}) => {
             setShows(shows.map((show) => show.id === deleteRole.role.show.id ? {
                 ...show,
                 performers: show.performers.filter((performer) => performer.user.id !== deleteRole.role.performer.user.id),
             } : {...show}));
-            message.success(`Removed from ${deleteRole.role.show.name}`);
+            await message.success(`Removed from ${deleteRole.role.show.name}`);
         }, onError: (error) => {
             console.log(error.message);
         },

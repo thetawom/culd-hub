@@ -5,12 +5,10 @@ import {LockOutlined, MailOutlined} from "@ant-design/icons";
 import AuthContext from "../../context/AuthContext";
 import AuthBox from "./AuthBox";
 import {REMEMBER_EMAIL} from "../../constants";
-import {
-    EMAIL_VALIDATION_RULES,
-    PASSWORD_VALIDATION_RULES
-} from "../../utils/user-field-validation";
+import {EMAIL_VALIDATION_RULES, PASSWORD_VALIDATION_RULES} from "../../utils/user-field-validation";
 
 const LoginPage: React.FC = () => {
+
     const {loginUser, invalidCredentials, setInvalidCredentials} =
         useContext(AuthContext);
 

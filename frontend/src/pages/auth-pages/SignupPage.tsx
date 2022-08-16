@@ -2,19 +2,16 @@ import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {Alert, Button, Form, Input, message} from "antd";
 import {FieldData, NamePath} from "rc-field-form/lib/interface";
-import {
-    LockOutlined,
-    MailOutlined,
-    PhoneOutlined,
-    UserOutlined,
-} from "@ant-design/icons";
+import {LockOutlined, MailOutlined, PhoneOutlined, UserOutlined,} from "@ant-design/icons";
 import AuthBox from "./AuthBox";
-import {gql, useMutation} from "@apollo/client";
+import {ApolloError, gql, useMutation} from "@apollo/client";
 import {REMEMBER_EMAIL} from "../../constants";
 import {
+    CONFIRM_PASSWORD_VALIDATION_RULES,
     EMAIL_VALIDATION_RULES,
     FIRST_NAME_VALIDATION_RULES,
     LAST_NAME_VALIDATION_RULES,
+    PASSWORD_VALIDATION_RULES,
     PHONE_VALIDATION_RULES
 } from "../../utils/user-field-validation";
 import {toLowerCase, toTitleCase} from "../../utils/text-utils";
@@ -62,16 +59,20 @@ const SignupPage = () => {
     };
 
     const [createUser] = useMutation(CREATE_USER_MUTATION, {
-        onCompleted: ({createUser}) => {
+        onCompleted: async ({createUser}) => {
             setInvalidEmail(false);
             localStorage.setItem(REMEMBER_EMAIL, createUser.user.email);
-            message.success("Account created successfully.");
+            await message.success("Account created successfully.");
             navigate("/login");
         },
-        onError: (error) => {
+        onError: async (error: ApolloError) => {
             console.log(error.message);
-            if (error.message.startsWith("duplicate key value")) {
+            if (error.networkError) {
+                await message.error("Failed to connect to server");
+            } else if (error.message.startsWith("duplicate key value")) {
                 setInvalidEmail(true);
+            } else {
+                await message.error(error.message);
             }
         },
     });
@@ -83,8 +84,8 @@ const SignupPage = () => {
         lastName: string;
         phone: string;
     }
-    const onFinish = (values: FormValues) => {
-        createUser({
+    const onFinish = async (values: FormValues) => {
+        await createUser({
             variables: {
                 email: values.email,
                 password: values.password,
@@ -164,10 +165,7 @@ const SignupPage = () => {
                 </Form.Item>
                 <Form.Item
                     name="password"
-                    rules={[{
-                        required: true,
-                        message: "Please enter your password."
-                    }]}
+                    rules={PASSWORD_VALIDATION_RULES}
                     hasFeedback
                 >
                     <Input.Password prefix={<LockOutlined/>}
@@ -176,23 +174,7 @@ const SignupPage = () => {
                 <Form.Item
                     name="confirm"
                     dependencies={["password" as NamePath]}
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please confirm your password."
-                        },
-                        ({getFieldValue}) => ({
-                            validator(_, value) {
-                                if (!value || getFieldValue("password") === value) {
-                                    return Promise.resolve();
-                                }
-
-                                return Promise.reject(
-                                    new Error("The two passwords that you entered do not match.")
-                                );
-                            },
-                        }),
-                    ]}
+                    rules={CONFIRM_PASSWORD_VALIDATION_RULES}
                     hasFeedback
                 >
                     <Input.Password

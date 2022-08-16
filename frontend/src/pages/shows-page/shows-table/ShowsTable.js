@@ -158,13 +158,13 @@ const ShowsTable = ({user}) => {
                             <MailTwoTone/>) : null}
                         style={{cursor: "pointer"}}
                         color="blue"
-                        onClick={() => {
+                        onClick={async () => {
                             if (contact.phone) {
-                                navigator.clipboard.writeText(contact.phone);
-                                message.info("Phone number copied to clipboard");
+                                await navigator.clipboard.writeText(contact.phone);
+                                await message.info("Phone number copied to clipboard");
                             } else if (contact.email) {
-                                navigator.clipboard.writeText(contact.email);
-                                message.info("Email address copied to clipboard");
+                                await navigator.clipboard.writeText(contact.email);
+                                await message.info("Email address copied to clipboard");
                             }
                         }}
                     >
