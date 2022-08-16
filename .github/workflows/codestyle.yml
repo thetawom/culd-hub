@@ -7,24 +7,39 @@
 # More details at https://github.com/eslint/eslint
 # and https://eslint.org
 
-name: ESLint
+name: Code Style
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
+
   eslint:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Install modules
         working-directory: ./frontend
-        run: yarn install
+        run: yarn add eslint
       - name: Run ESLint
         working-directory: ./frontend
         run: yarn run eslint . --ext .js,.jsx,.ts,.tsx
+
+  pycodestyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pycodestyle
+      - name: Run pycodestyle
+        run: |
+          pycodestyle --statistics --max-line-length=120 ./backend
