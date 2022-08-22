@@ -92,7 +92,7 @@ class LogoutUserMutation(graphene.Mutation):
     id = graphene.ID()
 
     @staticmethod
-    @login_required
+    # @login_required
     def mutate(root, info, **kwargs):
         user_id = info.context.user.pk
         for session in Session.objects.filter(expire_date__gte=timezone.now()):

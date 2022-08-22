@@ -36,7 +36,7 @@ def delete_user_for_member(sender, instance, **kwargs):
 @receiver(post_save, sender=Show)
 def create_channel_for_show(sender, instance, **kwargs):
     if instance.is_published and instance.channel_id == "" and instance.time:
-        d = datetime.strptime(instance.time, "%H:%M:%S")
+        d = instance.time.strftime("%H:%M:%S")
         d = datetime.strftime(d, "%I:%M %p")
         response = instance.slack_boss.create_channel(
             instance.name.replace(" ", "-").lower()
