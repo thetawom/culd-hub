@@ -10,11 +10,16 @@ import {
 import AuthContext from "../context/AuthContext";
 import UserContext from "../context/UserContext";
 import PropTypes from "prop-types";
+import "./Header.css";
 
-const Header = ({newUserTooltip}) => {
-    let {authTokens, logoutUser} = useContext(AuthContext);
+interface Props {
+    newUserTooltip: boolean,
+}
 
-    let {user, isNewUser} = useContext(UserContext);
+const Header: React.FC<Props> = ({newUserTooltip}) => {
+    const {authTokens, logoutUser} = useContext(AuthContext);
+
+    const {user, isNewUser} = useContext(UserContext);
 
     const onClick = (e) => {
         if (e.key === "logout") {
