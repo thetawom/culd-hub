@@ -131,7 +131,7 @@ python manage.py runserver
 ```
 In a separate shell, move to the frontend directory and start the frontend server.
 ```sh
-cd frontend && yarn start
+cd frontend && yarn && yarn start
 ```
 You may need to temporarily point the backend proxy used by your development server to your backend on port 8000. Restart the server after modifying the following in `package.json`.
 ```json
