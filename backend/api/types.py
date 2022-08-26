@@ -1,6 +1,9 @@
+from graphene import Scalar
 from graphene_django import DjangoObjectType
+from graphene_django.utils import camelize
 
 from show_manager.models import Member, Show, Round, Contact, Role
+from users.exceptions import WrongUsage
 from users.models import User
 
 
@@ -60,3 +63,15 @@ class RoleType(DjangoObjectType):
     class Meta:
         model = Role
         fields = ("id", "show", "performer", "role")
+
+
+class ExpectedErrorType(Scalar):
+    @staticmethod
+    def serialize(errors):
+        if isinstance(errors, dict):
+            if errors.get("__all__", False):
+                errors["non_field_errors"] = errors.pop("__all__")
+            return camelize(errors)
+        elif isinstance(errors, list):
+            return {"nonFieldErrors": errors}
+        raise WrongUsage("`errors` must be list or dict!")

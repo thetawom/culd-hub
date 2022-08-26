@@ -1,10 +1,10 @@
 import graphene
-from django.contrib.sessions.models import Session
-from django.utils import timezone
 from graphql_jwt.decorators import login_required
 
 from show_manager.models import Show, Member, Role
+from users.mixins import SendPasswordResetEmailMixin, LogoutUserMixin
 from users.models import User
+from .bases import DynamicArgsMixin
 from .types import RoleType, UserType
 
 
@@ -87,15 +87,11 @@ class EditUserMutation(graphene.Mutation):
         return EditUserMutation(user=user_instance)
 
 
-class LogoutUserMutation(graphene.Mutation):
-    ok = graphene.Boolean()
-    id = graphene.ID()
+class LogoutUserMutation(LogoutUserMixin, graphene.Mutation):
+    _required_args = []
 
-    @staticmethod
-    # @login_required
-    def mutate(root, info, **kwargs):
-        user_id = info.context.user.pk
-        for session in Session.objects.filter(expire_date__gte=timezone.now()):
-            if str(user_id) == session.get_decoded().get("_auth_user_id"):
-                session.delete()
-        return LogoutUserMutation(id=user_id, ok=True)
+
+class SendPasswordResetEmailMutation(
+    DynamicArgsMixin, SendPasswordResetEmailMixin, graphene.Mutation
+):
+    _required_args = ["email"]
