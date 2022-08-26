@@ -1,12 +1,12 @@
 import dj_database_url
+
 from core.settings.base import *
 
-
-SECRET_KEY = os.environ.get("SECRET_KEY", "")
 DEBUG = False
-ALLOWED_HOSTS = [os.environ.get("PRODUCTION_HOST")]
 
-CSRF_TRUSTED_ORIGINS = [os.environ.get("PRODUCTION_ORIGIN")]
+ALLOWED_HOSTS = [env("PRODUCTION_HOST")]
+
+CSRF_TRUSTED_ORIGINS = [env("PRODUCTION_ORIGIN")]
 
 INSTALLED_APPS.extend(["whitenoise.runserver_nostatic"])
 
@@ -22,7 +22,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
 WHITENOISE_ROOT = os.path.join(BASE_DIR, "../", "frontend", "build", "root")
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = env("DATABASE_URL")
 db_from_env = dj_database_url.config(
     default=DATABASE_URL, conn_max_age=500, ssl_require=True
 )

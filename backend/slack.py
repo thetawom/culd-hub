@@ -1,9 +1,5 @@
-import os
-
-from dotenv import load_dotenv
+from django.conf import settings
 from slack_sdk import WebClient
-
-load_dotenv()
 
 
 class SlackBoss(object):
@@ -12,7 +8,7 @@ class SlackBoss(object):
     def __new__(cls):
         if not cls.instance:
             cls.instance = super(SlackBoss, cls).__new__(cls)
-            cls.instance.client = WebClient(token=os.getenv("SLACK_TOKEN", ""))
+            cls.instance.client = WebClient(token=settings.SLACK_TOKEN)
         return cls.instance
 
     def create_channel(self, name):

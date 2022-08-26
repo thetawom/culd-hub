@@ -14,14 +14,20 @@ import os
 from datetime import timedelta
 
 import django
+import environ
 from django.utils.encoding import force_str
 
 django.utils.encoding.force_text = force_str
+
+env = environ.Env()
+environ.Env.read_env()
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
+
+SECRET_KEY = env("SECRET_KEY")
 
 # Application definition
 
@@ -141,4 +147,4 @@ AUTH_USER_MODEL = "users.User"
 
 PHONENUMBER_DEFAULT_REGION = "US"
 
-CSRF_TRUSTED_ORIGINS = ["https://culd-hub.herokuapp.com/admin/"]
+SLACK_TOKEN = env("SLACK_TOKEN")

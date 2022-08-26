@@ -3,6 +3,7 @@ asgiref==3.5.2
 coverage==6.4.3
 dj-database-url==1.0.0
 Django==4.1
+django-environ==0.9.0
 django-graphql-jwt==0.3.4
 django-phonenumber-field==6.3.0
 graphene==2.1.9
@@ -13,7 +14,6 @@ phonenumbers==8.12.53
 promise==2.3
 psycopg2-binary==2.9.3
 PyJWT==2.4.0
-python-dotenv==0.20.0
 Rx==1.6.1
 singledispatch==3.7.0
 six==1.16.0
