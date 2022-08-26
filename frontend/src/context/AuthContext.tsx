@@ -36,7 +36,8 @@ export const REFRESH_TOKEN_MUTATION = gql`
 export const LOGOUT_USER_MUTATION = gql`
     mutation LogoutUser {
         logoutUser {
-            ok
+            success
+            errors
         }
     }
 `;

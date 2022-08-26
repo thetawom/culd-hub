@@ -5,12 +5,24 @@ import {EMAIL_VALIDATION_RULES} from "../../utils/user-field-validation";
 import {toLowerCase} from "../../utils/text-utils";
 import {MailOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
+import {gql, useMutation} from "@apollo/client";
+
+export const SEND_PASSWORD_RESET_EMAIL_MUTATION = gql`
+    mutation SendPasswordResetEmail ($email: String!) {
+        sendPasswordResetEmail(email: $email) {
+            success
+            errors
+        }
+    }
+`;
 
 const ForgotPasswordPage: React.FC = () => {
 
     const [form] = Form.useForm();
 
     const [email, setEmail] = useState(null);
+
+    const [sendPasswordResetEmail] = useMutation(SEND_PASSWORD_RESET_EMAIL_MUTATION);
 
     const [resendTimeout, setResendTimeout] = useState(0);
 
@@ -23,14 +35,18 @@ const ForgotPasswordPage: React.FC = () => {
     type FormValues = {
         email: string; password: string; firstName: string; lastName: string; phone: string;
     }
-    const onFinish = (values: FormValues) => {
+    const onFinish = async (values: FormValues) => {
         setEmail(() => values.email);
-        submitEmail(values.email);
+        await submitEmail(values.email);
     };
 
-    const submitEmail = (email: string): void => {
+    const submitEmail = async (email: string) => {
         setResendTimeout(59);
-        console.log(email);
+        await sendPasswordResetEmail({
+            variables: {
+                email: email,
+            },
+        });
     };
 
     const subtitle = (<>

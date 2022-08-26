@@ -60,7 +60,7 @@ class User(AbstractUser):
 
     def send_password_reset_email(self, info, *args, **kwargs):
         email_context = self.get_email_context(
-            info, "password-reset", TokenAction.PASSWORD_RESET
+            info, "password_reset", TokenAction.PASSWORD_RESET
         )
         template = "email/password_reset_email.html"
         subject = "email/password_reset_subject.txt"
