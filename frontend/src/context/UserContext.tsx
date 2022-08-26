@@ -3,7 +3,6 @@ import React, {createContext, useContext, useState} from "react";
 import Loader from "../components/Loader";
 import useAuthQuery from "../utils/hooks/useAuthQuery";
 import AuthContext from "./AuthContext";
-import PropTypes from "prop-types";
 
 const UserContext = createContext(undefined);
 
@@ -28,7 +27,7 @@ const GET_ME_QUERY = gql`
 `;
 
 interface Props {
-    children: React.ReactNode,
+    children: React.ReactNode[],
 }
 
 class User {
@@ -70,8 +69,4 @@ export const UserProvider: React.FC<Props> = ({children}) => {
             {loading || !user ? <Loader/> : <>{children}</>}
         </UserContext.Provider>
     );
-};
-
-UserProvider.propTypes = {
-    children: PropTypes.element,
 };

@@ -1,25 +1,9 @@
 import React, {useContext} from "react";
-import {
-    Button,
-    message,
-    Modal,
-    Progress,
-    Space,
-    Table,
-    Tag,
-    Tooltip
-} from "antd";
-import {
-    InfoCircleTwoTone,
-    MailTwoTone,
-    PhoneTwoTone,
-    PlusOutlined,
-    StarFilled,
-} from "@ant-design/icons";
+import {Button, message, Modal, Progress, Space, Table, Tag, Tooltip} from "antd";
+import {InfoCircleTwoTone, MailTwoTone, PhoneTwoTone, PlusOutlined, StarFilled,} from "@ant-design/icons";
 import dayjs from "dayjs";
 import ShowsTableContext from "./ShowsTableContext";
 import ShowDetails from "../ShowDetails";
-import Loader from "../../../components/Loader";
 import {OPTIONS_ENUM} from "./ShowsTableControls";
 import PropTypes from "prop-types";
 
@@ -233,7 +217,7 @@ const ShowsTable = ({user}) => {
         return false;
     };
 
-    return needsRefresh ? (<Loader/>) : (<Table
+    return <Table
         columns={columns}
         dataSource={
             openFilter === OPTIONS_ENUM.ALL
@@ -246,7 +230,8 @@ const ShowsTable = ({user}) => {
         }
         rowKey="id"
         size="middle"
-    />);
+        loading={needsRefresh}
+    />;
 };
 
 ShowsTable.propTypes = {

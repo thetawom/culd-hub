@@ -1,16 +1,5 @@
 @import "~antd/dist/antd.css";
 
-.spin {
-    position: absolute;
-    top: 50vh;
-    left: 50vw;
-    transform: translate(-50%, -50%);
-}
-
-.spin span {
-    font-size: 60px;
-}
-
-#profile-page .ant-form-item {
-    margin-bottom: 0;
+.App {
+    width: 100vw;
 }

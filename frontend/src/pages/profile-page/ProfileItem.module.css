@@ -1,0 +1,9 @@
+.content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content .ant-form-item {
+    margin-bottom: 0;
+}

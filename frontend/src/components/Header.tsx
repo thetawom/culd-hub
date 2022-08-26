@@ -1,16 +1,10 @@
 import React, {useContext} from "react";
 import {Link} from "react-router-dom";
 import {Layout, Menu, Tooltip} from "antd";
-import {
-    HomeFilled,
-    LogoutOutlined,
-    SettingFilled,
-    UserOutlined,
-} from "@ant-design/icons";
+import {HomeFilled, LogoutOutlined, SettingFilled, UserOutlined,} from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 import UserContext from "../context/UserContext";
-import PropTypes from "prop-types";
-import "./Header.css";
+import styles from "./Header.module.css";
 
 interface Props {
     newUserTooltip: boolean,
@@ -46,6 +40,7 @@ const Header: React.FC<Props> = ({newUserTooltip}) => {
                         placement="bottomRight"
                         visible={newUserTooltip && isNewUser}
                         color="#eb2f96"
+                        overlayClassName={styles.tooltip}
                     >
                         {user.firstName} {user.lastName}
                     </Tooltip>
@@ -73,10 +68,6 @@ const Header: React.FC<Props> = ({newUserTooltip}) => {
             ></Menu>
         </Layout.Header>
     );
-};
-
-Header.propTypes = {
-    newUserTooltip: PropTypes.bool,
 };
 
 export default Header;

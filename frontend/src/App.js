@@ -7,14 +7,18 @@ import LoginPage from "./pages/auth-pages/LoginPage";
 import SignupPage from "./pages/auth-pages/SignupPage";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import {AuthProvider} from "./context/AuthContext";
-import {message} from "antd";
+import {message, Spin} from "antd";
 import ForgotPasswordPage from "./pages/auth-pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth-pages/ResetPasswordPage";
+import Loader from "./components/Loader";
+
 
 function App() {
     message.config({
         duration: 1.5,
     });
+
+    Spin.setDefaultIndicator(<Loader/>);
 
     return (<div className="App">
         <AuthProvider>

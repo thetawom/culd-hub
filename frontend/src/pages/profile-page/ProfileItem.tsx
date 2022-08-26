@@ -3,6 +3,7 @@ import {Button, Card, Form, Input, message} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 import {gql} from "@apollo/client";
 import useAuthMutation from "../../utils/hooks/useAuthMutation";
+import styles from "./ProfileItem.module.css";
 
 const EDIT_USER_MUTATION = gql`
     mutation EditUser (
@@ -88,13 +89,7 @@ const ProfileItem: React.FC<Props> = ({
             }
         }}
     >
-        <div
-            style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-            }}
-        >
+        <div className={styles.content}>
             <Card.Meta
                 title={title}
                 description={editing ? (<Form form={form} onFinish={onSubmit}
