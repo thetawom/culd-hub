@@ -141,4 +141,4 @@ GitHub.sublime-settings
 !**/migrations
 !**/migrations/__init__.py
 
-/scripts/mock-data.json
+/scripts/*.json
