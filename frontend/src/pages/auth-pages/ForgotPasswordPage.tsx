@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import AuthBox from "./AuthBox";
 import {Alert, Button, Form, Input} from "antd";
 import {EMAIL_VALIDATION_RULES} from "../../utils/user-field-validation";
@@ -12,6 +12,14 @@ const ForgotPasswordPage: React.FC = () => {
 
     const [email, setEmail] = useState(null);
 
+    const [resendTimeout, setResendTimeout] = useState(0);
+
+    useEffect(() => {
+        if (resendTimeout > 0) {
+            setTimeout(() => setResendTimeout(resendTimeout - 1), 1000);
+        }
+    }, [resendTimeout]);
+
     type FormValues = {
         email: string; password: string; firstName: string; lastName: string; phone: string;
     }
@@ -21,6 +29,7 @@ const ForgotPasswordPage: React.FC = () => {
     };
 
     const submitEmail = (email: string): void => {
+        setResendTimeout(59);
         console.log(email);
     };
 
@@ -44,8 +53,9 @@ const ForgotPasswordPage: React.FC = () => {
                     <Button
                         onClick={() => submitEmail(email)}
                         style={{width: "100%"}}
+                        disabled={resendTimeout > 0}
                     >
-                        Resend reset link
+                        {resendTimeout > 0 ? `Resend reset link in ${resendTimeout} seconds` : "Resend reset link"}
                     </Button>
                 </Form.Item>
             </> :
@@ -73,7 +83,8 @@ const ForgotPasswordPage: React.FC = () => {
                         {() => (<Button
                             type="primary"
                             htmlType="submit"
-                            disabled={!form.isFieldsTouched(["email"], true) || !!form.getFieldsError().filter(({errors}) => errors.length).length}
+                            disabled={!form.isFieldsTouched(["email"], true)
+                                || !!form.getFieldsError().filter(({errors}) => errors.length).length}
                             style={{width: "100%"}}
                         >
                             Reset my password
