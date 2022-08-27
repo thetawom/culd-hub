@@ -23,6 +23,7 @@ from .mutations import (
     EditUserMutation,
     LogoutUserMutation,
     SendPasswordResetEmailMutation,
+    ResetPasswordMutation,
 )
 from .types import UserType, MemberType, ShowType
 
@@ -101,6 +102,7 @@ class Mutation(graphene.ObjectType):
 
     logout_user = LogoutUserMutation.Field()
     send_password_reset_email = SendPasswordResetEmailMutation.Field()
+    reset_password = ResetPasswordMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

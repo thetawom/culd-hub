@@ -4,11 +4,10 @@ from .exceptions import TokenScopeError
 
 
 def get_token(user, action, **kwargs):
-    username = user.get_username()
-    payload = {user.USERNAME_FIELD: username, "action": action}
+    payload = {"email": user.email, "action": action}
     if kwargs:
         payload.update(**kwargs)
-    token = signing.dumps(payload)
+    token = signing.dumps(payload, compress=True)
     return token
 
 

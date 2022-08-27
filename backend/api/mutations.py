@@ -2,7 +2,11 @@ import graphene
 from graphql_jwt.decorators import login_required
 
 from show_manager.models import Show, Member, Role
-from users.mixins import SendPasswordResetEmailMixin, LogoutUserMixin
+from users.mixins import (
+    SendPasswordResetEmailMixin,
+    LogoutUserMixin,
+    ResetPasswordMixin,
+)
 from users.models import User
 from .bases import DynamicArgsMixin
 from .types import RoleType, UserType
@@ -95,3 +99,7 @@ class SendPasswordResetEmailMutation(
     DynamicArgsMixin, SendPasswordResetEmailMixin, graphene.Mutation
 ):
     _required_args = ["email"]
+
+
+class ResetPasswordMutation(DynamicArgsMixin, ResetPasswordMixin, graphene.Mutation):
+    _required_args = ["token", "password"]

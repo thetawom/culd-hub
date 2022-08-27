@@ -8,6 +8,10 @@ on:
 
 env:
   DJANGO_SETTINGS_MODULE: core.settings.dev
+  SECRET_KEY: secret-key
+  SLACK_TOKEN: slack-token
+  EMAIL_HOST_USER: test@email.com
+  EMAIL_HOST_PASSWORD: email-password
 
 jobs:
   build:

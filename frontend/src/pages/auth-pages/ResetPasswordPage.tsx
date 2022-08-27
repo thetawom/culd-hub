@@ -5,7 +5,22 @@ import {Alert, Button, Form, Input, message} from "antd";
 import {LockOutlined} from "@ant-design/icons";
 import {NamePath} from "rc-field-form/lib/interface";
 import {CONFIRM_PASSWORD_VALIDATION_RULES, PASSWORD_VALIDATION_RULES} from "../../utils/user-field-validation";
-import {REMEMBER_EMAIL} from "../../constants";
+import {ApolloError, gql, useMutation} from "@apollo/client";
+
+export const RESET_PASSWORD_MUTATION = gql`
+    mutation ResetPassword (
+        $token: String!
+        $password: String!
+    ) {
+        resetPassword(
+            token: $token
+            password: $password
+        ) {
+            success
+            errors
+        }
+    }
+`;
 
 const ResetPasswordPage: React.FC = () => {
     const params = useParams();
@@ -13,6 +28,21 @@ const ResetPasswordPage: React.FC = () => {
     const [form] = Form.useForm();
 
     const navigate = useNavigate();
+
+    const [resetPassword] = useMutation(RESET_PASSWORD_MUTATION, {
+        onCompleted: async () => {
+            await message.success("Password reset successfully.");
+            navigate("/login");
+        },
+        onError: async (error: ApolloError) => {
+            console.log(error.message);
+            if (error.networkError) {
+                await message.error("Failed to connect to server");
+            } else {
+                await message.error(error.message);
+            }
+        },
+    });
 
     const [invalidPassword, setInvalidPassword] = useState(false);
 
@@ -25,14 +55,12 @@ const ResetPasswordPage: React.FC = () => {
         confirm: string;
     }
     const onFinish = async (values: FormValues) => {
-        console.log(params);
-        console.log(values.password);
-        setInvalidPassword(true);
-
-        const email = "ew2664@columbia.edu";
-        localStorage.setItem(REMEMBER_EMAIL, email);
-        navigate("/login");
-        await message.success("Password reset successfully.");
+        await resetPassword({
+            variables: {
+                token: params.token,
+                password: values.password
+            }
+        });
     };
 
     const subtitle = (<>
