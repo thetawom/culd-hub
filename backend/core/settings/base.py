@@ -147,6 +147,8 @@ AUTH_USER_MODEL = "users.User"
 
 PHONENUMBER_DEFAULT_REGION = "US"
 
+PASSWORD_RESET_TIMEOUT_DAYS = 1
+
 SLACK_TOKEN = env("SLACK_TOKEN")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

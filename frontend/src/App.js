@@ -30,7 +30,8 @@ function App() {
                 <Route path="login/" element={<LoginPage/>}/>
                 <Route path="signup/" element={<SignupPage/>}/>
                 <Route path="password_reset/" element={<ForgotPasswordPage/>}/>
-                <Route path="password_reset/:token/" element={<ResetPasswordPage/>}/>
+                <Route path="password_reset/:userId/:token/"
+                       element={<ResetPasswordPage/>}/>
             </Routes>
         </AuthProvider>
     </div>);

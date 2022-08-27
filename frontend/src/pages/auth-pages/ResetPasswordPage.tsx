@@ -4,15 +4,20 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import {Alert, Button, Form, Input, message} from "antd";
 import {LockOutlined} from "@ant-design/icons";
 import {NamePath} from "rc-field-form/lib/interface";
-import {CONFIRM_PASSWORD_VALIDATION_RULES, PASSWORD_VALIDATION_RULES} from "../../utils/user-field-validation";
+import {
+    CONFIRM_PASSWORD_VALIDATION_RULES,
+    PASSWORD_VALIDATION_RULES
+} from "../../utils/user-field-validation";
 import {ApolloError, gql, useMutation} from "@apollo/client";
 
 export const RESET_PASSWORD_MUTATION = gql`
     mutation ResetPassword (
+        $userId: ID!
         $token: String!
         $password: String!
     ) {
         resetPassword(
+            userId: $userId
             token: $token
             password: $password
         ) {
@@ -30,9 +35,20 @@ const ResetPasswordPage: React.FC = () => {
     const navigate = useNavigate();
 
     const [resetPassword] = useMutation(RESET_PASSWORD_MUTATION, {
-        onCompleted: async () => {
-            await message.success("Password reset successfully.");
-            navigate("/login");
+        onCompleted: async ({resetPassword}) => {
+            if (resetPassword.success) {
+                navigate("/login");
+                await message.success("Password reset successfully.");
+            } else {
+                const error = resetPassword.errors.nonFieldErrors[0];
+                switch (error?.code) {
+                    case "invalid_token":
+                        await message.error("Sorry, your password reset link has already expired.");
+                        break;
+                    default:
+                        await message.error(error?.message);
+                }
+            }
         },
         onError: async (error: ApolloError) => {
             console.log(error.message);
@@ -57,6 +73,7 @@ const ResetPasswordPage: React.FC = () => {
     const onFinish = async (values: FormValues) => {
         await resetPassword({
             variables: {
+                userId: params.userId,
                 token: params.token,
                 password: values.password
             }

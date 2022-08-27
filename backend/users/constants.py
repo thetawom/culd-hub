@@ -41,7 +41,3 @@ class Messages:
             "code": "password_already_set",
         }
     ]
-
-
-class TokenAction(object):
-    PASSWORD_RESET = "password_reset"

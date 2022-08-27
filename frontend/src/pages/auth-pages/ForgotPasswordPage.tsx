@@ -78,7 +78,7 @@ const ForgotPasswordPage: React.FC = () => {
             <>
                 <Alert
                     type="info"
-                    message="Enter your registered email address below for a link to reset your password."
+                    message="Enter your registered email address below for a one-time link to reset your password."
                     banner
                     style={{marginBottom: "1.5em"}}
                 />

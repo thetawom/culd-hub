@@ -102,4 +102,7 @@ class SendPasswordResetEmailMutation(
 
 
 class ResetPasswordMutation(DynamicArgsMixin, ResetPasswordMixin, graphene.Mutation):
+    class Arguments:
+        user_id = graphene.ID(required=True)
+
     _required_args = ["token", "password"]

@@ -10,9 +10,8 @@ from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
-from .constants import TokenAction
 from .managers import UserManager
-from .utils import get_token
+from .tokens import action_token, TokenAction
 
 
 class User(AbstractUser):
@@ -44,7 +43,8 @@ class User(AbstractUser):
         )
 
     def get_email_context(self, info, path, action, **kwargs):
-        token = get_token(self, action, **kwargs)
+        # token = get_token(self, action, **kwargs)
+        token = action_token.make_token(self, action)
         site = get_current_site(info.context)
         return {
             "user": self,
