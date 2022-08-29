@@ -1,0 +1,40 @@
+.content {
+    width: 40%;
+    margin: auto;
+    padding: 30px;
+}
+
+.headingSpace {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.headingSpace h2 {
+    margin-bottom: 0;
+}
+
+.headingSpace .icon {
+    font-size: 0.9em;
+    margin-right: 0.4em;
+}
+
+.headingSpace .membershipText {
+    color: gray;
+}
+
+.divider {
+    margin-top: 0.8em;
+    margin-bottom: 1.2em;
+}
+
+.profileItemSpace {
+    width: 100%;
+}
+
+.halfWidthInput {
+    width: 50% !important;
+}
+
+.fullWidthInput {
+    width: calc(100% - 50px);
+}

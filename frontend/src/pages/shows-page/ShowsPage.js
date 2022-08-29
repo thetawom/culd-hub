@@ -11,7 +11,7 @@ const ShowsPage = () => {
     let {user} = useContext(UserContext);
 
     return (
-        <Layout style={{minHeight: "100vh"}}>
+        <Layout>
             <Header newUserTooltip/>
             <Layout.Content
                 id="shows-page"
