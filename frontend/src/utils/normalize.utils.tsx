@@ -9,6 +9,9 @@ export const toTitleCase = (str: string): string =>
     );
 
 export const formatPhoneNumber = (str: string): string => {
-    const phoneNumber = parsePhoneNumber(str);
-    return (phoneNumber.country === "US") ? phoneNumber.formatNational() : phoneNumber.formatInternational();
+    if (str) {
+        const phoneNumber = parsePhoneNumber(str);
+        return (phoneNumber.country === "US") ? phoneNumber.formatNational() : phoneNumber.formatInternational();
+    }
+    return "";
 };
