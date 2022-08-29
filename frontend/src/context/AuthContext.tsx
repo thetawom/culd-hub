@@ -12,7 +12,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import {AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL} from "../constants";
-import {message} from "antd";
+import {onApolloError} from "../utils/graphql-utils";
 
 const AuthContext = createContext(undefined);
 
@@ -89,7 +89,7 @@ export const AuthProvider: React.FC<Props> = ({children}) => {
                 console.log(error.message);
                 setInvalidCredentials(true);
             } else {
-                await message.error("Failed to connect to server");
+                await onApolloError(error);
             }
         },
     });

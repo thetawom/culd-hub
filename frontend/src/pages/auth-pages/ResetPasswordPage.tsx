@@ -8,7 +8,8 @@ import {
     CONFIRM_PASSWORD_VALIDATION_RULES,
     PASSWORD_VALIDATION_RULES
 } from "../../utils/user-field-validation";
-import {ApolloError, gql, useMutation} from "@apollo/client";
+import {gql, useMutation} from "@apollo/client";
+import {onApolloError} from "../../utils/graphql-utils";
 
 export const RESET_PASSWORD_MUTATION = gql`
     mutation ResetPassword (
@@ -50,14 +51,7 @@ const ResetPasswordPage: React.FC = () => {
                 }
             }
         },
-        onError: async (error: ApolloError) => {
-            console.log(error.message);
-            if (error.networkError) {
-                await message.error("Failed to connect to server");
-            } else {
-                await message.error(error.message);
-            }
-        },
+        onError: onApolloError,
     });
 
     const [invalidPassword, setInvalidPassword] = useState(false);

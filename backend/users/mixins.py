@@ -4,12 +4,14 @@ import graphene
 from django.contrib.sessions.models import Session
 from django.core.signing import BadSignature, SignatureExpired
 from django.utils import timezone
+from graphql_jwt.decorators import login_required
 
 from api.bases import Output
 from api.types import UserType
+from show_manager.forms import MemberForm
 from .constants import Messages
 from .exceptions import TokenScopeError, EmailAlreadyInUse
-from .forms import RegisterForm
+from .forms import RegisterForm, UpdateUserForm
 from .models import User
 from .tokens import action_token, TokenAction
 
@@ -19,7 +21,7 @@ class RegisterMixin(Output):
     user = graphene.Field(UserType)
 
     def __new__(cls, *args, **kwargs):
-        return super(RegisterMixin, cls).__new__(cls)
+        return super().__new__(cls)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
@@ -37,9 +39,40 @@ class RegisterMixin(Output):
             return cls(success=False, errors={User.EMAIL_FIELD: Messages.EMAIL_IN_USE})
 
 
+class UpdateProfileMixin(Output):
+    user_form = UpdateUserForm
+    member_form = MemberForm
+    user = graphene.Field(UserType)
+
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls)
+
+    @classmethod
+    @login_required
+    def mutate(cls, root, info, **kwargs):
+        user = info.context.user
+        user_fields = {
+            field: (kwargs.get(field, getattr(user, field)))
+            for field in cls.user_form.Meta.fields
+        }
+        user_f = cls.user_form(user_fields, instance=user)
+        member_fields = {
+            field: (kwargs.get(field, getattr(user.member, field)))
+            for field in cls.member_form.Meta.fields
+        }
+        member_f = cls.member_form(member_fields, instance=user.member)
+        if user_f.is_valid() and member_f.is_valid():
+            user_f.save()
+            member_f.save()
+            return cls(success=True, user=user)
+        else:
+            errors = user_f.errors.get_json_data() | member_f.errors.get_json_data()
+            return cls(success=False, errors=errors)
+
+
 class LogoutUserMixin(Output):
     def __new__(cls, *args, **kwargs):
-        return super(LogoutUserMixin, cls).__new__(cls)
+        return super().__new__(cls)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
@@ -56,7 +89,7 @@ class LogoutUserMixin(Output):
 
 class SendPasswordResetEmailMixin(Output):
     def __new__(cls, *args, **kwargs):
-        return super(SendPasswordResetEmailMixin, cls).__new__(cls)
+        return super().__new__(cls)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
@@ -72,7 +105,7 @@ class SendPasswordResetEmailMixin(Output):
 
 class ResetPasswordMixin(Output):
     def __new__(cls, *args, **kwargs):
-        return super(ResetPasswordMixin, cls).__new__(cls)
+        return super().__new__(cls)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):

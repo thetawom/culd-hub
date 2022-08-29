@@ -9,7 +9,7 @@ import {
     UserOutlined,
 } from "@ant-design/icons";
 import AuthBox from "./AuthBox";
-import {ApolloError, gql, useMutation} from "@apollo/client";
+import {gql, useMutation} from "@apollo/client";
 import {REMEMBER_EMAIL} from "../../constants";
 import {
     CONFIRM_PASSWORD_VALIDATION_RULES,
@@ -22,6 +22,7 @@ import {
 import {toLowerCase, toTitleCase} from "../../utils/text-utils";
 import {APIInterface, UserType} from "../../interfaces/api.interface";
 import styles from "./SignupPage.module.css";
+import {onApolloError} from "../../utils/graphql-utils";
 
 export const REGISTER_MUTATION = gql`
 	mutation Register(
@@ -77,14 +78,7 @@ const SignupPage = () => {
                 form.setFields(errors);
             }
         },
-        onError: async (error: ApolloError) => {
-            console.log(error.message);
-            if (error.networkError) {
-                await message.error("Failed to connect to server");
-            } else {
-                await message.error(error.message);
-            }
-        },
+        onError: onApolloError,
     });
 
     type FormValues = {

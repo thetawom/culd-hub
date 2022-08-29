@@ -1,5 +1,4 @@
 import graphene
-from graphql_jwt.decorators import login_required
 
 from show_manager.models import Show, Member, Role
 from users.mixins import (
@@ -7,16 +6,10 @@ from users.mixins import (
     LogoutUserMixin,
     ResetPasswordMixin,
     RegisterMixin,
+    UpdateProfileMixin,
 )
-from users.models import User
 from .bases import DynamicArgsMixin
-from .types import RoleType, UserType
-
-
-class RegisterMutation(DynamicArgsMixin, RegisterMixin, graphene.Mutation):
-    __doc__ = RegisterMixin.__doc__
-    _required_args = ["email", "password1", "password2", "first_name", "last_name"]
-    _args = ["phone"]
+from .types import RoleType
 
 
 class CreateRoleMutation(graphene.Mutation):
@@ -51,29 +44,15 @@ class DeleteRoleMutation(graphene.Mutation):
         return DeleteRoleMutation(role=role_instance)
 
 
-class EditUserMutation(graphene.Mutation):
-    user = graphene.Field(UserType)
+class RegisterMutation(DynamicArgsMixin, RegisterMixin, graphene.Mutation):
+    __doc__ = RegisterMixin.__doc__
+    _required_args = ["email", "password1", "password2", "first_name", "last_name"]
+    _args = ["phone"]
 
-    class Arguments:
-        first_name = graphene.String()
-        last_name = graphene.String()
-        email = graphene.String()
-        phone = graphene.String()
-        school = graphene.String()
-        class_year = graphene.String()
 
-    @staticmethod
-    @login_required
-    def mutate(root, info, **kwargs):
-        user_instance = User.objects.get(pk=info.context.user.pk)
-        for key, value in kwargs.items():
-            if hasattr(user_instance, key):
-                setattr(user_instance, key, value)
-            elif hasattr(user_instance.member, key):
-                setattr(user_instance.member, key, value)
-        user_instance.save()
-        user_instance.member.save()
-        return EditUserMutation(user=user_instance)
+class UpdateProfileMutation(DynamicArgsMixin, UpdateProfileMixin, graphene.Mutation):
+    __doc__ = UpdateProfileMixin.__doc__
+    _args = ["first_name", "last_name", "email", "phone", "school", "class_year"]
 
 
 class LogoutUserMutation(LogoutUserMixin, graphene.Mutation):

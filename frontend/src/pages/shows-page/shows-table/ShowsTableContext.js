@@ -6,6 +6,7 @@ import AuthContext from "../../../context/AuthContext";
 import useAuthLazyQuery from "../../../utils/hooks/useAuthLazyQuery";
 import useAuthQuery from "../../../utils/hooks/useAuthQuery";
 import PropTypes from "prop-types";
+import {onApolloError} from "../../../utils/graphql-utils";
 
 const GET_SHOWS_QUERY = gql`
 	{
@@ -131,9 +132,8 @@ export const ShowsTableProvider = ({children}) => {
                 performers: [...show.performers, createRole.role.performer],
             } : {...show}));
             await message.success(`Signed up for ${createRole.role.show.name}`);
-        }, onError: (error) => {
-            console.log(error.message);
         },
+        onError: onApolloError,
     });
 
     let addToShowRoster = (id) => {
@@ -153,9 +153,8 @@ export const ShowsTableProvider = ({children}) => {
                 performers: show.performers.filter((performer) => performer.user.id !== deleteRole.role.performer.user.id),
             } : {...show}));
             await message.success(`Removed from ${deleteRole.role.show.name}`);
-        }, onError: (error) => {
-            console.log(error.message);
         },
+        onError: onApolloError,
     });
 
     let removeFromShowRoster = (id) => {

@@ -4,9 +4,10 @@ import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 import {gql} from "@apollo/client";
 import useAuthMutation from "../../utils/hooks/useAuthMutation";
 import styles from "./ProfileItem.module.css";
+import {onApolloError} from "../../utils/graphql-utils";
 
-const EDIT_USER_MUTATION = gql`
-    mutation EditUser (
+const UPDATE_PROFILE_MUTATION = gql`
+    mutation UpdateProfile (
         $email: String
         $firstName: String
         $lastName: String
@@ -14,7 +15,7 @@ const EDIT_USER_MUTATION = gql`
         $classYear: String
         $school: String
     ) {
-        editUser (
+        updateProfile (
             email: $email
             firstName: $firstName
             lastName: $lastName
@@ -22,6 +23,8 @@ const EDIT_USER_MUTATION = gql`
             classYear: $classYear
             school: $school
         ) {
+            success
+            errors
             user {
                 id
                 firstName
@@ -59,12 +62,11 @@ const ProfileItem: React.FC<Props> = ({
 
     const [editing, setEditing] = useState(false);
 
-    const [editUser] = useAuthMutation(EDIT_USER_MUTATION, {
+    const [editUser] = useAuthMutation(UPDATE_PROFILE_MUTATION, {
         onCompleted: async () => {
             await message.success(`Successfully edited your ${title.toLowerCase()}`);
-        }, onError: (error) => {
-            console.log(error.message);
         },
+        onError: onApolloError,
     });
 
     const onSubmit = (formValues: StringDict) => {

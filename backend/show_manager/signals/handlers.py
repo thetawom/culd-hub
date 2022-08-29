@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 
+from ..decorators import disable_for_loaddata
 from ..models import Member, Round, Show
 
 User = get_user_model()
@@ -31,6 +32,7 @@ def delete_user_for_member(sender, instance, **kwargs):
 
 # Should be for modifying channel info?
 @receiver(pre_save, sender=Show)
+@disable_for_loaddata
 def check_channel(sender, instance, **kwargs):
     if instance.id is None:
         pass
@@ -42,6 +44,7 @@ def check_channel(sender, instance, **kwargs):
 
 # Should be for initially creating a channel
 @receiver(post_save, sender=Show)
+@disable_for_loaddata
 def create_channel_for_show(sender, instance, **kwargs):
     slack = instance.slack_boss
     print("NAME: ", instance.name)
