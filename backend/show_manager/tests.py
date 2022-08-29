@@ -2,6 +2,7 @@ import datetime
 from unittest.mock import patch
 
 from django.contrib.admin.sites import AdminSite
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
@@ -140,6 +141,12 @@ class TestShowModel(TestCase):
             Round.objects.create(show=show, time=time)
             self.assertEqual(show.time, min(self.times[: i + 1]))
         self.assertEqual(show.rounds.count(), len(self.times))
+
+    def test_publish_show_without_date(self):
+        show = Show.objects.create(name=self.show_name)
+        with self.assertRaises(ValidationError):
+            show.is_published = True
+            show.save()
 
 
 class TestContactModel(TestCase):

@@ -31,6 +31,11 @@ def delete_user_for_member(sender, instance, **kwargs):
     User.objects.filter(id=instance.user.id).delete()
 
 
+@receiver(pre_save, sender=Show)
+def clean_show(sender, instance, **kwargs):
+    instance.full_clean()
+
+
 # Should be for modifying channel info?
 @receiver(pre_save, sender=Show)
 @disable_for_loaddata

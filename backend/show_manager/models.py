@@ -1,9 +1,11 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.translation import gettext as _
 from phonenumber_field.modelfields import PhoneNumberField
 
-from slack import SlackBoss
-from users.models import User
+User = get_user_model()
 
 SCHOOL_CHOICES = (
     ("C", "Columbia College"),
@@ -134,6 +136,12 @@ class Show(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        if self.is_published and not self.date:
+            raise ValidationError(
+                {"is_published": _("Cannot publish show until date is set.")}
+            )
 
 
 class Round(models.Model):
