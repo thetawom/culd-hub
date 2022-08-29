@@ -1,10 +1,11 @@
 import React, {useState} from "react";
 import {Button, Card, Form, Input, message} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
-import {gql} from "@apollo/client";
+import {ApolloError, gql} from "@apollo/client";
 import useAuthMutation from "../../utils/hooks/useAuthMutation";
 import styles from "./ProfileItem.module.css";
 import {onApolloError} from "../../utils/graphql-utils";
+import {APIInterface, UserType} from "../../interfaces/api.interface";
 
 const UPDATE_PROFILE_MUTATION = gql`
     mutation UpdateProfile (
@@ -45,14 +46,20 @@ type StringDict = { [index: string]: string }
 
 interface Props {
     title: string,
+    name: string,
     values: StringDict,
     display: (values: StringDict) => string,
     input: React.ReactNode,
     choices: StringDict,
 }
 
+type UpdateProfileType = APIInterface & {
+    user: UserType;
+}
+
 const ProfileItem: React.FC<Props> = ({
                                           title,
+                                          name,
                                           values,
                                           display,
                                           input,
@@ -63,10 +70,19 @@ const ProfileItem: React.FC<Props> = ({
     const [editing, setEditing] = useState(false);
 
     const [editUser] = useAuthMutation(UPDATE_PROFILE_MUTATION, {
-        onCompleted: async () => {
-            await message.success(`Successfully edited your ${title.toLowerCase()}`);
+        onCompleted: async ({updateProfile}: { updateProfile: UpdateProfileType }) => {
+            if (updateProfile.success) {
+                setEditing(false);
+                await message.success(`Successfully edited your ${title.toLowerCase()}`);
+            } else {
+                const errors = updateProfile.errors;
+                await message.error(errors[Object.keys(errors)[0]][0].message);
+            }
         },
-        onError: onApolloError,
+        onError: async (error: ApolloError) => {
+            setEditing(false);
+            await onApolloError(error);
+        },
     });
 
     const onSubmit = (formValues: StringDict) => {
@@ -79,8 +95,9 @@ const ProfileItem: React.FC<Props> = ({
         }
         if (modified) {
             editUser({variables: formValues});
+        } else {
+            setEditing(false);
         }
-        setEditing(false);
     };
 
     return (<Card
