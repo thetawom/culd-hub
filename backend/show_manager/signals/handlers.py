@@ -4,6 +4,7 @@ from django.dispatch import receiver
 
 from ..decorators import disable_for_loaddata
 from ..models import Member, Round, Show
+from ..slack import slack_boss
 
 User = get_user_model()
 
@@ -39,19 +40,16 @@ def check_channel(sender, instance, **kwargs):
     else:
         prev = Show.objects.get(id=instance.id)
         if prev.channel_id != instance.channel_id:
-            print("Change")
+            pass
 
 
 # Should be for initially creating a channel
 @receiver(post_save, sender=Show)
 @disable_for_loaddata
 def create_channel_for_show(sender, instance, **kwargs):
-    slack = instance.slack_boss
-    print("NAME: ", instance.name)
-    print("CHANNEL ID: ", instance.channel_id)
     if instance.is_published:
-        slack.create_channel(instance)
-        message = slack.post_show_info(instance)
+        slack_boss.create_channel(instance)
+        message = slack_boss.post_show_info(instance)
 
 
 # @disable_for_loaddata

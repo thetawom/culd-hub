@@ -110,8 +110,6 @@ class Show(models.Model):
     class Meta:
         ordering = ["date", "time"]
 
-    slack_boss = SlackBoss()
-
     @admin.display(description="Day of Week")
     def day_of_week(self):
         return self.date.strftime("%a").upper() if self.date else None

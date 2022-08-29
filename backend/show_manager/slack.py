@@ -3,16 +3,13 @@ from slack_sdk import WebClient
 
 
 class SlackBoss(object):
-    instance = None
-
-    def __new__(cls):
-        if not cls.instance:
-            cls.instance = super(SlackBoss, cls).__new__(cls)
-            cls.instance.client = WebClient(token=settings.SLACK_TOKEN)
-        return cls.instance
+    def __init__(self):
+        self.client = WebClient(token=settings.SLACK_TOKEN)
 
     def create_channel(self, info):
-        response = self.client.conversations_create(name=info.name.replace(" ", "-").lower(), is_private=False)
+        response = self.client.conversations_create(
+            name=info.name.replace(" ", "-").lower(), is_private=False
+        )
         info.channel_id = response["channel"]["id"]
         info.save()
 
@@ -47,11 +44,13 @@ class SlackBoss(object):
     def post_show_info(self, info):
         block = self.create_show_info(info)
         response = self.client.chat_postMessage(channel=info.channel_id, blocks=block)
-        print(response)
         return response
 
     def update_show_info(self, info, message):
         block = self.create_show_info(info)
-        print(block)
-        print(info.channel_id)
-        return self.client.chat_update(channel=info.channel_id, ts=message.ts, blocks=block)
+        return self.client.chat_update(
+            channel=info.channel_id, ts=message.ts, blocks=block
+        )
+
+
+slack_boss = SlackBoss()

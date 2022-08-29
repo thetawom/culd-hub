@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import Mock
+from unittest.mock import patch
 
 from django.contrib.admin.sites import AdminSite
 from django.db.utils import IntegrityError
@@ -54,10 +54,15 @@ class TestMemberModel(TestCase):
 
 class TestShowModel(TestCase):
     def setUp(self):
-        self.slack_boss = Mock()
-        self.slack_boss.create_channel.return_value = {"ok": True, "channel": {"id": 1}}
-        self.slack_boss.post_message.return_value = {"ok": True, "channel": {"id": 1}}
-        Show.slack_boss = self.slack_boss
+        with patch("show_manager.slack.slack_boss") as mock_slack_boss:
+            mock_slack_boss.create_channel.return_value = {
+                "ok": True,
+                "channel": {"id": 1},
+            }
+            mock_slack_boss.post_message.return_value = {
+                "ok": True,
+                "channel": {"id": 1},
+            }
 
         self.users = [
             User.objects.create(
