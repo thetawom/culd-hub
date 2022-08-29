@@ -1,7 +1,7 @@
 import graphene
 
 from api.types import ExpectedErrorType
-from users.exceptions import WrongUsage
+from common.exceptions import WrongUsage
 
 
 class Output:
@@ -10,6 +10,8 @@ class Output:
 
 
 class DynamicArgsMixin:
+    """A mixin that initializes graphene arguments for a mutation"""
+
     _meta = None
     _args = {}
     _required_args = {}

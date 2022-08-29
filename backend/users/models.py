@@ -29,6 +29,10 @@ class User(AbstractUser):
     def __str__(self):
         return self.get_full_name()
 
+    @classmethod
+    def email_is_free(cls, email):
+        return not User.objects.filter(email=email).exists()
+
     def send(self, subject, template, context, recipient_list=None):
         _subject = render_to_string(subject, context).replace("\n", " ").strip()
         html_message = render_to_string(template, context)

@@ -1,0 +1,11 @@
+.subtitle a {
+    font-weight: bold;
+}
+
+.halfInput {
+    width: 50% !important;
+}
+
+button {
+    width: 100%;
+}

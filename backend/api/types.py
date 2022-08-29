@@ -2,8 +2,8 @@ from graphene import Scalar
 from graphene_django import DjangoObjectType
 from graphene_django.utils import camelize
 
+from common.exceptions import WrongUsage
 from show_manager.models import Member, Show, Round, Contact, Role
-from users.exceptions import WrongUsage
 from users.models import User
 
 

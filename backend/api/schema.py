@@ -17,13 +17,13 @@ from show_manager.models import (
 )
 from users.models import User
 from .mutations import (
-    CreateUserMutation,
     CreateRoleMutation,
     DeleteRoleMutation,
     EditUserMutation,
     LogoutUserMutation,
     SendPasswordResetEmailMutation,
     ResetPasswordMutation,
+    RegisterMutation,
 )
 from .types import UserType, MemberType, ShowType
 
@@ -95,7 +95,7 @@ class Mutation(graphene.ObjectType):
     refresh_token = graphql_jwt.Refresh.Field()
     revoke_token = graphql_jwt.Revoke.Field()
 
-    create_user = CreateUserMutation.Field()
+    register = RegisterMutation.Field()
     create_role = CreateRoleMutation.Field()
     delete_role = DeleteRoleMutation.Field()
     edit_user = EditUserMutation.Field()

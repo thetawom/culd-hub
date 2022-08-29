@@ -1,8 +1,13 @@
-import React, {useState} from "react";
+import React from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {Alert, Button, Form, Input, message} from "antd";
-import {FieldData, NamePath} from "rc-field-form/lib/interface";
-import {LockOutlined, MailOutlined, PhoneOutlined, UserOutlined,} from "@ant-design/icons";
+import {Button, Form, Input, message} from "antd";
+import {NamePath} from "rc-field-form/lib/interface";
+import {
+    LockOutlined,
+    MailOutlined,
+    PhoneOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
 import AuthBox from "./AuthBox";
 import {ApolloError, gql, useMutation} from "@apollo/client";
 import {REMEMBER_EMAIL} from "../../constants";
@@ -15,22 +20,28 @@ import {
     PHONE_VALIDATION_RULES
 } from "../../utils/user-field-validation";
 import {toLowerCase, toTitleCase} from "../../utils/text-utils";
+import {APIInterface, UserType} from "../../interfaces/api.interface";
+import styles from "./SignupPage.module.css";
 
-export const CREATE_USER_MUTATION = gql`
-	mutation CreateUser(
+export const REGISTER_MUTATION = gql`
+	mutation Register(
 		$email: String!
-		$password: String!
+		$password1: String!
+		$password2: String!
 		$firstName: String!
 		$lastName: String!
 		$phone: String!
 	) {
-		createUser(
+		register(
 			email: $email
-			password: $password
+			password1: $password1
+			password2: $password2
 			firstName: $firstName
 			lastName: $lastName
 			phone: $phone
 		) {
+		    success
+		    errors
 			user {
 				id
 				firstName
@@ -42,35 +53,34 @@ export const CREATE_USER_MUTATION = gql`
 	}
 `;
 
+type RegisterType = APIInterface & {
+    user: UserType;
+}
+
 const SignupPage = () => {
     const [form] = Form.useForm();
 
     const navigate = useNavigate();
 
-    const [invalidEmail, setInvalidEmail] = useState(false);
-
-    const onChange = (changedFields: FieldData[]) => {
-        for (const field of changedFields) {
-            if ((field.name as string[]).includes("email")) {
-                setInvalidEmail(false);
-                break;
+    const [createUser] = useMutation(REGISTER_MUTATION, {
+        onCompleted: async ({register}: { register: RegisterType }) => {
+            if (register.success) {
+                localStorage.setItem(REMEMBER_EMAIL, register.user.email);
+                navigate("/login");
+                await message.success("Account created successfully.");
+            } else {
+                const errors = Object.entries(register.errors).map(
+                    ([field, errors]) => ({
+                        name: field,
+                        errors: errors.map(error => error.message)
+                    }));
+                form.setFields(errors);
             }
-        }
-    };
-
-    const [createUser] = useMutation(CREATE_USER_MUTATION, {
-        onCompleted: async ({createUser}) => {
-            setInvalidEmail(false);
-            localStorage.setItem(REMEMBER_EMAIL, createUser.user.email);
-            await message.success("Account created successfully.");
-            navigate("/login");
         },
         onError: async (error: ApolloError) => {
             console.log(error.message);
             if (error.networkError) {
                 await message.error("Failed to connect to server");
-            } else if (error.message.startsWith("duplicate key value")) {
-                setInvalidEmail(true);
             } else {
                 await message.error(error.message);
             }
@@ -79,7 +89,8 @@ const SignupPage = () => {
 
     type FormValues = {
         email: string;
-        password: string;
+        password1: string;
+        password2: string;
         firstName: string;
         lastName: string;
         phone: string;
@@ -88,7 +99,8 @@ const SignupPage = () => {
         await createUser({
             variables: {
                 email: values.email,
-                password: values.password,
+                password1: values.password1,
+                password2: values.password2,
                 firstName: values.firstName,
                 lastName: values.lastName,
                 phone: values.phone ? values.phone : "",
@@ -97,29 +109,18 @@ const SignupPage = () => {
     };
 
     const subtitle = (
-        <>
+        <div className={styles.subtitle}>
             Already have an account?{" "}
-            <Link to="/login">
-                <span style={{fontWeight: "bold"}}>Log in!</span>
-            </Link>
-        </>
+            <Link to="/login">Log in!</Link>
+        </div>
     );
 
-    const alert = invalidEmail ? (
-        <Alert
-            type="error"
-            message="Account with the same email already exists."
-            banner
-        />
-    ) : null;
-
     return (
-        <AuthBox subtitle={subtitle} alert={alert}>
+        <AuthBox subtitle={subtitle}>
             <Form
                 form={form}
                 name="register"
                 onFinish={onFinish}
-                onFieldsChange={onChange}
             >
                 <Form.Item>
                     <Input.Group compact>
@@ -132,7 +133,7 @@ const SignupPage = () => {
                             <Input
                                 prefix={<UserOutlined/>}
                                 placeholder="First name"
-                                style={{width: "50%"}}
+                                className={styles.halfInput}
                             />
                         </Form.Item>
                         <Form.Item
@@ -141,16 +142,16 @@ const SignupPage = () => {
                             normalize={toTitleCase}
                             noStyle
                         >
-                            <Input placeholder="Last name"
-                                   style={{width: "50%"}}/>
+                            <Input
+                                placeholder="Last name"
+                                className={styles.halfInput}
+                            />
                         </Form.Item>
                     </Input.Group>
                 </Form.Item>
                 <Form.Item
                     name="email"
                     rules={EMAIL_VALIDATION_RULES}
-                    validateStatus={invalidEmail ? "error" : ""}
-                    hasFeedback={invalidEmail}
                     normalize={toLowerCase}
                 >
                     <Input prefix={<MailOutlined/>}
@@ -164,7 +165,7 @@ const SignupPage = () => {
                            prefix={<PhoneOutlined/>}/>
                 </Form.Item>
                 <Form.Item
-                    name="password"
+                    name="password1"
                     rules={PASSWORD_VALIDATION_RULES}
                     hasFeedback
                 >
@@ -172,8 +173,8 @@ const SignupPage = () => {
                                     placeholder="Password"/>
                 </Form.Item>
                 <Form.Item
-                    name="confirm"
-                    dependencies={["password" as NamePath]}
+                    name="password2"
+                    dependencies={["password1" as NamePath]}
                     rules={CONFIRM_PASSWORD_VALIDATION_RULES}
                     hasFeedback
                 >
@@ -188,10 +189,9 @@ const SignupPage = () => {
                             type="primary"
                             htmlType="submit"
                             disabled={
-                                !form.isFieldsTouched(["firstName", "lastName", "email", "password", "confirm"], true) ||
+                                !form.isFieldsTouched(["firstName", "lastName", "email", "password1", "password2"], true) ||
                                 !!form.getFieldsError().filter(({errors}) => errors.length).length
                             }
-                            style={{width: "100%"}}
                         >
                             Register
                         </Button>

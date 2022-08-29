@@ -6,32 +6,17 @@ from users.mixins import (
     SendPasswordResetEmailMixin,
     LogoutUserMixin,
     ResetPasswordMixin,
+    RegisterMixin,
 )
 from users.models import User
 from .bases import DynamicArgsMixin
 from .types import RoleType, UserType
 
 
-class CreateUserMutation(graphene.Mutation):
-    user = graphene.Field(UserType)
-
-    class Arguments:
-        first_name = graphene.String(required=True)
-        last_name = graphene.String(required=True)
-        email = graphene.String(required=True)
-        password = graphene.String(required=True)
-        phone = graphene.String()
-
-    @staticmethod
-    def mutate(root, info, first_name, last_name, email, password, phone=""):
-        user_instance = User.objects.create(
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            phone=phone,
-        )
-        return CreateUserMutation(user=user_instance)
+class RegisterMutation(DynamicArgsMixin, RegisterMixin, graphene.Mutation):
+    __doc__ = RegisterMixin.__doc__
+    _required_args = ["email", "password1", "password2", "first_name", "last_name"]
+    _args = ["phone"]
 
 
 class CreateRoleMutation(graphene.Mutation):
@@ -92,17 +77,16 @@ class EditUserMutation(graphene.Mutation):
 
 
 class LogoutUserMutation(LogoutUserMixin, graphene.Mutation):
-    _required_args = []
+    __doc__ = LogoutUserMixin.__doc__
 
 
 class SendPasswordResetEmailMutation(
     DynamicArgsMixin, SendPasswordResetEmailMixin, graphene.Mutation
 ):
-    _required_args = ["email"]
+    __doc__ = SendPasswordResetEmailMixin.__doc__
+    _required_args = {"email": "String"}
 
 
 class ResetPasswordMutation(DynamicArgsMixin, ResetPasswordMixin, graphene.Mutation):
-    class Arguments:
-        user_id = graphene.ID(required=True)
-
-    _required_args = ["token", "password"]
+    __doc__ = ResetPasswordMixin.__doc__
+    _required_args = {"user_id": "ID", "token": "String", "password": "String"}

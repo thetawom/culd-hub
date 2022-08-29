@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 
-from ..decorators import disable_for_loaddata
 from ..models import Member, Round, Show
 
 User = get_user_model()
@@ -40,7 +39,7 @@ def check_channel(sender, instance, **kwargs):
         if prev.channel_id != instance.channel_id:
             print("Change")
 
-            
+
 # Should be for initially creating a channel
 @receiver(post_save, sender=Show)
 def create_channel_for_show(sender, instance, **kwargs):
@@ -50,6 +49,7 @@ def create_channel_for_show(sender, instance, **kwargs):
     if instance.is_published:
         slack.create_channel(instance)
         message = slack.post_show_info(instance)
+
 
 # @disable_for_loaddata
 # @receiver(post_save, sender=Show)
@@ -66,11 +66,11 @@ def create_channel_for_show(sender, instance, **kwargs):
 #         message = slack.post_show_info(instance)
 #     elif instance.channel_id != "":
 #         print("THIS RUNS")
-        # slack.update_show_info(instance, message)
-        # slack.update_show_info(instance)
-    # elif instance.is_published and instance.channel_id != "":
-    #     print(instance.channel_id)
-    #     # slack.update_show_info(instance)
+# slack.update_show_info(instance, message)
+# slack.update_show_info(instance)
+# elif instance.is_published and instance.channel_id != "":
+#     print(instance.channel_id)
+#     # slack.update_show_info(instance)
 # @receiver(post_save, sender=Show)
 # @disable_for_loaddata
 # def create_channel_for_show(sender, instance, **kwargs):

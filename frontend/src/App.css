@@ -3,3 +3,10 @@
 .App {
     width: 100vw;
 }
+
+.ant-form-item-explain {
+    margin-bottom: 10px;
+}
+
+.ant-form-item-explain-error {
+}

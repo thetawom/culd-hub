@@ -46,7 +46,7 @@ export const CONFIRM_PASSWORD_VALIDATION_RULES: Rule[] = [
     },
     ({getFieldValue}) => ({
         validator(_, value) {
-            if (!value || getFieldValue("password") === value) {
+            if (!value || getFieldValue("password1") === value) {
                 return Promise.resolve();
             }
             return Promise.reject(

@@ -1,5 +1,12 @@
 import React, {createContext, useEffect, useState} from "react";
-import {ApolloClient, ApolloError, createHttpLink, gql, InMemoryCache, useMutation,} from "@apollo/client";
+import {
+    ApolloClient,
+    ApolloError,
+    createHttpLink,
+    gql,
+    InMemoryCache,
+    useMutation,
+} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
 import {useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
@@ -66,6 +73,7 @@ export const AuthProvider: React.FC<Props> = ({children}) => {
 
     const [tokenAuth] = useMutation(TOKEN_AUTH_MUTATION, {
         onCompleted: ({tokenAuth}) => {
+            console.log(tokenAuth);
             setInvalidCredentials(false);
             setAuthTokens({
                 access: tokenAuth.token,
