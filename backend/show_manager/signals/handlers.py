@@ -1,10 +1,15 @@
+import logging
+
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
+from slack_sdk.errors import SlackApiError
 
 from ..decorators import disable_for_loaddata
 from ..models import Member, Round, Show
 from ..slack import slack_boss
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -32,6 +37,7 @@ def delete_user_for_member(sender, instance, **kwargs):
 
 
 @receiver(pre_save, sender=Show)
+@disable_for_loaddata
 def clean_show(sender, instance, **kwargs):
     instance.full_clean()
 
@@ -40,11 +46,9 @@ def clean_show(sender, instance, **kwargs):
 @receiver(pre_save, sender=Show)
 @disable_for_loaddata
 def check_channel(sender, instance, **kwargs):
-    if instance.id is None:
-        pass
-    else:
+    if not kwargs.get("created", True):
         prev = Show.objects.get(id=instance.id)
-        if prev.channel_id != instance.channel_id:
+        if not prev.channel.id != instance.channel.id:
             pass
 
 
@@ -52,9 +56,13 @@ def check_channel(sender, instance, **kwargs):
 @receiver(post_save, sender=Show)
 @disable_for_loaddata
 def create_channel_for_show(sender, instance, **kwargs):
-    if instance.is_published:
-        slack_boss.create_channel(instance)
-        message = slack_boss.post_show_info(instance)
+    if instance.is_published and instance.channel is None:
+        logger.info(f"Creating channel for {instance} ...")
+        try:
+            slack_boss.create_channel(instance)
+            slack_boss.send_briefing(instance)
+        except SlackApiError as error:
+            logger.info(f"Failed to create channel: {error}")
 
 
 # @disable_for_loaddata

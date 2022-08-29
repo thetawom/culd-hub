@@ -14,13 +14,15 @@ class SlackBoss(object):
         response = self.client.conversations_create(
             name=self._get_channel_name(show), is_private=False
         )
+        print(response)
         show.channel_id = response["channel"]["id"]
         show.save()
+        return response
 
     @staticmethod
     def _create_briefing(show):
         time = show.time.strftime("%I:%M %p") if show.time else "TBD"
-        block = [
+        briefing = [
             {
                 "type": "section",
                 "text": {
@@ -41,19 +43,23 @@ class SlackBoss(object):
                 ],
             }
         ]
-        return block
-        # return self.client.chat_postMessage(channel=info.channel_id, blocks=block)
+        return briefing
 
-    def post_show_info(self, show):
-        block = self._create_briefing(show)
-        response = self.client.chat_postMessage(channel=show.channel_id, blocks=block)
+    def send_briefing(self, show):
+        briefing = self._create_briefing(show)
+        response = self.client.chat_postMessage(
+            channel=show.channel_id, blocks=briefing
+        )
+        print(response)
         return response
 
-    def update_show_info(self, show, message):
+    def update_briefing(self, show, message):
         block = self._create_briefing(show)
-        return self.client.chat_update(
+        response = self.client.chat_update(
             channel=show.channel_id, ts=message.ts, blocks=block
         )
+        print(response)
+        return response
 
 
 slack_boss = SlackBoss()

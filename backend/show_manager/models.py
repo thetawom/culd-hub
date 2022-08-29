@@ -67,8 +67,7 @@ class Member(models.Model):
 
 
 class Show(models.Model):
-    name = models.CharField(max_length=60)
-    channel_id = models.CharField(max_length=60, null=False, blank=True, default="")
+    name = models.CharField(max_length=60, null=False, blank=False)
     date = models.DateField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True, editable=False)
     address = models.CharField(
@@ -179,3 +178,9 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class Channel(models.Model):
+    id = models.CharField(primary_key=True, max_length=60, unique=True)
+    show = models.OneToOneField(Show, on_delete=models.CASCADE, related_name="channel")
+    briefing_timestamp = models.CharField(max_length=24)
