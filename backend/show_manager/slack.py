@@ -6,17 +6,20 @@ class SlackBoss(object):
     def __init__(self):
         self.client = WebClient(token=settings.SLACK_TOKEN)
 
-    def create_channel(self, info):
-        response = self.client.conversations_create(
-            name=info.name.replace(" ", "-").lower(), is_private=False
-        )
-        info.channel_id = response["channel"]["id"]
-        info.save()
+    @staticmethod
+    def _get_channel_name(show):
+        return f"{show.date.strftime('%m-%d')}-{show.name.replace(' ', '-').lower()}"
 
-    def create_show_info(self, info):
-        d = "TBD"
-        if info.time:
-            d = info.time.strftime("%I:%M %p")
+    def create_channel(self, show):
+        response = self.client.conversations_create(
+            name=self._get_channel_name(show), is_private=False
+        )
+        show.channel_id = response["channel"]["id"]
+        show.save()
+
+    @staticmethod
+    def _create_briefing(show):
+        time = show.time.strftime("%I:%M %p") if show.time else "TBD"
         block = [
             {
                 "type": "section",
@@ -25,15 +28,15 @@ class SlackBoss(object):
                     "type": "mrkdwn",
                 },
                 "fields": [
-                    {"type": "mrkdwn", "text": "*Date:* " + str(info.date)},
-                    {"type": "mrkdwn", "text": "*Time:* " + d},
+                    {"type": "mrkdwn", "text": "*Date:* " + str(show.date)},
+                    {"type": "mrkdwn", "text": "*Time:* " + time},
                     {
                         "type": "mrkdwn",
-                        "text": "*Point Person:* " + str(info.point),
+                        "text": "*Point Person:* " + str(show.point),
                     },
                     {
                         "type": "mrkdwn",
-                        "text": "*Lions:* " + str(info.lions),
+                        "text": "*Lions:* " + str(show.lions),
                     },
                 ],
             }
@@ -41,15 +44,15 @@ class SlackBoss(object):
         return block
         # return self.client.chat_postMessage(channel=info.channel_id, blocks=block)
 
-    def post_show_info(self, info):
-        block = self.create_show_info(info)
-        response = self.client.chat_postMessage(channel=info.channel_id, blocks=block)
+    def post_show_info(self, show):
+        block = self._create_briefing(show)
+        response = self.client.chat_postMessage(channel=show.channel_id, blocks=block)
         return response
 
-    def update_show_info(self, info, message):
-        block = self.create_show_info(info)
+    def update_show_info(self, show, message):
+        block = self._create_briefing(show)
         return self.client.chat_update(
-            channel=info.channel_id, ts=message.ts, blocks=block
+            channel=show.channel_id, ts=message.ts, blocks=block
         )
 
 
