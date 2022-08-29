@@ -6,7 +6,7 @@ import AuthContext from "../../../context/AuthContext";
 import useAuthLazyQuery from "../../../utils/hooks/useAuthLazyQuery";
 import useAuthQuery from "../../../utils/hooks/useAuthQuery";
 import PropTypes from "prop-types";
-import {onApolloError} from "../../../utils/graphql-utils";
+import {onApolloError} from "../../../utils/graphql.utils";
 
 const GET_SHOWS_QUERY = gql`
 	{

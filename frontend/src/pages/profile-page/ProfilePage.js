@@ -1,11 +1,6 @@
 import React, {useContext, useState} from "react";
 import {Divider, Form, Input, Layout, Select, Space, Typography} from "antd";
-import {
-    MailOutlined,
-    PhoneOutlined,
-    SmileOutlined,
-    UserOutlined
-} from "@ant-design/icons";
+import {MailOutlined, PhoneOutlined, SmileOutlined, UserOutlined} from "@ant-design/icons";
 import UserContext from "../../context/UserContext";
 import Header from "../../components/Header";
 import ProfileItem from "./ProfileItem";
@@ -17,8 +12,8 @@ import {
     FIRST_NAME_VALIDATION_RULES,
     LAST_NAME_VALIDATION_RULES,
     PHONE_VALIDATION_RULES
-} from "../../utils/user-field-validation";
-import {toLowerCase, toTitleCase} from "../../utils/text-utils";
+} from "../../utils/validate.utils";
+import {formatPhoneNumber, toLowerCase, toTitleCase} from "../../utils/normalize.utils";
 
 
 const GET_SCHOOL_CHOICES_QUERY = gql`
@@ -136,7 +131,7 @@ const ProfilePage = () => {
                 <ProfileItem
                     title="Phone Number"
                     values={{phone: user.phone}}
-                    display={values => values.phone || "Not set"}
+                    display={values => formatPhoneNumber(values.phone) || "Not set"}
                     input={<Form.Item
                         name="phone"
                         initialValue={user.phone}

@@ -1,4 +1,5 @@
 import {Rule} from "antd/lib/form";
+import {isValidPhoneNumber} from "libphonenumber-js";
 
 export const FIRST_NAME_VALIDATION_RULES: Rule[] = [
     {
@@ -26,10 +27,16 @@ export const EMAIL_VALIDATION_RULES: Rule[] = [
 ];
 
 export const PHONE_VALIDATION_RULES: Rule[] = [
-    {
-        pattern: new RegExp(/(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/g),
-        message: "This is not a valid phone number.",
-    },
+    () => ({
+        validator(_, value) {
+            if (isValidPhoneNumber(value, "US")) {
+                return Promise.resolve();
+            }
+            return Promise.reject(
+                new Error("This is not a valid phone number.")
+            );
+        }
+    })
 ];
 
 export const PASSWORD_VALIDATION_RULES: Rule[] = [

@@ -2,12 +2,7 @@ import React from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {Button, Form, Input, message} from "antd";
 import {NamePath} from "rc-field-form/lib/interface";
-import {
-    LockOutlined,
-    MailOutlined,
-    PhoneOutlined,
-    UserOutlined,
-} from "@ant-design/icons";
+import {LockOutlined, MailOutlined, PhoneOutlined, UserOutlined,} from "@ant-design/icons";
 import AuthBox from "./AuthBox";
 import {gql, useMutation} from "@apollo/client";
 import {REMEMBER_EMAIL} from "../../constants";
@@ -18,11 +13,11 @@ import {
     LAST_NAME_VALIDATION_RULES,
     PASSWORD_VALIDATION_RULES,
     PHONE_VALIDATION_RULES
-} from "../../utils/user-field-validation";
-import {toLowerCase, toTitleCase} from "../../utils/text-utils";
+} from "../../utils/validate.utils";
+import {toLowerCase, toTitleCase} from "../../utils/normalize.utils";
 import {APIInterface, UserType} from "../../interfaces/api.interface";
 import styles from "./SignupPage.module.css";
-import {onApolloError} from "../../utils/graphql-utils";
+import {onApolloError} from "../../utils/graphql.utils";
 
 export const REGISTER_MUTATION = gql`
 	mutation Register(

@@ -5,7 +5,7 @@ import ShowsPage from "./pages/shows-page/ShowsPage";
 import ProfilePage from "./pages/profile-page/ProfilePage";
 import LoginPage from "./pages/auth-pages/LoginPage";
 import SignupPage from "./pages/auth-pages/SignupPage";
-import PrivateRoutes from "./utils/PrivateRoutes";
+import PrivateRoutes from "./components/PrivateRoutes";
 import {AuthProvider} from "./context/AuthContext";
 import {message, Spin} from "antd";
 import ForgotPasswordPage from "./pages/auth-pages/ForgotPasswordPage";

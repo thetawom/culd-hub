@@ -1,18 +1,11 @@
 import React, {createContext, useEffect, useState} from "react";
-import {
-    ApolloClient,
-    ApolloError,
-    createHttpLink,
-    gql,
-    InMemoryCache,
-    useMutation,
-} from "@apollo/client";
+import {ApolloClient, ApolloError, createHttpLink, gql, InMemoryCache, useMutation,} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
 import {useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import {AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL} from "../constants";
-import {onApolloError} from "../utils/graphql-utils";
+import {onApolloError} from "../utils/graphql.utils";
 
 const AuthContext = createContext(undefined);
 

@@ -1,18 +1,13 @@
 import React, {useContext} from "react";
 import {Link} from "react-router-dom";
 import {Layout, Menu, Tooltip} from "antd";
-import {
-    HomeFilled,
-    LogoutOutlined,
-    SettingFilled,
-    SmileOutlined,
-} from "@ant-design/icons";
+import {HomeFilled, LogoutOutlined, SettingFilled, SmileOutlined,} from "@ant-design/icons";
 import AuthContext from "../context/AuthContext";
 import UserContext from "../context/UserContext";
 import styles from "./Header.module.css";
 
 interface Props {
-    newUserTooltip: boolean,
+    newUserTooltip?: boolean,
 }
 
 const Header: React.FC<Props> = ({newUserTooltip}) => {

@@ -4,7 +4,7 @@ import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 import {ApolloError, gql} from "@apollo/client";
 import useAuthMutation from "../../utils/hooks/useAuthMutation";
 import styles from "./ProfileItem.module.css";
-import {onApolloError} from "../../utils/graphql-utils";
+import {onApolloError} from "../../utils/graphql.utils";
 import {APIInterface, UserType} from "../../interfaces/api.interface";
 
 const UPDATE_PROFILE_MUTATION = gql`
@@ -46,11 +46,10 @@ type StringDict = { [index: string]: string }
 
 interface Props {
     title: string,
-    name: string,
     values: StringDict,
     display: (values: StringDict) => string,
     input: React.ReactNode,
-    choices: StringDict,
+    choices?: StringDict,
 }
 
 type UpdateProfileType = APIInterface & {
@@ -59,7 +58,6 @@ type UpdateProfileType = APIInterface & {
 
 const ProfileItem: React.FC<Props> = ({
                                           title,
-                                          name,
                                           values,
                                           display,
                                           input,
@@ -85,7 +83,7 @@ const ProfileItem: React.FC<Props> = ({
         },
     });
 
-    const onSubmit = (formValues: StringDict) => {
+    const onSubmit = async (formValues: StringDict) => {
         let modified = false;
         for (const prop in formValues) {
             if (formValues[prop] !== values[prop]) {
@@ -94,7 +92,7 @@ const ProfileItem: React.FC<Props> = ({
             }
         }
         if (modified) {
-            editUser({variables: formValues});
+            await editUser({variables: formValues});
         } else {
             setEditing(false);
         }

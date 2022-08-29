@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import AuthBox from "./AuthBox";
 import {Alert, Button, Form, Input} from "antd";
-import {EMAIL_VALIDATION_RULES} from "../../utils/user-field-validation";
-import {toLowerCase} from "../../utils/text-utils";
+import {EMAIL_VALIDATION_RULES} from "../../utils/validate.utils";
+import {toLowerCase} from "../../utils/normalize.utils";
 import {MailOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
 import {gql, useMutation} from "@apollo/client";

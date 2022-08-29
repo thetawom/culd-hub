@@ -4,12 +4,9 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import {Alert, Button, Form, Input, message} from "antd";
 import {LockOutlined} from "@ant-design/icons";
 import {NamePath} from "rc-field-form/lib/interface";
-import {
-    CONFIRM_PASSWORD_VALIDATION_RULES,
-    PASSWORD_VALIDATION_RULES
-} from "../../utils/user-field-validation";
+import {CONFIRM_PASSWORD_VALIDATION_RULES, PASSWORD_VALIDATION_RULES} from "../../utils/validate.utils";
 import {gql, useMutation} from "@apollo/client";
-import {onApolloError} from "../../utils/graphql-utils";
+import {onApolloError} from "../../utils/graphql.utils";
 
 export const RESET_PASSWORD_MUTATION = gql`
     mutation ResetPassword (
