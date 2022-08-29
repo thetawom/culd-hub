@@ -121,6 +121,7 @@ const SignupPage = () => {
                         <Form.Item
                             name="firstName"
                             rules={FIRST_NAME_VALIDATION_RULES}
+                            validateTrigger="onBlur"
                             normalize={toTitleCase}
                             noStyle
                         >
@@ -133,6 +134,7 @@ const SignupPage = () => {
                         <Form.Item
                             name="lastName"
                             rules={LAST_NAME_VALIDATION_RULES}
+                            validateTrigger="onBlur"
                             normalize={toTitleCase}
                             noStyle
                         >
@@ -146,6 +148,7 @@ const SignupPage = () => {
                 <Form.Item
                     name="email"
                     rules={EMAIL_VALIDATION_RULES}
+                    validateTrigger="onBlur"
                     normalize={toLowerCase}
                 >
                     <Input prefix={<MailOutlined/>}
@@ -154,6 +157,7 @@ const SignupPage = () => {
                 <Form.Item
                     name="phone"
                     rules={PHONE_VALIDATION_RULES}
+                    validateTrigger="onBlur"
                 >
                     <Input placeholder="Phone number"
                            prefix={<PhoneOutlined/>}/>
