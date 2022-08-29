@@ -90,6 +90,7 @@ const ForgotPasswordPage: React.FC = () => {
                     <Form.Item
                         name="email"
                         rules={EMAIL_VALIDATION_RULES}
+                        validateTrigger="onBlur"
                         normalize={toLowerCase}
                     >
                         <Input prefix={<MailOutlined/>}

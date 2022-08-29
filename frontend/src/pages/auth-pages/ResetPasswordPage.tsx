@@ -61,15 +61,15 @@ const ResetPasswordPage: React.FC = () => {
     };
 
     type FormValues = {
-        password: string;
-        confirm: string;
+        password1: string;
+        password2: string;
     }
     const onFinish = async (values: FormValues) => {
         await resetPassword({
             variables: {
                 userId: params.userId,
                 token: params.token,
-                password: values.password
+                password: values.password1
             }
         });
     };
@@ -98,7 +98,7 @@ const ResetPasswordPage: React.FC = () => {
                 onFieldsChange={onChange}
             >
                 <Form.Item
-                    name="password"
+                    name="password1"
                     rules={PASSWORD_VALIDATION_RULES}
                     hasFeedback
                 >
@@ -106,8 +106,8 @@ const ResetPasswordPage: React.FC = () => {
                                     placeholder="Password"/>
                 </Form.Item>
                 <Form.Item
-                    name="confirm"
-                    dependencies={["password" as NamePath]}
+                    name="password2"
+                    dependencies={["password1" as NamePath]}
                     rules={CONFIRM_PASSWORD_VALIDATION_RULES}
                     hasFeedback
                 >
@@ -122,7 +122,7 @@ const ResetPasswordPage: React.FC = () => {
                             type="primary"
                             htmlType="submit"
                             disabled={
-                                !form.isFieldsTouched(["password", "confirm"], true) ||
+                                !form.isFieldsTouched(["password1", "password2"], true) ||
                                 !!form.getFieldsError().filter(({errors}) => errors.length).length
                             }
                             style={{width: "100%"}}
