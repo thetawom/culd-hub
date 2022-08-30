@@ -95,7 +95,7 @@ class SendPasswordResetEmailMixin(Output):
     def mutate(cls, root, info, **kwargs):
         try:
             email = kwargs.get("email")
-            user = User.objects.get(email=email)
+            user = User.objects.filter(email=email).first()
             if user:
                 user.send_password_reset_email(info, [email])
             return cls(success=True, errors=None)
