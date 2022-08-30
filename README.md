@@ -127,7 +127,7 @@ docker-compose down
 
 ### Running without Docker Compose
 
-Make sure you have followed the dependency installations under Getting Started.
+Make sure you have followed the dependency installation instructions under Getting Started.
 
 Move to the backend directory and clean any existing migrations.
 
@@ -144,7 +144,15 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-Load in the mock data from `scripts/data.json`.
+Alternatively, the above two steps can be automated with the `make_migrations` script. (The `-c` flag sets the option to
+clean any existing migrations.)
+
+```shell
+chmod u+x scripts/make_migrations.sh
+scripts/make_migrations.sh -c
+```
+
+If you already have mock data (e.g. `scripts/mock-data.json`), you can load it into the database.
 
 ```sh
 python manage.py loaddata scripts/data.json
@@ -165,7 +173,7 @@ python manage.py runserver
 In a separate shell, move to the frontend directory and start the frontend server.
 
 ```sh
-cd frontend && yarn && yarn start
+cd frontend && yarn start
 ```
 
 You may need to temporarily point the backend proxy used by your development server to your backend on port 8000.
