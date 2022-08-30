@@ -1,2 +1,4 @@
-export {default} from "./AuthPage";
-export * from "./AuthPage";
+export * from "./ForgotPasswordPage";
+export * from "./LoginPage";
+export * from "./ResetPasswordPage";
+export * from "./SignupPage";

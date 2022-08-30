@@ -3,10 +3,10 @@ import {Link} from "react-router-dom";
 import {Alert, Button, Form, Input} from "antd";
 import {LockOutlined, MailOutlined} from "@ant-design/icons";
 import {AuthContext, REMEMBER_EMAIL} from "../../../context/AuthContext";
-import AuthPage from "../index";
+import AuthPage from "../AuthPage";
 import {EMAIL_VALIDATION_RULES, PASSWORD_VALIDATION_RULES} from "../../../services/validation";
 
-const LoginPage: React.FC = () => {
+export const LoginPage: React.FC = () => {
 
     const {loginUser, invalidCredentials, setInvalidCredentials} =
         useContext(AuthContext);
@@ -90,5 +90,3 @@ const LoginPage: React.FC = () => {
         </AuthPage>
     );
 };
-
-export default LoginPage;

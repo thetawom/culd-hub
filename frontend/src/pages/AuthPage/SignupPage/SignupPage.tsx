@@ -17,14 +17,14 @@ import {
 import {APIInterface, handleApolloError, useMutation} from "../../../services/graphql";
 import styles from "./SignupPage.module.css";
 import {User} from "../../../context/UserContext";
-import AuthPage from "../index";
+import AuthPage from "../AuthPage";
 import {REGISTER_MUTATION} from "./queries";
 
 type RegisterType = APIInterface & {
     user: User;
 }
 
-const SignupPage = () => {
+export const SignupPage = () => {
 
     const [form] = Form.useForm();
     const navigate = useNavigate();
@@ -171,5 +171,3 @@ const SignupPage = () => {
         </AuthPage>
     );
 };
-
-export default SignupPage;

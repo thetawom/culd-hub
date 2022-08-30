@@ -1,15 +1,12 @@
 import "./App.css";
 import React from "react";
 import {Route, Routes} from "react-router-dom";
+import {ForgotPasswordPage, LoginPage, ResetPasswordPage, SignupPage} from "./pages/AuthPage";
 import ShowsPage from "./pages/shows-page/ShowsPage";
 import ProfilePage from "./pages/profile-page/ProfilePage";
-import LoginPage from "./pages/AuthPage/LoginPage/LoginPage";
-import SignupPage from "./pages/AuthPage/SignupPage/SignupPage";
 import PrivateRoutes from "./components/PrivateRoutes";
 import {AuthProvider} from "./context/AuthContext";
 import {message, Spin} from "antd";
-import ForgotPasswordPage from "./pages/AuthPage/ForgotPasswordPage/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/AuthPage/ResetPasswordPage/ResetPasswordPage";
 import Loader from "./components/Loader";
 
 

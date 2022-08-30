@@ -5,10 +5,10 @@ import {LockOutlined} from "@ant-design/icons";
 import {NamePath} from "rc-field-form/lib/interface";
 import {CONFIRM_PASSWORD_VALIDATION_RULES, PASSWORD_VALIDATION_RULES} from "../../../services/validation";
 import {APIInterface, handleApolloError, useMutation} from "../../../services/graphql";
-import AuthPage from "../index";
+import AuthPage from "../AuthPage";
 import {RESET_PASSWORD_MUTATION} from "./queries";
 
-const ResetPasswordPage: React.FC = () => {
+export const ResetPasswordPage: React.FC = () => {
     const params = useParams();
 
     const [form] = Form.useForm();
@@ -25,6 +25,7 @@ const ResetPasswordPage: React.FC = () => {
                 const error = resetPassword.errors.nonFieldErrors[0];
                 switch (error?.code) {
                     case "invalid_token":
+                        navigate("/password_reset");
                         await message.error("Sorry, your password reset link has already expired.");
                         break;
                     default:
@@ -120,5 +121,3 @@ const ResetPasswordPage: React.FC = () => {
         </AuthPage>
     );
 };
-
-export default ResetPasswordPage;

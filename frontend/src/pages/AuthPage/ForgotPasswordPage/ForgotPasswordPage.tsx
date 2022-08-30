@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import AuthPage from "../index";
+import AuthPage from "../AuthPage";
 import {Alert, Button, Form, Input, message} from "antd";
 import {EMAIL_VALIDATION_RULES, toLowerCase} from "../../../services/validation";
 import {MailOutlined} from "@ant-design/icons";
@@ -10,7 +10,7 @@ import {APIInterface, handleApolloError} from "../../../services/graphql";
 import {RESEND_PASSWORD_RESET_EMAIL_TIMEOUT_SECONDS} from "./constants";
 
 
-const ForgotPasswordPage: React.FC = () => {
+export const ForgotPasswordPage: React.FC = () => {
 
     const [form] = Form.useForm();
     const [email, setEmail] = useState(null);
@@ -128,5 +128,3 @@ const ForgotPasswordPage: React.FC = () => {
         }
     </AuthPage>);
 };
-
-export default ForgotPasswordPage;
