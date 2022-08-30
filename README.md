@@ -147,7 +147,7 @@ python manage.py migrate
 Alternatively, the above two steps can be automated with the `make_migrations` script. (The `-c` flag sets the option to
 clean any existing migrations.)
 
-```shell
+```sh
 chmod u+x scripts/make_migrations.sh
 scripts/make_migrations.sh -c
 ```
@@ -160,13 +160,19 @@ python manage.py loaddata scripts/data.json
 
 You can also choose to enter data yourself later with the admin site. In that case, create a superuser.
 
-```
+```sh
 python manage.py createsuperuser
+```
+
+Create a `.env` file from the `env.template` file provided and fill in the values.
+
+```sh
+cp core/settings/env.template core/settings/.env
 ```
 
 Start the backend server on port 8000.
 
-```
+```sh
 python manage.py runserver
 ```
 
