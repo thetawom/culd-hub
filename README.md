@@ -152,7 +152,8 @@ chmod u+x scripts/make_migrations.sh
 scripts/make_migrations.sh -c
 ```
 
-If you already have mock data (e.g. `scripts/mock-data.json`), you can load it into the database.
+If you already have [mock data](https://drive.google.com/file/d/1jxoKik3NF1UjPK-lGsHWs6NZpsmLC9n7/view?usp=sharing) (
+e.g. `scripts/mock-data.json`), you can load it into the database.
 
 ```sh
 python manage.py loaddata scripts/data.json
