@@ -12,11 +12,12 @@ const ResetPasswordPage: React.FC = () => {
     const params = useParams();
 
     const [form] = Form.useForm();
-
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const [resetPassword] = useMutation(RESET_PASSWORD_MUTATION, {
         onCompleted: async ({resetPassword}: { resetPassword: APIInterface }) => {
+            setLoading(false);
             if (resetPassword.success) {
                 navigate("/login");
                 await message.success("Password reset successfully.");
@@ -31,7 +32,9 @@ const ResetPasswordPage: React.FC = () => {
                 }
             }
         },
-        onError: handleApolloError(),
+        onError: handleApolloError(() => {
+            setLoading(false);
+        }),
     });
 
     const [invalidPassword, setInvalidPassword] = useState(false);
@@ -45,6 +48,7 @@ const ResetPasswordPage: React.FC = () => {
         password2: string;
     }
     const onFinish = async (values: FormValues) => {
+        setLoading(true);
         await resetPassword({
             variables: {
                 userId: params.userId,
@@ -102,9 +106,10 @@ const ResetPasswordPage: React.FC = () => {
                             type="primary"
                             htmlType="submit"
                             disabled={
-                                !form.isFieldsTouched(["password1", "password2"], true) ||
-                                !!form.getFieldsError().filter(({errors}) => errors.length).length
+                                !form.isFieldsTouched(["password1", "password2"], true)
+                                || !!form.getFieldsError().filter(({errors}) => errors.length).length
                             }
+                            loading={loading}
                             style={{width: "100%"}}
                         >
                             Reset my password

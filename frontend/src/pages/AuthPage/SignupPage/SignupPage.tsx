@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {Button, Form, Input, message} from "antd";
 import {NamePath} from "rc-field-form/lib/interface";
@@ -25,12 +25,14 @@ type RegisterType = APIInterface & {
 }
 
 const SignupPage = () => {
-    const [form] = Form.useForm();
 
+    const [form] = Form.useForm();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const [createUser] = useMutation(REGISTER_MUTATION, {
         onCompleted: async ({register}: { register: RegisterType }) => {
+            setLoading(false);
             if (register.success) {
                 localStorage.setItem(REMEMBER_EMAIL, register.user.email);
                 navigate("/login");
@@ -44,7 +46,9 @@ const SignupPage = () => {
                 form.setFields(errors);
             }
         },
-        onError: handleApolloError(),
+        onError: handleApolloError(() => {
+            setLoading(false);
+        }),
     });
 
     type FormValues = {
@@ -56,6 +60,7 @@ const SignupPage = () => {
         phone: string;
     }
     const onFinish = async (values: FormValues) => {
+        setLoading(true);
         await createUser({
             variables: {
                 email: values.email,
@@ -156,6 +161,7 @@ const SignupPage = () => {
                                 !form.isFieldsTouched(["firstName", "lastName", "email", "password1", "password2"], true) ||
                                 !!form.getFieldsError().filter(({errors}) => errors.length).length
                             }
+                            loading={loading}
                         >
                             Register
                         </Button>
