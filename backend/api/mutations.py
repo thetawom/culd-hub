@@ -1,6 +1,6 @@
 import graphene
 
-from show_manager.models import Show, Member, Role
+from shows.models import Show, Member, Role
 from users.mixins import (
     SendPasswordResetEmailMixin,
     LogoutUserMixin,

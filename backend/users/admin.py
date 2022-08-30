@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from show_manager.admin import MemberInlineAdmin
+from shows.admin import MemberInlineAdmin
 from .models import User
 
 

@@ -8,7 +8,7 @@ from graphql_jwt.decorators import login_required
 
 from api.bases import Output
 from api.types import UserType
-from show_manager.forms import MemberForm
+from shows.forms import MemberForm
 from .constants import Messages
 from .exceptions import TokenScopeError, EmailAlreadyInUse
 from .forms import RegisterForm, UpdateUserForm

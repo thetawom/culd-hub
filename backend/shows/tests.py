@@ -72,7 +72,7 @@ class TestMemberModel(TestCase):
 
 class TestShowModel(TestCase):
     def setUp(self):
-        with patch("show_manager.slack.slack_boss") as mock_slack_boss:
+        with patch("shows.slack.slack_boss") as mock_slack_boss:
             mock_slack_boss.create_channel.return_value = {
                 "ok": True,
                 "channel": {"id": 1},

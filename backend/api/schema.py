@@ -6,7 +6,7 @@ from django.dispatch import receiver
 from graphql_jwt.decorators import login_required, staff_member_required
 from graphql_jwt.refresh_token.signals import refresh_token_rotated
 
-from show_manager.models import (
+from shows.models import (
     Member,
     Show,
     SCHOOL_CHOICES,
