@@ -1,9 +1,8 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save, post_delete, pre_save
+from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
 from django.dispatch import receiver
-from slack_sdk.errors import SlackApiError
 
 from ..decorators import disable_for_loaddata
 from ..models import Member, Round, Show
@@ -42,80 +41,32 @@ def clean_show(sender, instance, **kwargs):
     instance.full_clean()
 
 
-# Should be for modifying channel info?
 @receiver(pre_save, sender=Show)
 @disable_for_loaddata
-def check_channel(sender, instance, **kwargs):
-    if not kwargs.get("created", True):
-        prev = Show.objects.get(id=instance.id)
-        if not prev.channel.id != instance.channel.id:
-            pass
-
-
-# Should be for initially creating a channel
-@receiver(post_save, sender=Show)
-@disable_for_loaddata
-def create_channel_for_show(sender, instance, **kwargs):
-    if instance.is_published and instance.channel is None:
-        logger.info(f"Creating channel for {instance} ...")
-        try:
+def create_or_update_channel_for_show(sender, instance, **kwargs):
+    prev_instance = Show.objects.filter(pk=instance.pk).first()
+    if instance.is_published:
+        if not hasattr(instance, "channel"):
             slack_boss.create_channel(instance)
-            slack_boss.send_briefing(instance)
-        except SlackApiError as error:
-            logger.info(f"Failed to create channel: {error}")
+        if hasattr(instance, "channel"):
+            if prev_instance and (
+                instance.name != prev_instance.name
+                or instance.date != prev_instance.date
+            ):
+                slack_boss.rename_channel(instance)
+            update_fields = [
+                field
+                for field in ["date", "time", "address", "lions"]
+                if getattr(instance, field) != getattr(prev_instance, field)
+            ]
+            slack_boss.send_or_update_briefing(instance, update_fields)
+    else:
+        if hasattr(instance, "channel"):
+            slack_boss.archive_channel(instance)
 
 
-# @disable_for_loaddata
-# @receiver(post_save, sender=Show)
-# def create_channel_for_show(sender, instance, **kwargs):
-#     print("KWARGS: ", kwargs.get("raw"))
-#     print("KWARGS: ", kwargs.get("created"))
-#     # Still doesn't work, need to figure out disable for loaddata
-#     # if (kwargs.get("created", True)) and not kwargs.get("raw", False):
-#     slack = instance.slack_boss
-#     print("NAME: ", instance.name)
-#     print("CHANNEL ID: ", instance.channel_id)
-#     if instance.is_published and instance.channel_id == "":
-#         slack.create_channel(instance)
-#         message = slack.post_show_info(instance)
-#     elif instance.channel_id != "":
-#         print("THIS RUNS")
-# slack.update_show_info(instance, message)
-# slack.update_show_info(instance)
-# elif instance.is_published and instance.channel_id != "":
-#     print(instance.channel_id)
-#     # slack.update_show_info(instance)
-# @receiver(post_save, sender=Show)
-# @disable_for_loaddata
-# def create_channel_for_show(sender, instance, **kwargs):
-#     if instance.is_published and instance.channel_id == "" and instance.time:
-#         d = instance.time.strftime("%I:%M %p")
-#         response = instance.slack_boss.create_channel(
-#             instance.name.replace(" ", "-").lower()
-#         )
-#         instance.channel_id = response["channel"]["id"]
-#         instance.save()
-#         instance.slack_boss.post_message(
-#             instance.channel_id,
-#             [
-#                 {
-#                     "type": "section",
-#                     "text": {
-#                         "text": "A message *with some bold text* and _some italicized text_.",
-#                         "type": "mrkdwn",
-#                     },
-#                     "fields": [
-#                         {"type": "mrkdwn", "text": "*Date:* " + str(instance.date)},
-#                         {"type": "mrkdwn", "text": "*Time:* " + d},
-#                         {
-#                             "type": "mrkdwn",
-#                             "text": "*Point Person:* " + str(instance.point),
-#                         },
-#                         {
-#                             "type": "mrkdwn",
-#                             "text": "*Lions:* " + str(instance.lions),
-#                         },
-#                     ],
-#                 }
-#             ],
-#         )
+@receiver(pre_delete, sender=Show)
+@disable_for_loaddata
+def delete_channel_for_show(sender, instance, **kwargs):
+    if hasattr(instance, "channel"):
+        slack_boss.archive_channel(instance)

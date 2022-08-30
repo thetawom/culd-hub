@@ -1,3 +1,5 @@
+import re
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -74,7 +76,9 @@ class Show(models.Model):
         max_length=80, blank=True, help_text="Venue name or room number if on campus"
     )
     is_campus = models.BooleanField(verbose_name="On Campus", default=False)
-    lions = models.PositiveSmallIntegerField(null=True, blank=True)
+    lions = models.PositiveSmallIntegerField(
+        null=True, blank=True, verbose_name="Number of lions"
+    )
 
     point = models.ForeignKey(
         "Member",
@@ -133,6 +137,12 @@ class Show(models.Model):
     def num_performers(self):
         return self.performers.count()
 
+    @admin.display(description="Slack")
+    def has_slack_channel(self):
+        return hasattr(self, "channel")
+
+    has_slack_channel.boolean = True
+
     def __str__(self):
         return self.name
 
@@ -141,6 +151,12 @@ class Show(models.Model):
             raise ValidationError(
                 {"is_published": _("Cannot publish show until date is set.")}
             )
+
+    def __iter__(self):
+        for field_name in self._meta.fields:
+            field_name = str(field_name).split(".")[-1]
+            value = getattr(self, field_name, None)
+            yield field_name, value
 
 
 class Round(models.Model):
@@ -184,3 +200,12 @@ class Channel(models.Model):
     id = models.CharField(primary_key=True, max_length=60, unique=True)
     show = models.OneToOneField(Show, on_delete=models.CASCADE, related_name="channel")
     briefing_timestamp = models.CharField(max_length=24)
+
+    @staticmethod
+    def get_channel_name(show):
+        name = re.sub(r"[^\w\s]", "", show.name)
+        date = show.date.strftime("%m-%d") if show.date else "TBD"
+        return f"{date}-{name.replace(' ', '-').lower()}"
+
+    def __str__(self):
+        return self.get_channel_name(self.show)
