@@ -1,20 +1,22 @@
 import React, {useContext, useState} from "react";
 import {Divider, Form, Input, Layout, Select, Space, Typography} from "antd";
 import {MailOutlined, PhoneOutlined, SmileOutlined, UserOutlined} from "@ant-design/icons";
-import UserContext from "../../context/UserContext";
+import {UserContext} from "../../context/UserContext";
 import Header from "../../components/Header";
 import ProfileItem from "./ProfileItem";
-import {gql} from "@apollo/client";
 import Loader from "../../components/Loader";
-import useAuthQuery from "../../utils/hooks/useAuthQuery";
+import {useAuthQuery} from "../../services/graphql";
 import {
     EMAIL_VALIDATION_RULES,
     FIRST_NAME_VALIDATION_RULES,
+    formatPhoneNumber,
     LAST_NAME_VALIDATION_RULES,
-    PHONE_VALIDATION_RULES
-} from "../../utils/validate.utils";
-import {formatPhoneNumber, toLowerCase, toTitleCase} from "../../utils/normalize.utils";
+    PHONE_VALIDATION_RULES,
+    toLowerCase,
+    toTitleCase
+} from "../../services/validation/";
 import styles from "./ProfilePage.module.css";
+import {gql} from "@apollo/client";
 
 
 const GET_SCHOOL_CHOICES_QUERY = gql`

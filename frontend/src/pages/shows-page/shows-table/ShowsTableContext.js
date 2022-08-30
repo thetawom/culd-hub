@@ -1,12 +1,9 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {message} from "antd";
-import {gql} from "@apollo/client";
-import useAuthMutation from "../../../utils/hooks/useAuthMutation";
-import AuthContext from "../../../context/AuthContext";
-import useAuthLazyQuery from "../../../utils/hooks/useAuthLazyQuery";
-import useAuthQuery from "../../../utils/hooks/useAuthQuery";
 import PropTypes from "prop-types";
-import {onApolloError} from "../../../utils/graphql.utils";
+import {handleApolloError, useAuthLazyQuery, useAuthMutation, useAuthQuery} from "../../../services/graphql";
+import {AuthContext} from "../../../context/AuthContext";
+import {gql} from "@apollo/client";
 
 const GET_SHOWS_QUERY = gql`
 	{
@@ -122,7 +119,10 @@ export const ShowsTableProvider = ({children}) => {
     });
 
     useEffect(() => {
-        getShows();
+        const fetchShows = async () => {
+            await getShows();
+        };
+        fetchShows().catch(console.error);
     }, [needsRefresh, getShows]);
 
     let [createRole] = useAuthMutation(CREATE_ROLE_MUTATION, {
@@ -133,12 +133,12 @@ export const ShowsTableProvider = ({children}) => {
             } : {...show}));
             await message.success(`Signed up for ${createRole.role.show.name}`);
         },
-        onError: onApolloError,
+        onError: handleApolloError,
     });
 
-    let addToShowRoster = (id) => {
+    let addToShowRoster = async (id) => {
         if (shows.find((show) => show.id === id).isOpen) {
-            createRole({
+            await createRole({
                 variables: {
                     showId: id,
                 },
@@ -154,12 +154,12 @@ export const ShowsTableProvider = ({children}) => {
             } : {...show}));
             await message.success(`Removed from ${deleteRole.role.show.name}`);
         },
-        onError: onApolloError,
+        onError: handleApolloError,
     });
 
-    let removeFromShowRoster = (id) => {
+    let removeFromShowRoster = async (id) => {
         if (shows.find((show) => show.id === id).isOpen) {
-            deleteRole({
+            await deleteRole({
                 variables: {
                     showId: id,
                 },
@@ -184,5 +184,5 @@ export const ShowsTableProvider = ({children}) => {
 };
 
 ShowsTableProvider.propTypes = {
-    children: PropTypes.element,
+    children: PropTypes.arrayOf(PropTypes.element),
 };

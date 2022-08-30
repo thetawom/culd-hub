@@ -1,11 +1,10 @@
 import React, {useState} from "react";
 import {Button, Card, Form, Input, message} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
-import {ApolloError, gql} from "@apollo/client";
-import useAuthMutation from "../../utils/hooks/useAuthMutation";
 import styles from "./ProfileItem.module.css";
-import {onApolloError} from "../../utils/graphql.utils";
-import {APIInterface, UserType} from "../../interfaces/api.interface";
+import {APIInterface, handleApolloError, useAuthMutation} from "../../services/graphql";
+import {User} from "../../context/UserContext";
+import {gql} from "@apollo/client";
 
 const UPDATE_PROFILE_MUTATION = gql`
     mutation UpdateProfile (
@@ -53,7 +52,7 @@ interface Props {
 }
 
 type UpdateProfileType = APIInterface & {
-    user: UserType;
+    user: User;
 }
 
 const ProfileItem: React.FC<Props> = ({
@@ -77,10 +76,9 @@ const ProfileItem: React.FC<Props> = ({
                 await message.error(errors[Object.keys(errors)[0]][0].message);
             }
         },
-        onError: async (error: ApolloError) => {
+        onError: handleApolloError(() => {
             setEditing(false);
-            await onApolloError(error);
-        },
+        }),
     });
 
     const onSubmit = async (formValues: StringDict) => {

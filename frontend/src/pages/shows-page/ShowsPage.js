@@ -1,7 +1,7 @@
 import React, {useContext} from "react";
 import {Divider, Layout, Typography} from "antd";
 import {AppstoreAddOutlined} from "@ant-design/icons";
-import UserContext from "../../context/UserContext";
+import {UserContext} from "../../context/UserContext";
 import Header from "../../components/Header";
 import ShowsTable from "./shows-table/ShowsTable";
 import {ShowsTableProvider} from "./shows-table/ShowsTableContext";
