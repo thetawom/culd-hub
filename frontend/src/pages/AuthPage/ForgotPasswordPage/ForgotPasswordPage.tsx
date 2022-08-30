@@ -5,23 +5,25 @@ import {EMAIL_VALIDATION_RULES, toLowerCase} from "../../../services/validation"
 import {MailOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
 import {useMutation} from "@apollo/client";
-import {SEND_PASSWORD_RESET_EMAIL_MUTATION} from "./constants";
+import {SEND_PASSWORD_RESET_EMAIL_MUTATION} from "./queries";
 import {APIInterface, handleApolloError} from "../../../services/graphql";
+import {RESEND_PASSWORD_RESET_EMAIL_TIMEOUT_SECONDS} from "./constants";
 
 
 const ForgotPasswordPage: React.FC = () => {
 
     const [form] = Form.useForm();
-
     const [email, setEmail] = useState(null);
-
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [resendTimeoutSeconds, setResendTimeoutSeconds] = useState(0);
 
     const [sendPasswordResetEmail] = useMutation(SEND_PASSWORD_RESET_EMAIL_MUTATION, {
             onCompleted: async ({sendPasswordResetEmail}: { sendPasswordResetEmail: APIInterface }) => {
+                setLoading(false);
                 if (sendPasswordResetEmail.success) {
                     setSubmitted(true);
-                    setResendTimeout(59);
+                    setResendTimeoutSeconds(RESEND_PASSWORD_RESET_EMAIL_TIMEOUT_SECONDS);
                 } else {
                     console.log(sendPasswordResetEmail.errors);
                     await message.error("Sorry, there was an error sending your password reset email");
@@ -29,17 +31,17 @@ const ForgotPasswordPage: React.FC = () => {
                     setSubmitted(false);
                 }
             },
-            onError: handleApolloError()
+            onError: handleApolloError(() => {
+                setLoading(false);
+            })
         }
     );
 
-    const [resendTimeout, setResendTimeout] = useState(0);
-
     useEffect(() => {
-        if (resendTimeout > 0) {
-            setTimeout(() => setResendTimeout(resendTimeout - 1), 1000);
+        if (resendTimeoutSeconds > 0) {
+            setTimeout(() => setResendTimeoutSeconds(resendTimeoutSeconds - 1), 1000);
         }
-    }, [resendTimeout]);
+    }, [resendTimeoutSeconds]);
 
     type FormValues = {
         email: string; password: string; firstName: string; lastName: string; phone: string;
@@ -50,6 +52,7 @@ const ForgotPasswordPage: React.FC = () => {
     };
 
     const submitEmail = async (email: string) => {
+        setLoading(true);
         await sendPasswordResetEmail({
             variables: {
                 email: email,
@@ -77,9 +80,10 @@ const ForgotPasswordPage: React.FC = () => {
                     <Button
                         onClick={() => submitEmail(email)}
                         style={{width: "100%"}}
-                        disabled={resendTimeout > 0}
+                        disabled={loading || resendTimeoutSeconds > 0}
+                        loading={loading}
                     >
-                        {resendTimeout > 0 ? `Resend reset link in ${resendTimeout} seconds` : "Resend reset link"}
+                        {resendTimeoutSeconds > 0 ? `Resend reset link in ${resendTimeoutSeconds} seconds` : "Resend reset link"}
                     </Button>
                 </Form.Item>
             </> :
@@ -108,10 +112,13 @@ const ForgotPasswordPage: React.FC = () => {
                         {() => (<Button
                             type="primary"
                             htmlType="submit"
-                            disabled={!form.isFieldsTouched(["email"], true)
-                                || !!form.getFieldsError().filter(({errors}) => errors.length).length}
+                            disabled={
+                                loading
+                                || !form.isFieldsTouched(["email"], true)
+                                || !!form.getFieldsError().filter(({errors}) => errors.length).length
+                            }
                             style={{width: "100%"}}
-                            loading={!!email}
+                            loading={loading}
                         >
                             Reset my password
                         </Button>)}

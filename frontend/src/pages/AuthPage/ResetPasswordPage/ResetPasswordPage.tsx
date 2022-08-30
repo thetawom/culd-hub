@@ -6,7 +6,7 @@ import {NamePath} from "rc-field-form/lib/interface";
 import {CONFIRM_PASSWORD_VALIDATION_RULES, PASSWORD_VALIDATION_RULES} from "../../../services/validation";
 import {APIInterface, handleApolloError, useMutation} from "../../../services/graphql";
 import AuthPage from "../index";
-import {RESET_PASSWORD_MUTATION} from "./constants";
+import {RESET_PASSWORD_MUTATION} from "./queries";
 
 const ResetPasswordPage: React.FC = () => {
     const params = useParams();

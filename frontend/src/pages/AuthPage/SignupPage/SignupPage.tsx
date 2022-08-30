@@ -18,7 +18,7 @@ import {APIInterface, handleApolloError, useMutation} from "../../../services/gr
 import styles from "./SignupPage.module.css";
 import {User} from "../../../context/UserContext";
 import AuthPage from "../index";
-import {REGISTER_MUTATION} from "./constants";
+import {REGISTER_MUTATION} from "./queries";
 
 type RegisterType = APIInterface & {
     user: User;
