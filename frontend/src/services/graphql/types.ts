@@ -7,3 +7,7 @@ type APIError = {
     message: string,
     code: string
 }
+
+export type QueryResult = {
+    loading: boolean
+}

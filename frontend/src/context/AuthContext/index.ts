@@ -1,2 +1,2 @@
-export * from "./AuthContext";
+export * from "./context";
 export {REMEMBER_EMAIL} from "./constants";
