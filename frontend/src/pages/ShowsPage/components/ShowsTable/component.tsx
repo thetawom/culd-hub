@@ -6,12 +6,15 @@ import ShowsTableContext from "../../context/ShowsTableContext";
 import ShowDetails from "../ShowDetails";
 import {OPTIONS_ENUM} from "../ShowsTableControls";
 import PropTypes from "prop-types";
+import {User} from "../../../../types/types";
 
-let customParseFormat = require("dayjs/plugin/customParseFormat");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
-const ShowsTable = ({user}) => {
-    let {
+const ShowsTable = ({user}: { user: User }) => {
+    
+    const {
         shows,
         showPriorityChoices,
         openFilter,
@@ -211,7 +214,7 @@ const ShowsTable = ({user}) => {
         },];
 
     const isPerforming = (show) => {
-        for (let performer of show.performers) {
+        for (const performer of show.performers) {
             if (performer.user.id === user.id) return true;
         }
         return false;

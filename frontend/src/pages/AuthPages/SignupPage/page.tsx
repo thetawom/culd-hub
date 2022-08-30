@@ -16,9 +16,9 @@ import {
 } from "../../../services/validation";
 import {APIInterface, handleApolloError, useMutation} from "../../../services/graphql";
 import styles from "./style.module.css";
-import {User} from "../../../context/UserContext";
 import AuthPage from "../template";
 import {REGISTER_MUTATION} from "./queries";
+import {User} from "../../../types/types";
 
 type RegisterType = APIInterface & {
     user: User;

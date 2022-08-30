@@ -3,7 +3,7 @@ import Loader from "../../components/Loader";
 import {QueryResult, useAuthQuery} from "../../services/graphql/";
 import {AuthContext} from "../AuthContext";
 import {GET_ME_QUERY} from "./constants";
-import {User} from "./types";
+import {User} from "../../types/types";
 
 export const UserContext = createContext(undefined);
 

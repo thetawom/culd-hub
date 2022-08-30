@@ -6,9 +6,11 @@ import Header from "../../components/Header";
 import ShowsTable from "./components/ShowsTable";
 import {ShowsTableProvider} from "./context/ShowsTableContext";
 import ShowsTableControls from "./components/ShowsTableControls";
+import {User} from "../../types/types";
 
 const ShowsPage = () => {
-    let {user} = useContext(UserContext);
+
+    const {user}: { user: User } = useContext(UserContext);
 
     return (
         <Layout>

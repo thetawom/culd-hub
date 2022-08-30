@@ -3,8 +3,8 @@ import {Button, Card, Form, Input, message} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 import styles from "./style.module.css";
 import {APIInterface, handleApolloError, useAuthMutation} from "../../../../services/graphql";
-import {User} from "../../../../context/UserContext";
 import {UPDATE_PROFILE_MUTATION} from "../../queries";
+import {User} from "../../../../types/types";
 
 
 type StringDict = { [index: string]: string }

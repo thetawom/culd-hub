@@ -5,7 +5,8 @@ import ShowsTableContext from "../../context/ShowsTableContext";
 import {OPTIONS_ENUM} from "./constants";
 
 const ShowsTableControls = () => {
-    let {openFilter, setOpenFilter, setNeedsRefresh} =
+    
+    const {openFilter, setOpenFilter, setNeedsRefresh} =
         useContext(ShowsTableContext);
 
     return (
