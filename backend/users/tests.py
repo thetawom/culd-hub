@@ -1,6 +1,6 @@
+from django.contrib.admin.sites import AdminSite
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from django.contrib.admin.sites import AdminSite
 
 from .admin import UserAdmin
 from .models import User

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "graphene_django",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "users.apps.UsersConfig",
-    "shows.apps.ShowManagerConfig",
+    "shows.apps.ShowsConfig",
     "coverage",
 ]
 
