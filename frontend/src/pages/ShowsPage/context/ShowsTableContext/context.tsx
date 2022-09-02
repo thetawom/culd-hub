@@ -3,6 +3,8 @@ import {message} from "antd";
 import {handleApolloError, useAuthLazyQuery, useAuthMutation, useAuthQuery} from "../../../../services/graphql";
 import {AuthContext} from "../../../../context/AuthContext";
 import {CREATE_ROLE_MUTATION, DELETE_ROLE_MUTATION, GET_SHOW_PRIORITY_CHOICES_QUERY, GET_SHOWS_QUERY} from "./queries";
+import {Show} from "../../../../types/types";
+import {ShowContextInterface} from "./types";
 
 const ShowsTableContext = createContext(undefined);
 
@@ -15,7 +17,7 @@ interface Props {
 export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
     const {logoutUser} = useContext(AuthContext);
 
-    const [shows, setShows] = useState([]);
+    const [shows, setShows] = useState<Show[]>([]);
 
     const [showPriorityChoices, setShowPriorityChoices] = useState(null);
     useAuthQuery(GET_SHOW_PRIORITY_CHOICES_QUERY, {
@@ -24,8 +26,8 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
         },
     });
 
-    const [openFilter, setOpenFilter] = useState("Open");
-    const [needsRefresh, setNeedsRefresh] = useState(true);
+    const [openFilter, setOpenFilter] = useState<string>("Open");
+    const [needsRefresh, setNeedsRefresh] = useState<boolean>(true);
 
     const [getShows] = useAuthLazyQuery(GET_SHOWS_QUERY, {
         onCompleted: ({shows}) => {
@@ -55,8 +57,8 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
         onError: handleApolloError(),
     });
 
-    const addToShowRoster = async (id) => {
-        if (shows.find((show) => show.id === id).isOpen) {
+    const addToShowRoster = async (id: number) => {
+        if (shows.find((show: Show) => show.id === id).isOpen) {
             await createRole({
                 variables: {
                     showId: id,
@@ -67,7 +69,7 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
 
     const [deleteRole] = useAuthMutation(DELETE_ROLE_MUTATION, {
         onCompleted: async ({deleteRole}) => {
-            setShows(shows.map((show) => show.id === deleteRole.role.show.id ? {
+            setShows(shows.map((show: Show) => show.id === deleteRole.role.show.id ? {
                 ...show,
                 performers: show.performers.filter((performer) => performer.user.id !== deleteRole.role.performer.user.id),
             } : {...show}));
@@ -76,8 +78,8 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
         onError: handleApolloError(),
     });
 
-    const removeFromShowRoster = async (id) => {
-        if (shows.find((show) => show.id === id).isOpen) {
+    const removeFromShowRoster = async (id: number) => {
+        if (shows.find((show: Show) => show.id === id).isOpen) {
             await deleteRole({
                 variables: {
                     showId: id,
@@ -86,7 +88,7 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
         }
     };
 
-    const contextData = {
+    const contextData: ShowContextInterface = {
         shows: shows,
         showPriorityChoices: showPriorityChoices,
         openFilter: openFilter,

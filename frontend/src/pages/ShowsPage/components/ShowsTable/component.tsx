@@ -5,15 +5,15 @@ import dayjs from "dayjs";
 import ShowsTableContext from "../../context/ShowsTableContext";
 import ShowDetails from "../ShowDetails";
 import {OPTIONS_ENUM} from "../ShowsTableControls";
-import PropTypes from "prop-types";
-import {User} from "../../../../types/types";
+import {Contact, Member, Round, Show, User} from "../../../../types/types";
+import {ShowContextInterface} from "../../context/ShowsTableContext/types";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
 const ShowsTable = ({user}: { user: User }) => {
-    
+
     const {
         shows,
         showPriorityChoices,
@@ -21,14 +21,14 @@ const ShowsTable = ({user}: { user: User }) => {
         needsRefresh,
         addToShowRoster,
         removeFromShowRoster,
-    } = useContext(ShowsTableContext);
+    }: ShowContextInterface = useContext(ShowsTableContext);
 
     const columns = [{
         title: "",
         key: "check",
-        render: (_, {id, performers, isOpen}) => (
+        render: (_, show: Show) => (
             <div style={{marginLeft: "10px", marginRight: "10px"}}>
-                {performers
+                {show.performers
                     .map((performer) => performer.user.id)
                     .includes(user.id) ? (<Button
                     size="small"
@@ -36,16 +36,16 @@ const ShowsTable = ({user}: { user: User }) => {
                         paddingLeft: "5px", paddingRight: "5px",
                     }}
                     type="primary"
-                    onClick={() => removeFromShowRoster(id)}
-                    disabled={!isOpen}
+                    onClick={() => removeFromShowRoster(show.id)}
+                    disabled={!show.isOpen}
                 >
                     <StarFilled/>
-                </Button>) : isOpen ? (<Button
+                </Button>) : show.isOpen ? (<Button
                     size="small"
                     style={{
                         paddingLeft: "5px", paddingRight: "5px",
                     }}
-                    onClick={() => addToShowRoster(id)}
+                    onClick={() => addToShowRoster(show.id)}
                 >
                     <PlusOutlined/>
                 </Button>) : null}
@@ -61,13 +61,13 @@ const ShowsTable = ({user}: { user: User }) => {
 				</span>),
         dataIndex: "priority",
         key: "priority",
-        render: (priority, {isOpen}) => {
+        render: (priority: string, show: Show) => {
             return (<Tag
-                color={!isOpen ? "purple" : priority === "F" ? "geekblue" : priority === "N" ? "green" : "red"}
+                color={!show.isOpen ? "purple" : priority === "F" ? "geekblue" : priority === "N" ? "green" : "red"}
                 key={priority}
                 style={{width: "5.5em", textAlign: "center"}}
             >
-                {(!isOpen ? "closed" : showPriorityChoices[priority] ?? priority).toUpperCase()}
+                {(!show.isOpen ? "closed" : showPriorityChoices[priority] ?? priority).toUpperCase()}
             </Tag>);
         },
         width: "4%",
@@ -75,7 +75,7 @@ const ShowsTable = ({user}: { user: User }) => {
         title: "Show Name",
         dataIndex: "name",
         key: "name",
-        render: (name, show) => {
+        render: (name: string, show: Show) => {
             return (<>
                 <span style={{fontSize: "1.05em"}}>{name}</span>
                 <Tooltip
@@ -99,13 +99,13 @@ const ShowsTable = ({user}: { user: User }) => {
         title: "Date",
         dataIndex: "date",
         key: "date",
-        render: (date) => (date ? dayjs(date).format("ddd, MMM DD") : ""),
+        render: (date: string) => (date ? dayjs(date).format("ddd, MMM DD") : ""),
         sorter: (a, b) => a.date.localeCompare(b.date),
     }, {
         title: "Time",
         dataIndex: "rounds",
         key: "rounds",
-        render: (rounds) => rounds.map(({id, time}) => (<div key={id}>
+        render: (rounds: Round[]) => rounds.map(({id, time}: Round) => (<div key={id}>
             {time ? dayjs(time, "HH:mm:ss").format("h:mm A") : ""}
         </div>)),
         sorter: (a, b) => a.time.localeCompare(b.time),
@@ -120,7 +120,7 @@ const ShowsTable = ({user}: { user: User }) => {
         dataIndex: "lions",
         key: "lions",
         width: "5%",
-        render: (lions) => (<span
+        render: (lions: number) => (<span
             style={{
                 textAlign: "center", width: "100%", display: "inline-block",
             }}
@@ -133,7 +133,7 @@ const ShowsTable = ({user}: { user: User }) => {
             title: "Contact",
             dataIndex: "contact",
             key: "contact",
-            render: (contact) => contact && (<>
+            render: (contact: Contact) => contact && (<>
                 <Tooltip
                     title={contact.phone ? contact.phone.replace(/(\+1)(\d{3})(\d{3})(\d{4})/, "($2) $3-$4") : contact.email ? contact.email : null}
                     placement="bottom"
@@ -171,13 +171,13 @@ const ShowsTable = ({user}: { user: User }) => {
 				</span>),
             dataIndex: "performers",
             key: "performers",
-            render: (performers, {lions, point}) => (
+            render: (performers: Member[], show: Show) => (
                 <div style={{display: "flex", justifyContent: "space-between"}}>
                     <Space wrap>
                         {performers
                             .slice()
                             .sort((a, b) => {
-                                return a.user.id === point?.user.id ? -1 : b.user.id === point?.user.id ? 1 : a.user.firstName.localeCompare(b.user.firstName);
+                                return a.user.id === show.point?.user.id ? -1 : b.user.id === show.point?.user.id ? 1 : a.user.firstName.localeCompare(b.user.firstName);
                             })
                             .map((performer) => (<Tooltip
                                 title={`${performer.user.firstName} ${performer.user.lastName}`}
@@ -190,7 +190,7 @@ const ShowsTable = ({user}: { user: User }) => {
                                         marginRight: "0px",
                                         cursor: "pointer"
                                     }}
-                                    color={performer.user.id === point?.user.id ? "volcano" : null}
+                                    color={performer.user.id === show.point?.user.id ? "volcano" : null}
                                 >
                                     {performer.user.firstName}
                                 </Tag>
@@ -198,7 +198,7 @@ const ShowsTable = ({user}: { user: User }) => {
                     </Space>
                     <Progress
                         type="circle"
-                        percent={Math.round((performers.length / (lions * 2 + 2)) * 100)}
+                        percent={Math.round((performers.length / (show.lions * 2 + 2)) * 100)}
                         format={() => `${performers.length}`}
                         width={32}
                         style={{
@@ -213,7 +213,7 @@ const ShowsTable = ({user}: { user: User }) => {
             width: "35%",
         },];
 
-    const isPerforming = (show) => {
+    const isPerforming = (show: Show) => {
         for (const performer of show.performers) {
             if (performer.user.id === user.id) return true;
         }
@@ -234,11 +234,8 @@ const ShowsTable = ({user}: { user: User }) => {
         rowKey="id"
         size="middle"
         loading={needsRefresh}
+        pagination={false}
     />;
-};
-
-ShowsTable.propTypes = {
-    user: PropTypes.object,
 };
 
 export default ShowsTable;
