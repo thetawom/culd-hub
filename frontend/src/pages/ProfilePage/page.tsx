@@ -1,5 +1,5 @@
 import React, {useContext, useState} from "react";
-import {Divider, Form, Input, Layout, Select, Space, Typography} from "antd";
+import {Divider, Form, Input, Layout, Row, Select, Space, Typography} from "antd";
 import {MailOutlined, PhoneOutlined, SmileOutlined, UserOutlined} from "@ant-design/icons";
 import {UserContext} from "../../context/UserContext";
 import Header from "../../components/Header";
@@ -51,14 +51,14 @@ const ProfilePage = () => {
         <Layout>
             <Header/>
             <Layout.Content className={styles.content}>
-                <Space className={styles.headingSpace} align="baseline">
-                    <Typography.Title level={2}>
+                <Row className={styles.heading} justify="space-between" align="bottom">
+                    <Typography.Title className={styles.title} level={2}>
                         <SmileOutlined className={styles.icon}/>Member Profile
                     </Typography.Title>
-                    <Typography className={styles.membershipText}>
+                    <Typography className={styles.subtitle}>
                         {membershipChoices ? membershipChoices[user.member.membership] : ""}
                     </Typography>
-                </Space>
+                </Row>
                 <Divider className={styles.divider}/>
                 <Space className={styles.profileItemSpace} direction="vertical">
                     <ProfileItem

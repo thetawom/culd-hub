@@ -14,3 +14,7 @@
     margin-top: 2px;
     margin-bottom: 10px;
 }
+
+.ant-table-content {
+    overflow: scroll;
+}

@@ -1,25 +1,39 @@
 .content {
-    width: 40%;
     margin: auto;
     padding: 30px;
 }
 
-.headingSpace {
-    width: 100%;
-    justify-content: space-between;
+@media only screen and (max-width: 600px) {
+    .content {
+        width: 100%;
+    }
 }
 
-.headingSpace h2 {
+@media only screen and (min-width: 768px) {
+    .content {
+        width: 80%;
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .content {
+        width: 50%;
+    }
+}
+
+.heading .title {
     margin-bottom: 0;
+    margin-right: 20px;
 }
 
-.headingSpace .icon {
+.heading .icon {
     font-size: 0.9em;
     margin-right: 0.4em;
 }
 
-.headingSpace .membershipText {
+.heading .subtitle {
     color: gray;
+    margin-bottom: 0;
 }
 
 .divider {

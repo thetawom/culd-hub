@@ -5,12 +5,12 @@ import ShowsTableContext from "../../context/ShowsTableContext";
 import {OPTIONS_ENUM} from "./constants";
 
 const ShowsTableControls = () => {
-    
+
     const {openFilter, setOpenFilter, setNeedsRefresh} =
         useContext(ShowsTableContext);
 
     return (
-        <Space style={{marginTop: "auto"}}>
+        <Space style={{marginTop: "1em", overflow: "scroll"}}>
             <Tooltip title="Refetch shows" placement="bottom">
                 <Button onClick={() => setNeedsRefresh(true)}>
                     <SyncOutlined/>
