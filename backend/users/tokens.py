@@ -1,7 +1,7 @@
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core import signing
 
-from .exceptions import TokenScopeError
+from users.exceptions import TokenScopeError
 
 
 class TokenAction(object):

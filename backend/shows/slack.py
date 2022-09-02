@@ -5,8 +5,8 @@ from django.conf import settings
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from .decorators import requires_slack_channel
-from .models import Channel, Show
+from common.decorators import requires_slack_channel
+from shows.models import Channel, Show
 
 logger = logging.getLogger(__name__)
 

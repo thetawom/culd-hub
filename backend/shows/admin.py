@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Show, Round, Member, Contact, Role, Channel
+from shows.models import Show, Round, Member, Contact, Role, Channel
 
 
 class RoundInlineAdmin(admin.TabularInline):

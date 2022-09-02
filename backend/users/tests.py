@@ -1,9 +1,11 @@
 from django.contrib.admin.sites import AdminSite
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from .admin import UserAdmin
-from .models import User
+from users.admin import UserAdmin
+
+User = get_user_model()
 
 
 class TestUserModel(TestCase):

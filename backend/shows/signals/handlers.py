@@ -4,9 +4,9 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
 from django.dispatch import receiver
 
-from ..decorators import disable_for_loaddata
-from ..models import Member, Round, Show
-from ..slack import slack_boss
+from common.decorators import disable_for_loaddata
+from shows.models import Member, Round, Show
+from shows.slack import slack_boss
 
 logger = logging.getLogger(__name__)
 

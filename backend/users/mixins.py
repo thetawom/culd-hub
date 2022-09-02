@@ -1,6 +1,7 @@
 from smtplib import SMTPException
 
 import graphene
+from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.core.signing import BadSignature, SignatureExpired
 from django.utils import timezone
@@ -9,11 +10,12 @@ from graphql_jwt.decorators import login_required
 from api.bases import Output
 from api.types import UserType
 from shows.forms import MemberForm
-from .constants import Messages
-from .exceptions import TokenScopeError, EmailAlreadyInUse
-from .forms import RegisterForm, UpdateUserForm
-from .models import User
-from .tokens import action_token, TokenAction
+from users.constants import Messages
+from users.exceptions import TokenScopeError, EmailAlreadyInUse
+from users.forms import RegisterForm, UpdateUserForm
+from users.tokens import action_token, TokenAction
+
+User = get_user_model()
 
 
 class RegisterMixin(Output):

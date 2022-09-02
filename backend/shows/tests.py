@@ -2,14 +2,16 @@ import datetime
 from unittest.mock import patch
 
 from django.contrib.admin.sites import AdminSite
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
-from users.models import User
-from .admin import ShowAdmin
-from .models import Member, Show, Round, Role, Contact
-from .slack import slack_boss
+from shows.admin import ShowAdmin
+from shows.models import Member, Show, Round, Role, Contact
+from shows.slack import slack_boss
+
+User = get_user_model()
 
 USER = {
     "email": "frankiev@gmail.com",

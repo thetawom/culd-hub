@@ -10,8 +10,8 @@ from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
-from .managers import UserManager
-from .tokens import action_token, TokenAction
+from users.managers import UserManager
+from users.tokens import action_token, TokenAction
 
 
 class User(AbstractUser):

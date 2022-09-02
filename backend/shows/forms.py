@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 
-from .models import Member
+from shows.models import Member
 
 
 class MemberForm(ModelForm):
