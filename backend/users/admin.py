@@ -3,8 +3,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from shows.admin import MemberInlineAdmin
-
 User = get_user_model()
 
 
@@ -56,8 +54,6 @@ class UserAdmin(BaseUserAdmin):
     )
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
-
-    inlines = [MemberInlineAdmin]
 
 
 admin.site.register(User, UserAdmin)

@@ -65,7 +65,7 @@ class Member(models.Model):
     )
 
     def __str__(self):
-        return self.user.get_full_name()
+        return f"{self.user.get_full_name()}"  # noqa
 
 
 class Show(models.Model):
@@ -82,7 +82,7 @@ class Show(models.Model):
 
     point = models.ForeignKey(
         "Member",
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         related_name="pointed_shows",
         null=True,
         blank=True,
@@ -146,17 +146,17 @@ class Show(models.Model):
     def __str__(self):
         return self.name
 
-    def clean(self):
-        if self.is_published and not self.date:
-            raise ValidationError(
-                {"is_published": _("Cannot publish show until date is set.")}
-            )
-
     def __iter__(self):
         for field_name in self._meta.fields:
             field_name = str(field_name).split(".")[-1]
             value = getattr(self, field_name, None)
             yield field_name, value
+
+    def clean(self):
+        if self.is_published and not self.date:
+            raise ValidationError(
+                {"is_published": _("Cannot publish show until date is set.")}
+            )
 
 
 class Round(models.Model):
@@ -183,7 +183,7 @@ class Role(models.Model):
         unique_together = [["show", "performer"]]
 
     def __str__(self):
-        return f"{self.show.name} ({self.performer.user.get_full_name()})"
+        return f"{self.show.name} ({self.performer.user.get_full_name()})"  # noqa
 
 
 class Contact(models.Model):
@@ -196,7 +196,17 @@ class Contact(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-class Channel(models.Model):
+class SlackUser(models.Model):
+    id = models.CharField(primary_key=True, max_length=60, unique=True)
+    member = models.OneToOneField(
+        Member, on_delete=models.CASCADE, related_name="slack_user", unique=True
+    )
+
+    def __str__(self):
+        return f"{self.id} ({self.member.user.get_full_name()})"  # noqa
+
+
+class SlackChannel(models.Model):
     id = models.CharField(primary_key=True, max_length=60, unique=True)
     show = models.OneToOneField(Show, on_delete=models.CASCADE, related_name="channel")
     briefing_timestamp = models.CharField(max_length=24)

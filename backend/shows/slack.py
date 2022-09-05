@@ -5,69 +5,120 @@ from django.conf import settings
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from common.decorators import requires_slack_channel
-from shows.models import Channel, Show
+from shows.decorators import requires_slack_channel
+from shows.models import SlackChannel, Show, SlackUser
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class SlackBoss(object):
     def __init__(self):
         self.client = WebClient(token=settings.SLACK_TOKEN)
 
-    def create_channel(self, show):
-        logger.info(f"Creating channel for {show} ...")
+    def fetch_user(self, member=None):
+        """
+        Fetches Slack user for the specified member by email.
+
+        Args:
+            member (Member): the Member instance to fetch the Slack user for
+
+        Returns:
+            A string containing the fetched user's Slack ID. None if there was no match or the user was not fetched successfully.
+        """
+        logging.info(f"Fetching slack user for {member} ...")
+        try:
+            response = self.client.users_lookupByEmail(email=member.user.email)
+        except SlackApiError as error:
+            logging.error(f"Failed to fetch user: {error}")
+        else:
+            logging.debug(response)
+            if response.get("ok", False):
+                user_id = response["user"]["id"]
+                if hasattr(member, "slack_user"):
+                    member.slack_user.id = user_id
+                    member.slack_user.save()
+                else:
+                    SlackUser.objects.create(id=user_id, member=member)
+                return user_id
+
+    def create_channel(self, show=None):
+        """
+        Creates a public Slack channel for the specified show using the channel name format `mm-dd-show-name`.
+
+        Args:
+            show (Show): the Show instance to create the Slack channel for
+
+        Returns:
+            A string containing the created channel's Slack ID. None if the channel was not created successfully.
+        """
+        logging.info(f"Creating channel for {show} ...")
         try:
             name = self._get_channel_name(show)
             response = self.client.conversations_create(name=name, is_private=False)
         except SlackApiError as error:
-            logger.error(f"Failed to create channel: {error}")
+            logging.error(f"Failed to create channel: {error}")
         else:
-            logger.info(response)
+            logging.debug(response)
             if response.get("ok", False):
-                Channel.objects.create(id=response["channel"]["id"], show=show)
+                channel_id = response["channel"]["id"]
+                SlackChannel.objects.create(id=channel_id, show=show)
+                return channel_id
 
     @requires_slack_channel
-    def rename_channel(self, show, name=None):
-        logger.info(f"Renaming channel for {show} ...")
+    def rename_channel(self, show=None, name=None):
+        """
+        Renames the Slack channel for a show using the default channel name format `mm-dd-show-name`, or an override name if specified.
+
+        Args:
+            show (Show): the Show instance to rename the channel for
+            name (str, optional): new channel name to use. If not specified, the default channel name format is used.
+
+        Returns:
+            A string containing the renamed channel's Slack ID. None if the channel was not renamed successfully.
+
+        Raises:
+            SlackBossException: If the show instance does not already have a Slack channel created
+        """
+        logging.info(f"Renaming channel for {show} ...")
         try:
-            if not name:
-                name = self._get_channel_name(show)
+            name = self._get_channel_name(show) if not name else name
             response = self.client.conversations_rename(
                 channel=show.channel.id, name=name
             )
         except SlackApiError as error:
-            logger.error(f"Failed to rename channel: {error}")
+            logging.error(f"Failed to rename channel: {error}")
         else:
-            logger.info(response)
+            logging.debug(response)
+            if response.get("ok", False):
+                return response["channel"]["id"]
 
     @requires_slack_channel
-    def archive_channel(self, show):
-        logger.info(f"Archiving channel for {show} ...")
+    def archive_channel(self, show=None):
+        logging.info(f"Archiving channel for {show} ...")
         archive_name = self._get_channel_name(show, archive=True)
         self.rename_channel(show, name=archive_name)
         try:
             response = self.client.conversations_archive(channel=show.channel.id)
         except SlackApiError as error:
-            logger.error(f"Failed to archive channel: {error}")
+            logging.error(f"Failed to archive channel: {error}")
         else:
-            logger.info(response)
+            logging.debug(response)
             if response.get("ok", False):
                 show.channel.delete()
 
     @requires_slack_channel
-    def send_or_update_briefing(self, show, update_fields=None):
-        logger.info(f"Sending or updating briefing for {show} ...")
+    def send_or_update_briefing(self, show=None, update_fields=None):
+        logging.info(f"Sending or updating briefing for {show} ...")
         briefing, text = self._build_briefing(show)
         is_update = show.channel.briefing_timestamp != ""
         try:
             if not is_update:
-                logger.info("Creating new briefing ...")
+                logging.info("Creating new briefing ...")
                 response = self.client.chat_postMessage(
                     channel=show.channel.id, blocks=briefing, text=text
                 )
             else:
-                logger.info(
+                logging.info(
                     f"Updating existing briefing ({show.channel.briefing_timestamp}) ..."
                 )
                 response = self.client.chat_update(
@@ -77,30 +128,30 @@ class SlackBoss(object):
                     text=text,
                 )
         except SlackApiError as error:
-            logger.error(f"Failed to send briefing: {error}")
+            logging.error(f"Failed to send briefing: {error}")
         else:
-            logger.info(response)
+            logging.debug(response)
             if response.get("ok", False):
-                channel = Channel.objects.get(id=response["channel"])
+                channel = SlackChannel.objects.get(id=response["channel"])
                 channel.briefing_timestamp = response["ts"]
                 channel.save()
                 if is_update and update_fields:
                     self.send_update_message(show, update_fields)
 
     @requires_slack_channel
-    def send_update_message(self, show, update_fields):
-        logger.info(f"Sending update message for {update_fields} for {show} ...")
+    def send_update_message(self, show=None, update_fields=None):
+        logging.info(f"Sending update message for {update_fields} for {show} ...")
         _, text = self._build_update_message(show, update_fields)
         try:
             response = self.client.chat_postMessage(channel=show.channel.id, text=text)
         except SlackApiError as error:
-            logger.error(f"Failed to send update message: {error}")
+            logging.error(f"Failed to send update message: {error}")
         else:
-            logger.info(response)
+            logging.debug(response)
 
     @staticmethod
     def _get_channel_name(show, archive=False):
-        channel_name = Channel.get_channel_name(show)
+        channel_name = SlackChannel.get_channel_name(show)
         if archive:
             channel_name = f"arch-{channel_name}-{str(datetime.now().timestamp()).replace('.', '-')}"
         return channel_name

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from shows.models import Show, Round, Member, Contact, Role, Channel
+from shows.models import Show, Round, Member, Contact, Role, SlackChannel, SlackUser
 
 
 class RoundInlineAdmin(admin.TabularInline):
@@ -53,4 +53,5 @@ admin.site.register(Show, ShowAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Contact)
 admin.site.register(Role)
-admin.site.register(Channel)
+admin.site.register(SlackChannel)
+admin.site.register(SlackUser)
