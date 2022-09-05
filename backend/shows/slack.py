@@ -96,7 +96,7 @@ class SlackBoss(object):
     def archive_channel(self, show=None):
         logging.info(f"Archiving channel for {show} ...")
         archive_name = self._get_channel_name(show, archive=True)
-        self.rename_channel(show, name=archive_name)
+        self.rename_channel(show=show, name=archive_name)
         try:
             response = self.client.conversations_archive(channel=show.channel.id)
         except SlackApiError as error:

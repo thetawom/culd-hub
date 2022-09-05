@@ -19,14 +19,15 @@ def get_updated_fields(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Show)
 @disable_for_loaddata
-def create_or_update_channel_for_show(sender, instance, **kwargs):
+def create_or_update_channel_for_show(sender, instance, created, **kwargs):
     if instance.is_published:
         if not hasattr(instance, "channel"):
             slack_boss.create_channel(show=instance)
         updated_fields = getattr(instance, "_updated_fields", [])
         delattr(instance, "_updated_fields")
-        if "name" in updated_fields or "date" in updated_fields:
+        if not created and ("name" in updated_fields or "date" in updated_fields):
             slack_boss.rename_channel(show=instance)
+        if updated_fields:
             slack_boss.send_or_update_briefing(
                 show=instance, update_fields=updated_fields
             )
