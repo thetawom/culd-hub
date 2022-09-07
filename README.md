@@ -37,10 +37,14 @@
 
 ## About The Project
 
-This is a custom show management web application for Columbia University Lion Dance, began in the summer of 2022. Every
-year, CU Lion Dance receives dozens of performance bookings, each of which requires careful planning and coordination of
-logistics. Previously, a Google Sheets setup was used for members to register for shows, but this grew increasingly
-cumbersome with scale and became hard to maintain. Even with Apps Script, it was also not fully customizable to the
+This is a custom show management web application for Columbia University Lion
+Dance, began in the summer of 2022. Every
+year, CU Lion Dance receives dozens of performance bookings, each of which
+requires careful planning and coordination of
+logistics. Previously, a Google Sheets setup was used for members to register
+for shows, but this grew increasingly
+cumbersome with scale and became hard to maintain. Even with Apps Script, it was
+also not fully customizable to the
 needs of members. From there, the CU Lion Dance Hub was born.
 
 <div align="center">
@@ -127,7 +131,8 @@ docker-compose down
 
 ### Running without Docker Compose
 
-Make sure you have followed the dependency installation instructions under Getting Started.
+Make sure you have followed the dependency installation instructions under
+Getting Started.
 
 Move to the backend directory and clean any existing migrations.
 
@@ -144,7 +149,8 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-Alternatively, the above two steps can be automated with the `make_migrations` script. (The `-c` flag sets the option to
+Alternatively, the above two steps can be automated with the `make_migrations`
+script. (The `-c` flag sets the option to
 clean any existing migrations.)
 
 ```sh
@@ -152,20 +158,22 @@ chmod u+x scripts/make_migrations.sh
 scripts/make_migrations.sh -c
 ```
 
-If you already have [mock data](https://drive.google.com/file/d/1jxoKik3NF1UjPK-lGsHWs6NZpsmLC9n7/view?usp=sharing) (
+If you already have [mock data][mock-data-url] (
 e.g. `scripts/mock-data.json`), you can load it into the database.
 
 ```sh
 python manage.py loaddata scripts/data.json
 ```
 
-You can also choose to enter data yourself later with the admin site. In that case, create a superuser.
+You can also choose to enter data yourself later with the admin site. In that
+case, create a superuser.
 
 ```sh
 python manage.py createsuperuser
 ```
 
-Create a `.env` file from the `env.template` file provided and fill in the values.
+Create a `.env` file from the `env.template` file provided and fill in the
+values.
 
 ```sh
 cp core/settings/env.template core/settings/.env
@@ -177,13 +185,15 @@ Start the backend server on port 8000.
 python manage.py runserver
 ```
 
-In a separate shell, move to the frontend directory and start the frontend server.
+In a separate shell, move to the frontend directory and start the frontend
+server.
 
 ```sh
 cd frontend && yarn start
 ```
 
-You may need to temporarily point the backend proxy used by your development server to your backend on port 8000.
+You may need to temporarily point the backend proxy used by your development
+server to your backend on port 8000.
 Restart the server after modifying the following in `package.json`.
 
 ```json
@@ -246,3 +256,5 @@ Navigate to http://localhost:3000/ to see the results.
 [Node-url]: https://nodejs.org/en/
 
 [Npm-url]: https://www.npmjs.com/
+
+[mock-data-url]: https://drive.google.com/file/d/15EpdAY931qGVnp5tzQZiUM-SkuKRD01o/view?usp=sharing
