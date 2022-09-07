@@ -23,7 +23,8 @@ class SlackBoss(object):
             member (Member): the Member instance to fetch the Slack user for
 
         Returns:
-            A string containing the fetched user's Slack ID. None if there was no match or the user was not fetched successfully.
+            A string containing the fetched user's Slack ID.
+            None if there was no match or the user was not fetched successfully.
         """
         logging.info(f"Fetching slack user for {member} ...")
         try:
@@ -67,11 +68,12 @@ class SlackBoss(object):
     @requires_slack_channel
     def rename_channel(self, show=None, name=None):
         """
-        Renames the Slack channel for a show using the default channel name format `mm-dd-show-name`, or an override name if specified.
+        Renames the Slack channel for a show.
+        If name parameter is not specified, default format `mm-dd-show-name` is used.
 
         Args:
             show (Show): the Show instance to rename the channel for
-            name (str, optional): new channel name to use. If not specified, the default channel name format is used.
+            name (str, optional): new channel name to use
 
         Returns:
             A string containing the renamed channel's Slack ID. None if the channel was not renamed successfully.
