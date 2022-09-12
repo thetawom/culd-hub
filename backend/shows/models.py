@@ -82,6 +82,7 @@ class Show(models.Model):
 
     point = models.ForeignKey(
         "Member",
+        verbose_name="Point person",
         on_delete=models.SET_NULL,
         related_name="pointed_shows",
         null=True,

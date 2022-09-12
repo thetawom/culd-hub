@@ -10,13 +10,14 @@ from shows.slackboss import slack_boss
 @disable_for_loaddata
 def get_updated_fields(sender, instance, **kwargs):
     original = Show.objects.filter(pk=instance.pk).first()
-    instance._updated_fields = [
+    updated_fields = [
         field
-        for field in ["name", "date", "time", "address", "lions"]
+        for field in ["name", "date", "time", "address", "lions", "point"]
         if getattr(instance, field) != getattr(original, field, None)
     ]
-    print(getattr(instance, "name"))
-    print(getattr(original, "name", None))
+    if "point" in updated_fields:
+        instance._original_point = getattr(original, "point", None)
+    instance._updated_fields = updated_fields
 
 
 @receiver(post_save, sender=Show)
@@ -28,18 +29,29 @@ def create_or_update_channel_for_show(sender, instance, **kwargs):
             slack_boss.create_channel(show=instance)
             created_channel = True
         updated_fields = getattr(instance, "_updated_fields", [])
-        delattr(instance, "_updated_fields")
         if not created_channel and (
-            "name" in updated_fields or "date" in updated_fields
+                "name" in updated_fields or "date" in updated_fields
         ):
             slack_boss.rename_channel(show=instance)
         if created_channel or updated_fields:
             slack_boss.send_or_update_briefing(
                 show=instance, update_fields=updated_fields
             )
+        if created_channel or "point" in updated_fields:
+            original_point = getattr(instance, "_original_point", None)
+            if original_point and original_point not in instance.performers.all():
+                slack_boss.remove_member_from_channel(
+                    show=instance, member=original_point
+                )
+            if hasattr(instance, "point"):
+                slack_boss.invite_member_to_channel(
+                    show=instance, member=instance.point
+                )
     else:
         if hasattr(instance, "channel"):
             slack_boss.archive_channel(show=instance)
+    delattr(instance, "_original_point")
+    delattr(instance, "_updated_fields")
 
 
 @receiver(post_save, sender=Member)
@@ -68,4 +80,5 @@ def invite_performer_to_show_channel(sender, instance, created, **kwargs):
 @receiver(pre_delete, sender=Role)
 @disable_for_loaddata
 def remove_performer_from_show_channel(sender, instance, **kwargs):
-    slack_boss.remove_member_from_channel(show=instance.show, member=instance.performer)
+    slack_boss.remove_member_from_channel(show=instance.show,
+                                          member=instance.performer)

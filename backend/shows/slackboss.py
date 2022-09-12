@@ -229,7 +229,7 @@ class SlackBoss(object):
                 channel.briefing_timestamp = response["ts"]
                 channel.save()
                 if is_update and update_fields:
-                    self.send_update_message(show, update_fields)
+                    self.send_update_message(show=show, update_fields=update_fields)
 
     @requires_slack_channel
     def send_update_message(self, show=None, update_fields=None):
@@ -288,7 +288,7 @@ class SlackBoss(object):
                 ", the ".join(updates[:-1]), updates[-1]
             )
             if len(updates) > 1
-            else f"The {updates[0]}."
+            else f"Quick update! The {updates[0]}."
         )
         return briefing, text
 
