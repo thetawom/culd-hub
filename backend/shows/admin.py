@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from shows.forms import ShowAdminForm
 from shows.models import Show, Round, Member, Contact, Role, SlackChannel, SlackUser
 
 
@@ -34,6 +35,8 @@ class ShowAdmin(admin.ModelAdmin):
     empty_value_display = "TBD"
 
     inlines = [RoundInlineAdmin, RoleInlineAdmin]
+
+    form = ShowAdminForm
 
 
 class MemberAdmin(admin.ModelAdmin):

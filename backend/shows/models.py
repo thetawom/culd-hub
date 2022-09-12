@@ -77,9 +77,8 @@ class Show(models.Model):
     )
     is_campus = models.BooleanField(verbose_name="On Campus", default=False)
     lions = models.PositiveSmallIntegerField(
-        null=True, blank=True, verbose_name="Number of lions"
+        verbose_name="Number of lions", null=True, blank=True
     )
-
     point = models.ForeignKey(
         "Member",
         verbose_name="Point person",
@@ -98,7 +97,6 @@ class Show(models.Model):
     performers = models.ManyToManyField(
         "Member", through="Role", related_name="performed_shows"
     )
-
     is_published = models.BooleanField(
         verbose_name="Published",
         help_text="Whether or not show is visible to users",

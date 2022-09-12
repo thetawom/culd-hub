@@ -43,7 +43,7 @@ def create_or_update_channel_for_show(sender, instance, **kwargs):
                 slack_boss.remove_member_from_channel(
                     show=instance, member=original_point
                 )
-            if hasattr(instance, "point"):
+            if instance.point:
                 slack_boss.invite_member_to_channel(
                     show=instance, member=instance.point
                 )
