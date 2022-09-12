@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver
 
@@ -26,6 +28,7 @@ def create_or_update_channel_for_show(sender, instance, **kwargs):
     if instance.is_published:
         created_channel = False
         if not hasattr(instance, "channel"):
+            logging.info("New show channel!")
             slack_boss.create_channel(show=instance)
             created_channel = True
         updated_fields = getattr(instance, "_updated_fields", [])
@@ -33,6 +36,7 @@ def create_or_update_channel_for_show(sender, instance, **kwargs):
             "name" in updated_fields or "date" in updated_fields
         ):
             slack_boss.rename_channel(show=instance)
+        logging.info(f"Updated fields: {updated_fields}")
         if created_channel or updated_fields:
             slack_boss.send_or_update_briefing(
                 show=instance, update_fields=updated_fields
@@ -47,9 +51,9 @@ def create_or_update_channel_for_show(sender, instance, **kwargs):
                 slack_boss.invite_member_to_channel(
                     show=instance, member=instance.point
                 )
-    else:
-        if hasattr(instance, "channel"):
-            slack_boss.archive_channel(show=instance)
+    elif hasattr(instance, "channel"):
+        slack_boss.archive_channel(show=instance)
+
     for attr_name in ["_original_point", "_updated_fields"]:
         if hasattr(instance, attr_name):
             delattr(instance, attr_name)

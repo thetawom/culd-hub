@@ -225,11 +225,14 @@ class SlackBoss(object):
         else:
             logging.debug(response)
             if response.get("ok", False):
-                channel = SlackChannel.objects.get(id=response["channel"])
-                channel.briefing_timestamp = response["ts"]
-                channel.save()
                 if is_update and update_fields:
-                    self.send_update_message(show=show, update_fields=update_fields)
+                    delta_since_briefing = datetime.now() - datetime.fromtimestamp(
+                        int(show.channel.briefing_timestamp.split(".")[0])
+                    )
+                    if delta_since_briefing.total_seconds() > 10:
+                        self.send_update_message(show=show, update_fields=update_fields)
+                show.channel.briefing_timestamp = response["ts"]
+                show.channel.save()
 
     @requires_slack_channel
     def send_update_message(self, show=None, update_fields=None):
@@ -283,16 +286,20 @@ class SlackBoss(object):
                 ],
             }
         ]
-        text = f"New show on {show.date} at {time}!"
+        text = f"New show on {show.date}!"
         return briefing, text
 
     @staticmethod
     def _build_update_message(show, update_fields):
         briefing = None
-        updates = [
-            f"{Show._meta.get_field(field).verbose_name.lower()} is now {getattr(show, field)}"
-            for field in update_fields
-        ]
+        updates = []
+        for field in update_fields:
+            update_value = getattr(show, field)
+            if field == "time":
+                update_value = update_value.strftime("%I:%M %p")
+            updates.append(
+                f"{Show._meta.get_field(field).verbose_name.lower()} is now {update_value}"
+            )
         text = (
             "Quick update! The {} and the {}.".format(
                 ", the ".join(updates[:-1]), updates[-1]
