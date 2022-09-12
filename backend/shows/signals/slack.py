@@ -65,6 +65,8 @@ def fetch_slack_user_for_new_member(sender, instance, created, **kwargs):
 @receiver(pre_delete, sender=Show)
 @disable_for_loaddata
 def delete_channel_for_show(sender, instance, **kwargs):
+    instance.is_published = False
+    instance.save()
     if hasattr(instance, "channel"):
         slack_boss.archive_channel(show=instance)
 
