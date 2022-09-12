@@ -72,7 +72,7 @@ def delete_channel_for_show(sender, instance, **kwargs):
 @receiver(post_save, sender=Role)
 @disable_for_loaddata
 def invite_performer_to_show_channel(sender, instance, created, **kwargs):
-    if created and hasattr(instance, "channel"):
+    if created and hasattr(instance.show, "channel"):
         slack_boss.invite_member_to_channel(
             show=instance.show, member=instance.performer
         )
@@ -81,4 +81,7 @@ def invite_performer_to_show_channel(sender, instance, created, **kwargs):
 @receiver(pre_delete, sender=Role)
 @disable_for_loaddata
 def remove_performer_from_show_channel(sender, instance, **kwargs):
-    slack_boss.remove_member_from_channel(show=instance.show, member=instance.performer)
+    if hasattr(instance.show, "channel"):
+        slack_boss.remove_member_from_channel(
+            show=instance.show, member=instance.performer
+        )
