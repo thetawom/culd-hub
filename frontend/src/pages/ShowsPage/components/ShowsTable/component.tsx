@@ -1,6 +1,21 @@
 import React, {useContext} from "react";
-import {Button, message, Modal, Progress, Space, Table, Tag, Tooltip} from "antd";
-import {InfoCircleTwoTone, MailTwoTone, PhoneTwoTone, PlusOutlined, StarFilled,} from "@ant-design/icons";
+import {
+    Button,
+    message,
+    Modal,
+    Progress,
+    Space,
+    Table,
+    Tag,
+    Tooltip
+} from "antd";
+import {
+    InfoCircleTwoTone,
+    MailTwoTone,
+    PhoneTwoTone,
+    PlusOutlined,
+    StarFilled,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
 import ShowsTableContext from "../../context/ShowsTableContext";
 import ShowDetails from "../ShowDetails";
@@ -29,7 +44,7 @@ const ShowsTable = ({user}: { user: User }) => {
         render: (_, show: Show) => (
             <div style={{marginLeft: "10px", marginRight: "10px"}}>
                 {show.performers
-                    .map((performer) => performer.user.id)
+                    .map((performer: Member) => performer.user.id)
                     .includes(user.id) ? (<Button
                     size="small"
                     style={{
@@ -105,9 +120,10 @@ const ShowsTable = ({user}: { user: User }) => {
         title: "Time",
         dataIndex: "rounds",
         key: "rounds",
-        render: (rounds: Round[]) => rounds.map(({id, time}: Round) => (<div key={id}>
-            {time ? dayjs(time, "HH:mm:ss").format("h:mm A") : ""}
-        </div>)),
+        render: (rounds: Round[]) => rounds.map(({id, time}: Round) => (
+            <div key={id}>
+                {time ? dayjs(time, "HH:mm:ss").format("h:mm A") : ""}
+            </div>)),
         sorter: (a, b) => a.time.localeCompare(b.time),
     }, {
         title: (<span
@@ -176,10 +192,10 @@ const ShowsTable = ({user}: { user: User }) => {
                     <Space wrap>
                         {performers
                             .slice()
-                            .sort((a, b) => {
+                            .sort((a: Member, b: Member) => {
                                 return a.user.id === show.point?.user.id ? -1 : b.user.id === show.point?.user.id ? 1 : a.user.firstName.localeCompare(b.user.firstName);
                             })
-                            .map((performer) => (<Tooltip
+                            .map((performer: Member) => (<Tooltip
                                 title={`${performer.user.firstName} ${performer.user.lastName}`}
                                 placement="bottom"
                                 trigger="click"
@@ -226,10 +242,10 @@ const ShowsTable = ({user}: { user: User }) => {
             openFilter === OPTIONS_ENUM.ALL
                 ? shows
                 : openFilter === OPTIONS_ENUM.MINE
-                    ? shows.filter((show) => isPerforming(show))
+                    ? shows.filter((show: Show) => isPerforming(show))
                     : openFilter === OPTIONS_ENUM.OPEN
-                        ? shows.filter((show) => show.isOpen)
-                        : shows.filter((show) => !show.isOpen)
+                        ? shows.filter((show: Show) => show.isOpen)
+                        : shows.filter((show: Show) => !show.isOpen)
         }
         rowKey="id"
         size="middle"

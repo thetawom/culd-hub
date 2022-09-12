@@ -21,17 +21,18 @@
     }
 }
 
-.heading .title {
-    margin-bottom: 0;
-    margin-right: 20px;
-}
-
 .heading .icon {
     font-size: 0.9em;
     margin-right: 0.4em;
 }
 
+.heading .title {
+    margin-bottom: 0;
+    margin-right: 20px;
+}
+
 .heading .subtitle {
+    font-size: 1.2em;
     color: gray;
     margin-bottom: 0;
 }

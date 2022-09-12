@@ -5,17 +5,19 @@ import ShowsPage from "./pages/ShowsPage";
 import ProfilePage from "./pages/ProfilePage";
 import PrivateRoutes from "./components/PrivateRoutes";
 import {AuthProvider} from "./context/AuthContext";
-import {message, Spin} from "antd";
-import Loader from "./components/Loader";
-import {ForgotPasswordPage, LoginPage, ResetPasswordPage, SignupPage} from "./pages/AuthPages";
+import {message} from "antd";
+import {
+    ForgotPasswordPage,
+    LoginPage,
+    ResetPasswordPage,
+    SignupPage
+} from "./pages/AuthPages";
 
 
 function App() {
     message.config({
         duration: 1.5,
     });
-
-    Spin.setDefaultIndicator(<Loader/>);
 
     return (
         <div className="App">
@@ -27,7 +29,8 @@ function App() {
                     </Route>
                     <Route path="login/" element={<LoginPage/>}/>
                     <Route path="signup/" element={<SignupPage/>}/>
-                    <Route path="password_reset/" element={<ForgotPasswordPage/>}/>
+                    <Route path="password_reset/"
+                           element={<ForgotPasswordPage/>}/>
                     <Route path="password_reset/:userId/:token/"
                            element={<ResetPasswordPage/>}/>
                 </Routes>

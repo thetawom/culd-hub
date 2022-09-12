@@ -1,10 +1,23 @@
 import React, {useContext, useState} from "react";
-import {Divider, Form, Input, Layout, Row, Select, Space, Typography} from "antd";
-import {MailOutlined, PhoneOutlined, SmileOutlined, UserOutlined} from "@ant-design/icons";
+import {
+    Divider,
+    Form,
+    Input,
+    Layout,
+    Row,
+    Select,
+    Space,
+    Typography
+} from "antd";
+import {
+    MailOutlined,
+    PhoneOutlined,
+    SmileOutlined,
+    UserOutlined
+} from "@ant-design/icons";
 import {UserContext} from "../../context/UserContext";
 import Header from "../../components/Header";
 import ProfileItem from "./components/ProfileItem";
-import Loader from "../../components/Loader";
 import {QueryResult, useAuthQuery} from "../../services/graphql";
 import {
     EMAIL_VALIDATION_RULES,
@@ -16,7 +29,12 @@ import {
     toTitleCase
 } from "../../services/validation";
 import styles from "./style.module.css";
-import {GET_CLASS_YEAR_CHOICES_QUERY, GET_MEMBERSHIP_CHOICES_QUERY, GET_SCHOOL_CHOICES_QUERY} from "./queries";
+import {
+    GET_CLASS_YEAR_CHOICES_QUERY,
+    GET_MEMBERSHIP_CHOICES_QUERY,
+    GET_SCHOOL_CHOICES_QUERY
+} from "./queries";
+import Loader from "../../components/Loader";
 
 
 const ProfilePage = () => {
@@ -47,19 +65,20 @@ const ProfilePage = () => {
     const isLoading: boolean = classYearChoicesLoading || schoolChoicesLoading || membershipChoicesLoading
         || !classYearChoices || !schoolChoices || !membershipChoices;
 
-    return isLoading ? <Loader/> :
-        <Layout>
-            <Header/>
-            <Layout.Content className={styles.content}>
-                <Row className={styles.heading} justify="space-between" align="bottom">
-                    <Typography.Title className={styles.title} level={2}>
-                        <SmileOutlined className={styles.icon}/>Member Profile
-                    </Typography.Title>
-                    <Typography className={styles.subtitle}>
-                        {membershipChoices ? membershipChoices[user.member.membership] : ""}
-                    </Typography>
-                </Row>
-                <Divider className={styles.divider}/>
+    return <Layout>
+        <Header/>
+        <Layout.Content className={styles.content}>
+            <Row className={styles.heading} justify="space-between"
+                 align="bottom">
+                <Typography.Title className={styles.title} level={2}>
+                    <SmileOutlined className={styles.icon}/>Member Profile
+                </Typography.Title>
+                <Typography className={styles.subtitle}>
+                    {membershipChoices ? membershipChoices[user.member.membership] : ""}
+                </Typography>
+            </Row>
+            <Divider className={styles.divider}/>
+            {isLoading ? <Loader/> :
                 <Space className={styles.profileItemSpace} direction="vertical">
                     <ProfileItem
                         title="Full Name"
@@ -69,7 +88,8 @@ const ProfilePage = () => {
                         }}
                         display={values => `${values.firstName} ${values.lastName}`}
                         input={
-                            <Input.Group compact className={styles.fullWidthInput}>
+                            <Input.Group compact
+                                         className={styles.fullWidthInput}>
                                 <Form.Item
                                     name="firstName"
                                     initialValue={user.firstName}
@@ -165,9 +185,9 @@ const ProfilePage = () => {
                             </Form.Item>
                         }
                     />
-                </Space>
-            </Layout.Content>
-        </Layout>;
+                </Space>}
+        </Layout.Content>
+    </Layout>;
 };
 
 export default ProfilePage;

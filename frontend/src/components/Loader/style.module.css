@@ -6,5 +6,6 @@
 }
 
 .spin span {
-    font-size: 60px;
+    font-size: 60px !important;
+    text-align: center;
 }
