@@ -9,7 +9,7 @@ from django.test import TestCase
 
 from shows.admin import ShowAdmin
 from shows.models import Member, Show, Round, Role, Contact
-from shows.slack import slack_boss
+from shows.slackboss import slack_boss
 
 User = get_user_model()
 

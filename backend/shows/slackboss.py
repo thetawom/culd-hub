@@ -6,14 +6,40 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 from shows.decorators import requires_slack_channel
-from shows.models import SlackChannel, Show, SlackUser
+from shows.exceptions import SlackBossException
+from shows.models import SlackChannel, Show, SlackUser, Member
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 class SlackBoss(object):
-    def __init__(self):
-        self.client = WebClient(token=settings.SLACK_TOKEN)
+    """
+    Wrapper around Slack API WebClient with functions for show channel and member management.
+
+    Note that SlackBoss functions are as close to atomic as possible to enhance re-usability,
+    i.e., higher-level logic should be written where SlackBoss functions are invoked.
+
+    Attributes:
+        client (WebClient): the Slack web client configured with the workspace Slack token
+    """
+
+    def __init__(self, slack_token=None):
+        """
+        Initializes SlackBoss by creating a Slack API WebClient.
+
+        If no `slack_token` is provided, SlackBoss will attempt to fetch the one configured in project settings.
+
+        Args:
+            slack_token (str or None): workspace Slack token to configure the WebClient
+        """
+        if not slack_token:
+            if hasattr(settings, "SLACK_TOKEN"):
+                slack_token = settings.SLACK_TOKEN
+            else:
+                raise SlackBossException(
+                    "If slack_token is None, then SLACK_TOKEN must be configured in default settings."
+                )
+        self.client = WebClient(token=slack_token)
 
     def fetch_user(self, member=None):
         """
@@ -30,7 +56,10 @@ class SlackBoss(object):
         try:
             response = self.client.users_lookupByEmail(email=member.user.email)
         except SlackApiError as error:
-            logging.error(f"Failed to fetch user: {error}")
+            if error.response.get("error") == "users_not_found":
+                logging.warning(f"{member} is not in the Slack workspace")
+            else:
+                logging.error(f"Failed to fetch user: {error}")
         else:
             logging.debug(response)
             if response.get("ok", False):
@@ -42,19 +71,24 @@ class SlackBoss(object):
                     SlackUser.objects.create(id=user_id, member=member)
                 return user_id
 
-    def create_channel(self, show=None):
+    def create_channel(self, show=None, name=None):
         """
-        Creates a public Slack channel for the specified show using the channel name format `mm-dd-show-name`.
+        Creates a public Slack channel for the specified show.
+
+        Unless `name` is specified, the channel name will use the default format `mm-dd-show-name`.
 
         Args:
-            show (Show): the Show instance to create the Slack channel for
+            show (Show): the show to create the Slack channel for
+            name (str or None): the Slack channel name to use
 
         Returns:
-            A string containing the created channel's Slack ID. None if the channel was not created successfully.
+            A string containing the created channel's Slack ID.
+            None if the channel was not created successfully.
         """
         logging.info(f"Creating channel for {show} ...")
         try:
-            name = self._get_channel_name(show)
+            if not name:
+                name = self._get_channel_name(show)
             response = self.client.conversations_create(name=name, is_private=False)
         except SlackApiError as error:
             logging.error(f"Failed to create channel: {error}")
@@ -66,14 +100,71 @@ class SlackBoss(object):
                 return channel_id
 
     @requires_slack_channel
+    def invite_member_to_channel(self, show=None, member=None):
+        """
+        Invites a member's Slack user to the channel for a show.
+
+        Args:
+            show (Show): the show of the channel to invite the performer to
+            member (Member): the member to invite to a Slack channel
+
+        Raises:
+            SlackBossException: If the show instance does not already have a Slack channel created
+        """
+        logging.info(f"Inviting member {member} to channel for {show} ...")
+        try:
+            if not hasattr(member, "slack_user"):
+                self.fetch_user(member)
+            response = None
+            if hasattr(member, "slack_user"):
+                response = self.client.conversations_invite(
+                    channel=show.channel.id, users=member.slack_user.id
+                )
+        except SlackApiError as error:
+            if error.response.get("error") == "already_in_channel":
+                logging.info(f"{member} is already in the Slack channel")
+            else:
+                logging.error(f"Failed to invite to channel: {error}")
+        else:
+            if response:
+                logging.debug(response)
+
+    @requires_slack_channel
+    def remove_member_from_channel(self, show=None, member=None):
+        """
+        Removes a member's Slack user from the channel for a show.
+
+        Args:
+            show (Show): the show of the channel to remove the performer from
+            member (Member): the member to remove from the Slack channel
+
+        Raises:
+            SlackBossException: If the show instance does not already have a Slack channel created
+        """
+        logging.info(f"Removing member {member} from channel for {show} ...")
+        try:
+            if not hasattr(member, "slack_user"):
+                self.fetch_user(member)
+            response = None
+            if hasattr(member, "slack_user"):
+                response = self.client.conversations_kick(
+                    channel=show.channel.id, user=member.slack_user.id
+                )
+        except SlackApiError as error:
+            logging.error(f"Failed to remove from channel: {error}")
+        else:
+            if response:
+                logging.debug(response)
+
+    @requires_slack_channel
     def rename_channel(self, show=None, name=None):
         """
         Renames the Slack channel for a show.
         If name parameter is not specified, default format `mm-dd-show-name` is used.
 
         Args:
-            show (Show): the Show instance to rename the channel for
-            name (str, optional): new channel name to use
+            show (Show): the show to rename the channel for
+            name (str or None): new channel name to use
 
         Returns:
             A string containing the renamed channel's Slack ID. None if the channel was not renamed successfully.
@@ -189,11 +280,13 @@ class SlackBoss(object):
     def _build_update_message(show, update_fields):
         briefing = None
         updates = [
-            f"{Show._meta.get_field(field).verbose_name.lower()} has been updated to {getattr(show, field)}"
+            f"{Show._meta.get_field(field).verbose_name.lower()} is now {getattr(show, field)}"
             for field in update_fields
         ]
         text = (
-            "The {} and the {}.".format(", the ".join(updates[:-1]), updates[-1])
+            "Quick update! The {} and the {}.".format(
+                ", the ".join(updates[:-1]), updates[-1]
+            )
             if len(updates) > 1
             else f"The {updates[0]}."
         )
