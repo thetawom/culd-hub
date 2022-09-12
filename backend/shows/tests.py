@@ -74,15 +74,10 @@ class TestMemberModel(TestCase):
 
 class TestShowModel(TestCase):
     def setUp(self):
-        with patch("shows.slack.slack_boss") as mock_slack_boss:
-            mock_slack_boss.create_channel.return_value = {
-                "ok": True,
-                "channel": {"id": 1},
-            }
-            mock_slack_boss.post_message.return_value = {
-                "ok": True,
-                "channel": {"id": 1},
-            }
+        with patch("shows.slackboss.slack_boss") as mock_slack_boss:
+            mock_slack_boss.create_channel.return_value = "channel_id"
+            mock_slack_boss.fetch_user.return_value = "user_id"
+            mock_slack_boss.invite_member_to_channel.return_value = None
 
         self.users = [
             User.objects.create(

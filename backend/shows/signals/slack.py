@@ -30,7 +30,7 @@ def create_or_update_channel_for_show(sender, instance, **kwargs):
             created_channel = True
         updated_fields = getattr(instance, "_updated_fields", [])
         if not created_channel and (
-                "name" in updated_fields or "date" in updated_fields
+            "name" in updated_fields or "date" in updated_fields
         ):
             slack_boss.rename_channel(show=instance)
         if created_channel or updated_fields:
@@ -50,8 +50,9 @@ def create_or_update_channel_for_show(sender, instance, **kwargs):
     else:
         if hasattr(instance, "channel"):
             slack_boss.archive_channel(show=instance)
-    delattr(instance, "_original_point")
-    delattr(instance, "_updated_fields")
+    for attr_name in ["_original_point", "_updated_fields"]:
+        if hasattr(instance, attr_name):
+            delattr(instance, attr_name)
 
 
 @receiver(post_save, sender=Member)
@@ -71,7 +72,7 @@ def delete_channel_for_show(sender, instance, **kwargs):
 @receiver(post_save, sender=Role)
 @disable_for_loaddata
 def invite_performer_to_show_channel(sender, instance, created, **kwargs):
-    if created:
+    if created and hasattr(instance, "channel"):
         slack_boss.invite_member_to_channel(
             show=instance.show, member=instance.performer
         )
@@ -80,5 +81,4 @@ def invite_performer_to_show_channel(sender, instance, created, **kwargs):
 @receiver(pre_delete, sender=Role)
 @disable_for_loaddata
 def remove_performer_from_show_channel(sender, instance, **kwargs):
-    slack_boss.remove_member_from_channel(show=instance.show,
-                                          member=instance.performer)
+    slack_boss.remove_member_from_channel(show=instance.show, member=instance.performer)
