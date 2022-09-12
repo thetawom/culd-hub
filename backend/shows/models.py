@@ -69,9 +69,13 @@ class Member(models.Model):
 
 
 class Show(models.Model):
-    name = models.CharField(max_length=60, null=False, blank=False)
-    date = models.DateField(null=True, blank=True)
-    time = models.TimeField(null=True, blank=True, editable=False)
+    name = models.CharField(
+        verbose_name="Show name", max_length=60, null=False, blank=False
+    )
+    date = models.DateField(verbose_name="Show date", null=True, blank=True)
+    time = models.TimeField(
+        verbose_name="Show time", null=True, blank=True, editable=False
+    )
     address = models.CharField(
         max_length=80, blank=True, help_text="Venue name or room number if on campus"
     )
