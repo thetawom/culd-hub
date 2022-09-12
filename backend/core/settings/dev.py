@@ -1,3 +1,7 @@
+import logging
+
+from django.utils.log import DEFAULT_LOGGING
+
 from core.settings.base import *
 
 # Quick-start development settings - unsuitable for production
@@ -17,19 +21,3 @@ if os.environ.get("DEVELOPMENT_DATABASE") == "postgres":
             "PORT": 5432,
         }
     }
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "loggers": {
-        "app_api": {
-            "handlers": ["console"],
-            "level": "INFO",
-        },
-    },
-}
