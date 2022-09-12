@@ -29,7 +29,7 @@ export const EMAIL_VALIDATION_RULES: Rule[] = [
 export const PHONE_VALIDATION_RULES: Rule[] = [
     () => ({
         validator(_, value) {
-            if (isValidPhoneNumber(value, "US")) {
+            if (!value || isValidPhoneNumber(value, "US")) {
                 return Promise.resolve();
             }
             return Promise.reject(
