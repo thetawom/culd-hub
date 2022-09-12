@@ -234,13 +234,23 @@ class SlackBoss(object):
     @requires_slack_channel
     def send_update_message(self, show=None, update_fields=None):
         logging.info(f"Sending update message for {update_fields} for {show} ...")
-        _, text = self._build_update_message(show, update_fields)
-        try:
-            response = self.client.chat_postMessage(channel=show.channel.id, text=text)
-        except SlackApiError as error:
-            logging.error(f"Failed to send update message: {error}")
+        update_fields = [
+            field
+            for field in update_fields
+            if getattr(show, field) and getattr(show, field) != ""
+        ]
+        if update_fields:
+            _, text = self._build_update_message(show, update_fields)
+            try:
+                response = self.client.chat_postMessage(
+                    channel=show.channel.id, text=text
+                )
+            except SlackApiError as error:
+                logging.error(f"Failed to send update message: {error}")
+            else:
+                logging.debug(response)
         else:
-            logging.debug(response)
+            logging.info(f"No non-null fields for update message")
 
     @staticmethod
     def _get_channel_name(show, archive=False):
