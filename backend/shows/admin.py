@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from shows.forms import ShowAdminForm
-from shows.models import Show, Round, Member, Contact, Role, SlackChannel, SlackUser
+from shows.models import Show, Round, Member, Contact, Role
 
 
 class RoundInlineAdmin(admin.TabularInline):
@@ -20,29 +19,26 @@ class ShowAdmin(admin.ModelAdmin):
 
     list_display = [
         "name",
+        "status",
+        "has_slack_channel",
         "priority",
         "day_of_week",
         "date",
-        "format_time",
+        "formatted_time",
         "lions",
-        "num_performers",
+        "performer_count",
         "rounds",
         "address",
-        "is_published",
-        "has_slack_channel",
-        "is_open",
     ]
     empty_value_display = "TBD"
 
     inlines = [RoundInlineAdmin, RoleInlineAdmin]
 
-    form = ShowAdminForm
-
 
 class MemberAdmin(admin.ModelAdmin):
     list_display = [
         "user",
-        "membership",
+        "position",
         "school",
         "class_year",
     ]
@@ -56,5 +52,3 @@ admin.site.register(Show, ShowAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Contact)
 admin.site.register(Role)
-admin.site.register(SlackChannel)
-admin.site.register(SlackUser)

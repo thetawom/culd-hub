@@ -7,7 +7,8 @@ from slack_sdk.errors import SlackApiError
 
 from shows.decorators import requires_slack_channel
 from shows.exceptions import SlackBossException
-from shows.models import SlackChannel, Show, SlackUser, Member
+from shows.models import Show, Member
+from slack.models import Channel, User
 
 logging.basicConfig(level=logging.INFO)
 
@@ -68,7 +69,7 @@ class SlackBoss(object):
                     member.slack_user.id = user_id
                     member.slack_user.save()
                 else:
-                    SlackUser.objects.create(id=user_id, member=member)
+                    User.objects.create(id=user_id, member=member)
                 return user_id
 
     def create_channel(self, show=None, name=None):
@@ -96,7 +97,7 @@ class SlackBoss(object):
             logging.debug(response)
             if response.get("ok", False):
                 channel_id = response["channel"]["id"]
-                SlackChannel.objects.create(id=channel_id, show=show)
+                Channel.objects.create(id=channel_id, show=show)
                 return channel_id
 
     @requires_slack_channel
@@ -257,7 +258,7 @@ class SlackBoss(object):
 
     @staticmethod
     def _get_channel_name(show, archive=False):
-        channel_name = SlackChannel.get_channel_name(show)
+        channel_name = Channel.default_channel_name(show)
         if archive:
             channel_name = f"arch-{channel_name}-{str(datetime.now().timestamp()).replace('.', '-')}"
         return channel_name

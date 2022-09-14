@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "users.apps.UsersConfig",
     "shows.apps.ShowsConfig",
+    "slack.apps.SlackConfig",
     "coverage",
 ]
 

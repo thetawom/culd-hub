@@ -1,67 +1,62 @@
-import re
-
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext as _
+from model_utils import Choices
 from phonenumber_field.modelfields import PhoneNumberField
 
 User = get_user_model()
 
-SCHOOL_CHOICES = (
-    ("C", "Columbia College"),
-    ("S", "School of Engineering and Applied Science"),
-    ("B", "Barnard College"),
-    ("G", "School of General Studies"),
-    ("O", "Other"),
-)
-
-CLASS_YEAR_CHOICES = (
-    ("FR", "Freshman"),
-    ("SP", "Sophomore"),
-    ("JR", "Junior"),
-    ("SR", "Senior"),
-    ("GR", "Graduate"),
-    ("AL", "Alumni"),
-    ("OT", "Other"),
-)
-
-MEMBERSHIP_CHOICES = (
-    ("G", "General Member"),
-    ("B", "Executive Board Member"),
-)
-
-SHOW_PRIORITY_CHOICES = (
-    ("F", "Full"),
-    ("N", "Normal"),
-    ("U", "Urgent"),
-)
-
-PERFORMANCE_ROLE_CHOICES = (
-    ("L", "Lion"),
-    ("D", "Drum"),
-    ("C", "Cymbal"),
-    ("G", "Gong"),
-    ("M", "Monk"),
-    ("O", "Other"),
-)
-
 
 class Member(models.Model):
+    """Model for a club member.
+
+    Each Member has a one-to-zero-or-one relationship with User. Additional
+    profile information such as the member's school, class year, and club
+    position are also stored.
+    """
+
+    POSITIONS = Choices(
+        (0, "general_member", _("General Member")),
+        (1, "secretary", _("Secretary")),
+        (2, "treasurer", _("Treasurer")),
+        (3, "president", _("President")),
+        (4, "senior_advisor", _("Senior Advisor")),
+    )
+    SCHOOLS = Choices(
+        (0, "college", _("Columbia College")),
+        (1, "engineering", _("School of Engineering and Applied Science")),
+        (2, "barnard", _("Barnard College")),
+        (3, "general_studies", _("School of General Studies")),
+        (4, "other", _("Other")),
+    )
+    CLASS_YEARS = Choices(
+        (0, "freshman", _("Freshman")),
+        (1, "sophomore", _("Sophomore")),
+        (2, "junior", _("Junior")),
+        (3, "senior", _("Senior")),
+        (4, "masters", _("Masters")),
+        (4, "doctorate", _("Doctorate")),
+        (5, "alumni", _("Alumni")),
+        (6, "other", _("Other")),
+    )
+
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, null=True, related_name="member"
+        User, related_name="member", on_delete=models.CASCADE, null=True
     )
-    membership = models.CharField(max_length=1, choices=MEMBERSHIP_CHOICES, default="G")
-    school = models.CharField(
-        max_length=1, choices=SCHOOL_CHOICES, blank=True, null=True
+    position = models.PositiveSmallIntegerField(
+        choices=POSITIONS, default=POSITIONS.general_member, verbose_name="position"
     )
-    class_year = models.CharField(
-        verbose_name="Class Year",
-        max_length=2,
-        choices=CLASS_YEAR_CHOICES,
-        blank=True,
+    school = models.PositiveSmallIntegerField(
+        choices=SCHOOLS, null=True, blank=True, default=None, verbose_name="school"
+    )
+    class_year = models.PositiveSmallIntegerField(
+        choices=CLASS_YEARS,
         null=True,
+        blank=True,
+        default=None,
+        verbose_name="class year",
     )
 
     def __str__(self):
@@ -69,66 +64,98 @@ class Member(models.Model):
 
 
 class Show(models.Model):
-    name = models.CharField(
-        verbose_name="Show name", max_length=60, null=False, blank=False
+    """Model for a show.
+
+    Each Show stores information pertaining to the show, such as the date,
+    time, venue address, number of lions, point person, performers, etc.
+    """
+
+    PRIORITIES = Choices(
+        (0, "full", _("Full")),
+        (1, "normal", _("Normal")),
+        (2, "urgent", _("Urgent")),
     )
-    date = models.DateField(verbose_name="Show date", null=True, blank=True)
+    STATUSES = Choices(
+        (0, "draft", _("Draft")),
+        (1, "published", _("Published")),
+        (2, "closed", _("Closed")),
+    )
+
+    name = models.CharField(max_length=60, null=False, blank=False)
+    date = models.DateField(null=True, blank=True, verbose_name="show date")
     time = models.TimeField(
-        verbose_name="Show time", null=True, blank=True, editable=False
+        null=True,
+        blank=True,
+        editable=False,
+        verbose_name="show time",
+        help_text="time of the first round of the show, updated automatically",
     )
     address = models.CharField(
-        max_length=80, blank=True, help_text="Venue name or room number if on campus"
+        max_length=80,
+        blank=True,
+        verbose_name="venue address",
+        help_text=_("Venue name or room number if on campus"),
     )
-    is_campus = models.BooleanField(verbose_name="On Campus", default=False)
+    is_campus = models.BooleanField(default=False, verbose_name="On Campus")
     lions = models.PositiveSmallIntegerField(
-        verbose_name="Number of lions", null=True, blank=True
+        null=True, blank=True, verbose_name="Number of lions"
     )
     point = models.ForeignKey(
         "Member",
-        verbose_name="Point person",
-        on_delete=models.SET_NULL,
         related_name="pointed_shows",
+        related_query_name="pointed_show",
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        verbose_name="point person",
+    )
+    performers = models.ManyToManyField(
+        "Member",
+        related_name="performed_shows",
+        related_query_name="performed_show",
+        through="Role",
     )
     contact = models.ForeignKey(
         "Contact",
-        on_delete=models.SET_NULL,
         related_name="shows",
+        related_query_name="show",
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
     )
-    performers = models.ManyToManyField(
-        "Member", through="Role", related_name="performed_shows"
-    )
-    is_published = models.BooleanField(
-        verbose_name="Published",
-        help_text="Whether or not show is visible to users",
-        default=False,
-    )
-    is_open = models.BooleanField(
-        verbose_name="Open",
-        help_text="Whether or not show is open for sign-ups",
-        default=True,
-    )
-    priority = models.CharField(
-        max_length=1, choices=SHOW_PRIORITY_CHOICES, default="N"
+    status = models.PositiveSmallIntegerField(choices=STATUSES, default=STATUSES.draft)
+    priority = models.PositiveSmallIntegerField(
+        choices=PRIORITIES, default=PRIORITIES.normal
     )
 
     class Meta:
         ordering = ["date", "time"]
+
+    def __str__(self):
+        return self.name
+
+    def __iter__(self):
+        for field in self._meta.fields:
+            field_name = str(field).split(".")[-1]
+            yield field_name, getattr(self, field_name, None)
+
+    def clean(self):
+        if self.status > Show.STATUSES.draft and self.date is None:
+            raise ValidationError(
+                {"is_published": _("Cannot publish show until date is set.")}
+            )
 
     @admin.display(description="Day of Week")
     def day_of_week(self):
         return self.date.strftime("%a").upper() if self.date else None
 
     @admin.display(description="Date", ordering="date")
-    def format_date(self):
-        return self.date.strftime("%m/%d") if self.date else None
+    def formatted_date(self, fmt="%m/%d"):
+        return self.date.strftime(fmt) if self.date else None
 
     @admin.display(description="Time", ordering="time")
-    def format_time(self):
-        return self.time.strftime("%-I:%M %p") if self.time else None
+    def formatted_time(self, fmt="%-I:%M %p"):
+        return self.time.strftime(fmt) if self.time else None
 
     @admin.display(description="Times", ordering="time")
     def show_times(self):
@@ -137,7 +164,7 @@ class Show(models.Model):
         return " · ".join([r.time.strftime("%-I:%M %p") for r in self.rounds.all()])
 
     @admin.display(description="Performers")
-    def num_performers(self):
+    def performer_count(self):
         return self.performers.count()
 
     @admin.display(description="Slack")
@@ -146,24 +173,20 @@ class Show(models.Model):
 
     has_slack_channel.boolean = True
 
-    def __str__(self):
-        return self.name
-
-    def __iter__(self):
-        for field_name in self._meta.fields:
-            field_name = str(field_name).split(".")[-1]
-            value = getattr(self, field_name, None)
-            yield field_name, value
-
-    def clean(self):
-        if self.is_published and not self.date:
-            raise ValidationError(
-                {"is_published": _("Cannot publish show until date is set.")}
-            )
-
 
 class Round(models.Model):
-    show = models.ForeignKey("Show", on_delete=models.CASCADE, related_name="rounds")
+    """Model for a round of a show.
+
+    Each Round belongs to a show and stores the performance time of that
+    round. Each Show may have one or more Rounds (or none, if TBD).
+    """
+
+    show = models.ForeignKey(
+        "Show",
+        related_name="rounds",
+        related_query_name="round",
+        on_delete=models.CASCADE,
+    )
     time = models.TimeField(null=True, blank=True)
 
     class Meta:
@@ -174,12 +197,25 @@ class Round(models.Model):
 
 
 class Role(models.Model):
+    """Model for a performer's role at a show.
+
+    Each Role contains information about what role a performer played at a
+    show, e.g., lion, drum, cymbal, gong, etc.
+    """
+
+    ROLES = Choices(
+        (0, "lion", _("Lion")),
+        (1, "drum", _("Drum")),
+        (2, "cymbal", _("Cymbal")),
+        (3, "gong", _("Gong")),
+        (4, "monk", _("Monk")),
+        (5, "other", _("Other")),
+    )
+
     show = models.ForeignKey("Show", on_delete=models.CASCADE)
     performer = models.ForeignKey("Member", on_delete=models.CASCADE)
-    role = models.CharField(
-        max_length=1,
-        choices=PERFORMANCE_ROLE_CHOICES,
-        blank=True,
+    role = models.PositiveSmallIntegerField(
+        choices=ROLES, null=True, blank=True, default=None, verbose_name="role type"
     )
 
     class Meta:
@@ -190,6 +226,11 @@ class Role(models.Model):
 
 
 class Contact(models.Model):
+    """Model for a client contact.
+
+    Each Contact contains information about the client's name, phone, email, etc.
+    """
+
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     phone = PhoneNumberField(null=True, blank=True)
@@ -197,28 +238,3 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
-
-class SlackUser(models.Model):
-    id = models.CharField(primary_key=True, max_length=60, unique=True)
-    member = models.OneToOneField(
-        Member, on_delete=models.CASCADE, related_name="slack_user", unique=True
-    )
-
-    def __str__(self):
-        return f"{self.id} ({self.member.user.get_full_name()})"  # noqa
-
-
-class SlackChannel(models.Model):
-    id = models.CharField(primary_key=True, max_length=60, unique=True)
-    show = models.OneToOneField(Show, on_delete=models.CASCADE, related_name="channel")
-    briefing_timestamp = models.CharField(max_length=24)
-
-    @staticmethod
-    def get_channel_name(show):
-        name = re.sub(r"[^\w\s]", "", show.name)
-        date = show.date.strftime("%m-%d") if show.date else "TBD"
-        return f"{date}-{name.replace(' ', '-').lower()}"
-
-    def __str__(self):
-        return self.get_channel_name(self.show)
