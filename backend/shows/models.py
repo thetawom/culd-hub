@@ -6,6 +6,8 @@ from django.utils.translation import gettext as _
 from model_utils import Choices
 from phonenumber_field.modelfields import PhoneNumberField
 
+from slack.models import SlackUser
+
 User = get_user_model()
 
 
@@ -61,6 +63,14 @@ class Member(models.Model):
 
     def __str__(self):
         return f"{self.user.get_full_name()}"  # noqa
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.fetch_slack_user()
+
+    def fetch_slack_user(self):
+        """Fetch Slack user for member, creating one if necessary"""
+        return SlackUser.objects.get_or_create(member=self)
 
 
 class Show(models.Model):
@@ -167,11 +177,9 @@ class Show(models.Model):
     def performer_count(self):
         return self.performers.count()
 
-    @admin.display(description="Slack")
+    @admin.display(description="Slack", boolean=True)
     def has_slack_channel(self):
         return hasattr(self, "channel")
-
-    has_slack_channel.boolean = True
 
 
 class Round(models.Model):

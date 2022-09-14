@@ -3,7 +3,7 @@ from functools import wraps
 from django.utils.translation import gettext_lazy as _
 
 from common.exceptions import WrongUsage
-from shows.exceptions import SlackBossException
+from slack.exceptions import SlackBossException
 
 
 def requires_slack_channel(slack_function):

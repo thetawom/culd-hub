@@ -3,23 +3,39 @@ import re
 from django.db import models
 from django.utils.translation import gettext as _
 
-from shows.models import Member, Show
+from slack.managers import SlackUserManager
 
 
-# Create your models here.
-class User(models.Model):
+class SlackUser(models.Model):
+    """Model for a user in the Slack workspace.
+
+    Each Slack user has a one-to-one relationship with a Member. The user's
+    Slack ID is used as the primary key.
+    """
+
     id = models.CharField(primary_key=True, max_length=60, unique=True)
     member = models.OneToOneField(
-        Member, related_name="slack_user", on_delete=models.CASCADE, unique=True
+        "shows.Member", related_name="slack_user", on_delete=models.CASCADE, unique=True
     )
 
+    objects = SlackUserManager()
+
     def __str__(self):
-        return f"{self.id} ({self.member.user.get_full_name()})"
+        return str(self.id)
 
 
-class Channel(models.Model):
+class SlackChannel(models.Model):
+    """Model for a show channel in the Slack workspace.
+
+    Each channel has a one-to-one relationship with the show it is a channel
+    for. The channel's Slack workspace conversation ID is used as the primary
+    key. It also stores the unique timestamp for the channel's briefing message.
+    """
+
     id = models.CharField(primary_key=True, max_length=60, unique=True)
-    show = models.OneToOneField(Show, on_delete=models.CASCADE, related_name="channel")
+    show = models.OneToOneField(
+        "shows.Show", on_delete=models.CASCADE, related_name="channel"
+    )
     briefing_ts = models.CharField(
         max_length=24,
         default="",
@@ -28,18 +44,17 @@ class Channel(models.Model):
     )
 
     def __str__(self):
-        return self.default_channel_name(self.show)
+        return self.default_channel_name()
 
-    @staticmethod
-    def default_channel_name(show):
-        if show.name == "":
+    def default_channel_name(self):
+        if self.show.name == "":
             raise ValueError(
                 "Default channel name requires the name of the show to be set."
             )
-        if show.date is None:
+        if self.show.date is None:
             raise ValueError(
                 "Default channel name requires the date of the show to be set."
             )
-        name = re.sub(r"[^\w\s]", "", show.name)
-        date = show.date.strftime("%m-%d")
+        name = re.sub(r"[^\w\s]", "", self.show.name)
+        date = self.show.date.strftime("%m-%d")
         return f"{date}-{name.replace(' ', '-').lower()}"

@@ -11,7 +11,7 @@ class UserAdmin(BaseUserAdmin):
 
     @admin.display(boolean=True)
     def board(self, user):
-        return user.member.membership == "B"
+        return user.member.position > 0
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
