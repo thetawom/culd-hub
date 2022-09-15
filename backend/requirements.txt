@@ -6,6 +6,7 @@ django-environ==0.9.0
 django-graphql-jwt==0.3.4
 django-model-utils==4.2.0
 django-phonenumber-field==6.4.0
+Faker==14.2.0
 graphene==2.1.9
 graphene-django==2.15.0
 graphql-core==2.3.2
@@ -15,6 +16,7 @@ phonenumbers==8.12.54
 promise==2.3
 pycodestyle==2.9.1
 PyJWT==2.4.0
+python-dateutil==2.8.2
 Rx==1.6.1
 singledispatch==3.7.0
 six==1.16.0

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Tuple
 
 from django.db import models
@@ -33,9 +34,11 @@ class SlackUserManager(models.Manager):
         if hasattr(member, "slack_user"):
             raise ValueError(_("The member already has a SlackUser record"))
         user_id = slack_boss.fetch_user(member=member)
-        user = self.model(id=user_id, member=member, **extra_fields)
-        user.save()
-        return user
+        if user_id is not None:
+            logging.info(f"Creating SlackUser with ID {user_id} ...")
+            user = self.model(id=user_id, member=member, **extra_fields)
+            user.save()
+            return user
 
     def get_or_create(self, member: Member, **extra_fields) -> Tuple[SlackUser, bool]:
         """Fetches SlackUser for a member, or creates one if necessary.

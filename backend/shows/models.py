@@ -167,12 +167,6 @@ class Show(models.Model):
     def formatted_time(self, fmt="%-I:%M %p"):
         return self.time.strftime(fmt) if self.time else None
 
-    @admin.display(description="Times", ordering="time")
-    def show_times(self):
-        if self.rounds.count() == 0:
-            return None
-        return " · ".join([r.time.strftime("%-I:%M %p") for r in self.rounds.all()])
-
     @admin.display(description="Performers")
     def performer_count(self):
         return self.performers.count()

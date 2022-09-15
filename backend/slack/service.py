@@ -45,10 +45,10 @@ class SlackBoss:
         self.client = WebClient(token=token)
 
     def fetch_user(
-        self,
-        email: Optional[str] = None,
-        user: Optional[User] = None,
-        member: Optional[Member] = None,
+            self,
+            email: Optional[str] = None,
+            user: Optional[User] = None,
+            member: Optional[Member] = None,
     ) -> Optional[str]:
         """
         Fetches Slack user ID for the specified member by email.
@@ -69,17 +69,18 @@ class SlackBoss:
         if email is not None:
             return self._fetch_user_by_email(email)
         elif user is not None:
-            return self._fetch_user_by_email(user.email)
+            return self._fetch_user_by_email(user.email, user)
         elif member is not None:
             if not hasattr(member, "user"):
                 raise SlackBossException(
                     f"Member {member} does not have an associated User"
                 )
-            return self._fetch_user_by_email(member.user.email)
-        raise WrongUsage("At least one of email, user, or member must be " "specified")
+            return self._fetch_user_by_email(member.user.email, member)
+        raise WrongUsage(
+            "At least one of email, user, or member must be " "specified")
 
     def _fetch_user_by_email(
-        self, email: str, identifier: Optional[str] = None
+            self, email: str, identifier: Optional[str] = None
     ) -> Optional[str]:
         """
         Fetches Slack user ID by the user's associated email address.
@@ -103,7 +104,7 @@ class SlackBoss:
         except SlackApiError as api_error:
             error = api_error.response.get("error")
             if error == "users_not_found":
-                logging.warning(f"{identifier} is not in the Slack workspace")
+                logging.warning(f"{email} is not in the Slack workspace")
             else:
                 raise SlackBossException(error)
         else:
