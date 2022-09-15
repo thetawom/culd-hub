@@ -9,8 +9,8 @@ from django.utils.translation import gettext_lazy as _
 from slack.service import slack_boss
 
 if TYPE_CHECKING:
-    from slack.models import SlackUser
-    from shows.models import Member
+    from slack.models import SlackUser, SlackChannel
+    from shows.models import Member, Show
 
 
 class SlackUserManager(models.Manager):
@@ -57,3 +57,49 @@ class SlackUserManager(models.Manager):
             return self.get(member=member, **extra_fields), False
         except self.model.DoesNotExist:
             return self.create(member=member, **extra_fields), True
+
+
+class SlackChannelManager(models.Manager):
+    """Model manager for SlackChannel"""
+
+    def create(self, show: Show, **extra_fields) -> SlackChannel:
+        """Creates SlackChannel for a show.
+
+        Args:
+            show: The show to create the SlackChannel for.
+
+        Returns:
+            The newly created SlackChannel instance.
+
+        Raises:
+            SlackBossException: If there was an error creating the Slack channel.
+        """
+
+        if not show:
+            raise ValueError(_("The show must be set"))
+        if hasattr(show, "channel"):
+            raise ValueError(_("The show already has a SlackChannel record"))
+        channel_id = slack_boss.create_channel(show=show)
+        if channel_id is not None:
+            logging.info(f"Creating SlackChannel with ID {channel_id} ...")
+            channel = self.model(id=channel_id, show=show, **extra_fields)
+            channel.save()
+            return channel
+
+    def get_or_create(self, show: Show, **extra_fields) -> Tuple[SlackChannel, bool]:
+        """Fetches SlackChannel for a show, or creates one if necessary.
+
+        Args:
+            show: The show to fetch or create the SlackChannel for.
+
+        Returns:
+            A tuple containing the fetched or newly created SlackChannel instance and a boolean indicating if an instance was created.
+
+        Raises:
+            SlackBossException: If there was an error creating the Slack channel.
+        """
+
+        try:
+            return self.get(show=show, **extra_fields), False
+        except self.model.DoesNotExist:
+            return self.create(show=show, **extra_fields), True

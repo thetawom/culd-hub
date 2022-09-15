@@ -1,9 +1,7 @@
-import re
-
 from django.db import models
 from django.utils.translation import gettext as _
 
-from slack.managers import SlackUserManager
+from slack.managers import SlackUserManager, SlackChannelManager
 
 
 class SlackUser(models.Model):
@@ -43,18 +41,7 @@ class SlackChannel(models.Model):
         help_text=_("Slack ts for initial briefing message in the channel"),
     )
 
-    def __str__(self):
-        return self.default_channel_name()
+    objects = SlackChannelManager()
 
-    def default_channel_name(self):
-        if self.show.name == "":
-            raise ValueError(
-                "Default channel name requires the name of the show to be set."
-            )
-        if self.show.date is None:
-            raise ValueError(
-                "Default channel name requires the date of the show to be set."
-            )
-        name = re.sub(r"[^\w\s]", "", self.show.name)
-        date = self.show.date.strftime("%m-%d")
-        return f"{date}-{name.replace(' ', '-').lower()}"
+    def __str__(self):
+        return self.show.default_channel_name()

@@ -6,7 +6,7 @@ from faker import Faker
 from slack.service import SlackBoss
 
 
-def slack_id_faker(faker=None):
+def fake_slack_id(faker=None):
     if faker is None:
         faker = Faker()
         Faker.seed(1234)
@@ -23,6 +23,14 @@ class PatchSlackBossMixin(TestCase):
         self._patch_fetch_user()
 
     def _patch_fetch_user(self):
-        patcher = patch.object(SlackBoss, "fetch_user", side_effect=slack_id_faker())
-        self.mock_fetch_user = patcher.start()
-        self.addCleanup(patcher.stop)
+        fetch_user_patcher = patch.object(
+            SlackBoss, "fetch_user", side_effect=fake_slack_id()
+        )
+        self.mock_fetch_user = fetch_user_patcher.start()
+        self.addCleanup(fetch_user_patcher.stop)
+
+        create_channel_patcher = patch.object(
+            SlackBoss, "create_channel", side_effect=fake_slack_id()
+        )
+        self.mock_create_channel = create_channel_patcher.start()
+        self.addCleanup(create_channel_patcher.stop)

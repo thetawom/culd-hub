@@ -1,3 +1,5 @@
+import re
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -6,7 +8,7 @@ from django.utils.translation import gettext as _
 from model_utils import Choices
 from phonenumber_field.modelfields import PhoneNumberField
 
-from slack.models import SlackUser
+from slack.models import SlackUser, SlackChannel
 
 User = get_user_model()
 
@@ -152,8 +154,17 @@ class Show(models.Model):
     def clean(self):
         if self.status > Show.STATUSES.draft and self.date is None:
             raise ValidationError(
-                {"is_published": _("Cannot publish show until date is set.")}
+                {"status": _("Cannot publish show until date is set.")}
             )
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.status > Show.STATUSES.draft:
+            self.fetch_slack_channel()
+
+    def fetch_slack_channel(self):
+        """Fetch Slack channel for show, creating one if necessary"""
+        return SlackChannel.objects.get_or_create(show=self)
 
     @admin.display(description="Day of Week")
     def day_of_week(self):
@@ -174,6 +185,19 @@ class Show(models.Model):
     @admin.display(description="Slack", boolean=True)
     def has_slack_channel(self):
         return hasattr(self, "channel")
+
+    def default_channel_name(self) -> str:
+        if self.name == "":
+            raise ValueError(
+                "Default channel name requires the name of the show to be set."
+            )
+        if self.date is None:
+            raise ValueError(
+                "Default channel name requires the date of the show to be set."
+            )
+        name = re.sub(r"[^\w\s]", "", self.name)
+        date = self.date.strftime("%m-%d")
+        return f"{date}-{name.replace(' ', '-').lower()}"
 
 
 class Round(models.Model):
