@@ -1,4 +1,4 @@
-from unittest.mock import patch
+import logging
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -7,24 +7,21 @@ from django.test import TestCase
 from faker import Faker
 
 from shows.models import Member, Show, Round, Role, Contact
-from shows.tests.utils import fake_show_data
-from slack.service import SlackBoss
-from slack.tests.utils import slack_id_faker
+from shows.tests.utils import fake_show_data, fake_round_data
+from slack.tests.utils import PatchSlackBossMixin
 from users.tests.utils import fake_user_data
+
+logging.disable(logging.WARNING)
 
 User = get_user_model()
 
 
-class TestMemberModel(TestCase):
+class TestMemberModel(PatchSlackBossMixin, TestCase):
     def setUp(self):
+        super().setUp()
+
         faker = Faker()
         Faker.seed(0)
-
-        patcher = patch.object(
-            SlackBoss, "fetch_user", side_effect=slack_id_faker(faker)
-        )
-        self.mock_fetch_user = patcher.start()
-        self.addCleanup(patcher.stop)
 
         self.user_data = fake_user_data(faker)
         self.user = User.objects.create(
@@ -50,16 +47,12 @@ class TestMemberModel(TestCase):
         self.assertEqual(User.objects.count(), pre_user_count - 1)
 
 
-class TestShowModel(TestCase):
+class TestShowModel(PatchSlackBossMixin, TestCase):
     def setUp(self):
+        super().setUp()
+
         faker = Faker()
         Faker.seed(0)
-
-        patcher = patch.object(
-            SlackBoss, "fetch_user", side_effect=slack_id_faker(faker)
-        )
-        self.mock_fetch_user = patcher.start()
-        self.addCleanup(patcher.stop)
 
         self.user_data = fake_user_data(faker, count=3)
         self.users = [

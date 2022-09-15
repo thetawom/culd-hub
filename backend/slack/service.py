@@ -14,8 +14,6 @@ if TYPE_CHECKING:
     from users.models import User
     from shows.models import Member
 
-logging.basicConfig(level=logging.INFO)
-
 
 class SlackBoss:
     """Custom Slack API WebClient wrapper
@@ -45,10 +43,10 @@ class SlackBoss:
         self.client = WebClient(token=token)
 
     def fetch_user(
-            self,
-            email: Optional[str] = None,
-            user: Optional[User] = None,
-            member: Optional[Member] = None,
+        self,
+        email: Optional[str] = None,
+        user: Optional[User] = None,
+        member: Optional[Member] = None,
     ) -> Optional[str]:
         """
         Fetches Slack user ID for the specified member by email.
@@ -76,11 +74,10 @@ class SlackBoss:
                     f"Member {member} does not have an associated User"
                 )
             return self._fetch_user_by_email(member.user.email, member)
-        raise WrongUsage(
-            "At least one of email, user, or member must be " "specified")
+        raise WrongUsage("At least one of email, user, or member must be " "specified")
 
     def _fetch_user_by_email(
-            self, email: str, identifier: Optional[str] = None
+        self, email: str, identifier: Optional[str] = None
     ) -> Optional[str]:
         """
         Fetches Slack user ID by the user's associated email address.

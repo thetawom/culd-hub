@@ -1,27 +1,24 @@
-from unittest.mock import patch
+import logging
 
 from django.contrib.admin import AdminSite
 from django.test import TestCase
 from faker import Faker
 
 from shows.models import Member
-from slack.service import SlackBoss
-from slack.tests.utils import slack_id_faker
+from slack.tests.utils import PatchSlackBossMixin
 from users.admin import UserAdmin
 from users.models import User
 from users.tests.utils import fake_user_data
 
+logging.disable(logging.WARNING)
 
-class TestUserAdmin(TestCase):
+
+class TestUserAdmin(PatchSlackBossMixin, TestCase):
     def setUp(self):
+        super().setUp()
+
         faker = Faker()
         Faker.seed(0)
-
-        patcher = patch.object(
-            SlackBoss, "fetch_user", side_effect=slack_id_faker(faker)
-        )
-        self.mock_fetch_user = patcher.start()
-        self.addCleanup(patcher.stop)
 
         self.user_data = fake_user_data(faker)
         self.user = User.objects.create(

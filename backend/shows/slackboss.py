@@ -10,8 +10,6 @@ from shows.models import Show, Member
 from slack.exceptions import SlackBossException
 from slack.models import SlackChannel, SlackUser
 
-logging.basicConfig(level=logging.INFO)
-
 
 class SlackBoss(object):
     """
