@@ -158,14 +158,27 @@ class Show(models.Model):
             )
 
     def save(self, *args, **kwargs):
+        old_instance = Show.objects.filter(pk=self.pk).first()
+        updated_fields = [
+            field
+            for field in ["name", "date", "time", "address", "lions", "point"]
+            if getattr(self, field) != getattr(old_instance, field, None)
+        ]
+
+        # attr changed
         super().save(*args, **kwargs)
         if self.status > Show.STATUSES.draft:
             channel, created = self.fetch_slack_channel()
             if created:
-                slack_users = [
-                    performer.fetch_slack_user() for performer in self.performers.all()
-                ]
-                channel.invite_users(slack_users)
+                if self.performers.count() > 0:
+                    slack_users = [
+                        performer.fetch_slack_user()
+                        for performer in self.performers.all()
+                    ]
+                    channel.invite_users(slack_users)
+            else:
+                if "name" in updated_fields or "date" in updated_fields:
+                    channel.update_name()
 
     def delete(self, *args, **kwargs):
         self.status = self.STATUSES.draft

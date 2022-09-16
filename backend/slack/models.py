@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Optional
 
 from django.db import models
 from django.utils.translation import gettext as _
@@ -49,13 +49,22 @@ class SlackChannel(models.Model):
     def __str__(self):
         return self.show.default_channel_name()
 
+    def update_name(self, name: Optional[str] = None):
+        """Renames the Slack channel.
+        The default channel name format is used if name is not provided.
+
+        Args:
+            name: The name to use for the Slack channel.
+        """
+        slack_boss.rename_channel(channel_id=self.id, name=name, show=self.show)
+
     def invite_users(self, users: Union[SlackUser, List[SlackUser]]):
         """Invites Slack user or users to the Slack channel.
 
         Args:
             users: The Slack user or users to invite.
         """
-        slack_boss.invite_users_to_channel(channel=self, users=users)
+        slack_boss.invite_users_to_channel(channel_id=self.id, users=users)
 
     def remove_users(self, users: Union[SlackUser, List[SlackUser]]):
         """Removes Slack user or users from the Slack channel.
@@ -63,4 +72,4 @@ class SlackChannel(models.Model):
         Args:
             users: The Slack user or users to remove.
         """
-        slack_boss.remove_users_from_channel(channel=self, users=users)
+        slack_boss.remove_users_from_channel(channel_id=self.id, users=users)
