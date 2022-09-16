@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Tuple, Union, List
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from slack.service import slack_boss
 
 if TYPE_CHECKING:
+    from django.db.models import QuerySet
     from slack.models import SlackUser, SlackChannel
     from shows.models import Member, Show
 
@@ -26,7 +27,7 @@ class SlackUserManager(models.Manager):
             The newly created SlackUser instance.
 
         Raises:
-            SlackBossException: If there was an error fetching the Slack user ID.
+            SlackBossException: If there was an error fetching the user ID.
         """
 
         if not member:
@@ -47,10 +48,11 @@ class SlackUserManager(models.Manager):
             member: The member to fetch or create the SlackUser for.
 
         Returns:
-            A tuple containing the fetched or newly created SlackUser instance and a boolean indicating if an instance was created.
+            A tuple containing the fetched or newly created SlackUser instance
+            and a boolean indicating if an instance was created.
 
         Raises:
-            SlackBossException: If there was an error fetching the Slack user ID.
+            SlackBossException: If there was an error fetching the user ID.
         """
 
         try:
@@ -72,7 +74,7 @@ class SlackChannelManager(models.Manager):
             The newly created SlackChannel instance.
 
         Raises:
-            SlackBossException: If there was an error creating the Slack channel.
+            SlackBossException: If there was an error creating the channel.
         """
 
         if not show:
@@ -93,13 +95,44 @@ class SlackChannelManager(models.Manager):
             show: The show to fetch or create the SlackChannel for.
 
         Returns:
-            A tuple containing the fetched or newly created SlackChannel instance and a boolean indicating if an instance was created.
+            A tuple containing the fetched or newly created SlackChannel
+            instance and a boolean indicating if an instance was created.
 
         Raises:
-            SlackBossException: If there was an error creating the Slack channel.
+            SlackBossException: If there was an error creating the channel.
         """
 
         try:
             return self.get(show=show, **extra_fields), False
         except self.model.DoesNotExist:
             return self.create(show=show, **extra_fields), True
+
+    def invite_users(self, users: Union[SlackUser, List[SlackUser]]) -> QuerySet:
+        """Invites Slack user or users to all queried Slack channels.
+
+        Args:
+            users: The Slack user or users to invite.
+
+        Returns:
+            A query set containing all Slack channels previously queried.
+        """
+
+        channel_set = self.all()
+        for channel in channel_set:
+            channel.invite_users(users)
+        return channel_set
+
+    def remove_users(self, users: Union[SlackUser, List[SlackUser]]) -> QuerySet:
+        """Removes Slack user or users from all queried Slack channels.
+
+        Args:
+            users: The Slack user or users to remove.
+
+        Returns:
+            A query set containing all Slack channels previously queried.
+        """
+
+        channel_set = self.all()
+        for channel in channel_set:
+            channel.remove_users(users)
+        return channel_set

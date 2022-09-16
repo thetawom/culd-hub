@@ -72,7 +72,7 @@ class Member(models.Model):
 
     def fetch_slack_user(self):
         """Fetch Slack user for member, creating one if necessary"""
-        return SlackUser.objects.get_or_create(member=self)
+        return SlackUser.objects.get_or_create(member=self)[0]
 
 
 class Show(models.Model):
@@ -160,11 +160,54 @@ class Show(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if self.status > Show.STATUSES.draft:
-            self.fetch_slack_channel()
+            channel, created = self.fetch_slack_channel()
+            if created:
+                slack_users = [
+                    performer.fetch_slack_user() for performer in self.performers.all()
+                ]
+                channel.invite_users(slack_users)
+
+    def delete(self, *args, **kwargs):
+        self.status = self.STATUSES.draft
+        self.save()
+        super().delete(*args, **kwargs)
 
     def fetch_slack_channel(self):
-        """Fetch Slack channel for show, creating one if necessary"""
+        """Fetches Slack channel, or creates one if necessary.
+
+        Returns:
+            A tuple containing the fetched or newly created SlackChannel
+            instance and a boolean indicating if an instance was created.
+
+        Raises:
+            SlackBossException: If there was an error creating the channel.
+        """
+
         return SlackChannel.objects.get_or_create(show=self)
+
+    def default_channel_name(self) -> str:
+        """Generates the default Slack channel name for the show.
+
+        The default name uses the format mm-dd-show-name.
+
+        Returns:
+            The default Slack channel name for the show.
+
+        Raises:
+            ValueError: If necessary fields for the name are missing.
+        """
+
+        if self.name == "":
+            raise ValueError(
+                "Default channel name requires the name of the show to be set."
+            )
+        if self.date is None:
+            raise ValueError(
+                "Default channel name requires the date of the show to be set."
+            )
+        name = re.sub(r"[^\w\s]", "", self.name)
+        date = self.date.strftime("%m-%d")
+        return f"{date}-{name.replace(' ', '-').lower()}"
 
     @admin.display(description="Day of Week")
     def day_of_week(self):
@@ -185,19 +228,6 @@ class Show(models.Model):
     @admin.display(description="Slack", boolean=True)
     def has_slack_channel(self):
         return hasattr(self, "channel")
-
-    def default_channel_name(self) -> str:
-        if self.name == "":
-            raise ValueError(
-                "Default channel name requires the name of the show to be set."
-            )
-        if self.date is None:
-            raise ValueError(
-                "Default channel name requires the date of the show to be set."
-            )
-        name = re.sub(r"[^\w\s]", "", self.name)
-        date = self.date.strftime("%m-%d")
-        return f"{date}-{name.replace(' ', '-').lower()}"
 
 
 class Round(models.Model):
@@ -249,6 +279,21 @@ class Role(models.Model):
 
     def __str__(self):
         return f"{self.show.name} ({self.performer.user.get_full_name()})"  # noqa
+
+    def save(self, *args, **kwargs):
+        created = self._state.adding
+        super().save(*args, **kwargs)
+        if created and hasattr(self.show, "channel"):
+            slack_user = self.performer.fetch_slack_user()
+            if slack_user is not None:
+                self.show.channel.invite_users(slack_user)
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        if hasattr(self.show, "channel"):
+            slack_user = self.performer.fetch_slack_user()
+            if slack_user is not None:
+                self.show.channel.remove_users(slack_user)
 
 
 class Contact(models.Model):
