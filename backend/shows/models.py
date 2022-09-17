@@ -183,6 +183,8 @@ class Show(models.Model):
     def delete(self, *args, **kwargs):
         self.status = self.STATUSES.draft
         self.save()
+        if hasattr(self, "channel"):
+            self.channel.archive(rename=True)
         super().delete(*args, **kwargs)
 
     def fetch_slack_channel(self):

@@ -107,6 +107,17 @@ class SlackChannelManager(models.Manager):
         except self.model.DoesNotExist:
             return self.create(show=show, **extra_fields), True
 
+    def archive(self) -> QuerySet:
+        """Archives all queried Slack channels.
+
+        Returns:
+            A query set containing all Slack channels previously queried.
+        """
+        channel_set = self.all()
+        for channel in channel_set:
+            channel.archive()
+        return channel_set
+
     def invite_users(self, users: Union[SlackUser, List[SlackUser]]) -> QuerySet:
         """Invites Slack user or users to all queried Slack channels.
 

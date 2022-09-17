@@ -120,6 +120,41 @@ class SlackBoss:
                 raise SlackBossException("Error creating Slack channel")
             return response["channel"]["id"]
 
+    def archive_channel(
+        self,
+        channel_id: Optional[str] = None,
+        channel: Optional[SlackChannel] = None,
+        show: Optional[Show] = None,
+    ):
+        """Archives the specified Slack channel.
+
+        One of channel_id, channel, or show should be provided.
+
+        Args:
+            channel_id: The Slack ID for the channel to archive.
+            channel: The Slack channel to archive.
+            show: The show to archive the Slack channel for.
+
+        Raises:
+            SlackBossException: If there was an error archiving the channel.
+        """
+
+        channel_id, channel_label = self._get_slack_channel_id_arg(
+            channel_id=channel_id, channel=channel, show=show
+        )
+
+        logging.info(f"Archiving channel {channel_label} ...")
+        try:
+            response = self.client.conversations_archive(channel=channel_id)
+        except SlackApiError as api_error:
+            error = api_error.response.get("error")
+            raise SlackBossException(error)
+        else:
+            logging.debug(response)
+            if not response.get("ok", False):
+                raise SlackBossException("Error renaming Slack channel")
+        return True
+
     def rename_channel(
         self,
         channel_id: Optional[str] = None,
@@ -144,10 +179,10 @@ class SlackBoss:
 
         name, _ = self._get_channel_name_arg(name=name, show=show)
         channel_id, channel_label = self._get_slack_channel_id_arg(
-            channel_id=channel_id, channel=channel
+            channel_id=channel_id, channel=channel, show=show
         )
 
-        logging.info(f"Renaming channel for {channel_label} ...")
+        logging.info(f"Renaming channel {channel_label} ...")
         try:
             response = self.client.conversations_rename(
                 channel=show.channel.id, name=name
@@ -274,7 +309,7 @@ class SlackBoss:
             member: The member to get the email address for.
 
         Returns:
-            A tuple containing the email address along with a string label
+            A tuple containing the email address along with a user label
             depending on input type to use for logging purposes.
 
         Raises:
@@ -305,7 +340,7 @@ class SlackBoss:
             show: The show to get the channel name for.
 
         Returns:
-            A tuple containing the channel name along with a string label
+            A tuple containing the channel name along with a channel label
             depending on input type to use for logging purposes.
 
         Raises:
@@ -333,7 +368,7 @@ class SlackBoss:
             show: The show to get the Slack channel ID for.
 
         Returns:
-            A tuple containing the Slack channel ID along with a string
+            A tuple containing the Slack channel ID along with a channel
             label depending on input type to use for logging purposes.
 
         Raises:
@@ -364,7 +399,7 @@ class SlackBoss:
             users: The Slack user or users to get the ID or IDs for.
 
         Returns:
-            A tuple containing the Slack user ID or IDs along with a string
+            A tuple containing the Slack user ID or IDs along with a Slack users
             label depending on input type to use for logging purposes.
 
         Raises:
@@ -378,6 +413,33 @@ class SlackBoss:
                 return [user.id for user in users], str([user.member for user in users])
             return users.id, str(users)
         raise WrongUsage("At least one of user_ids or users must be specified")
+
+    @staticmethod
+    def _get_show_arg(
+        show: Optional[Show] = None,
+        channel: Optional[SlackChannel] = None,
+    ) -> Tuple[Show, str]:
+        """Processes show argument from various types.
+
+        Args:
+            show: The show to return.
+            channel: The channel to the show for.
+
+        Returns:
+            A tuple containing the show along with a show label depending on
+            input type to use for logging purposes.
+
+        Raises:
+            WrongUsage: If none of the optional inputs are provided.
+        """
+
+        if show is not None:
+            return show, str(show)
+        elif channel is not None:
+            if channel.show is not None:
+                return channel.show, str(channel.show)
+            raise SlackBossException(f"Channel {channel} does not have a Show")
+        raise WrongUsage("At least one of show or channel must be specified")
 
 
 slack_boss = SlackBoss()
