@@ -148,14 +148,14 @@ const ProfilePage = () => {
                     <ProfileItem
                         title="School"
                         values={{school: user.member.school}}
-                        display={values => values.school || "Not set"}
+                        display={values => (values.school != null) ? values.school : "Not set"}
                         choices={schoolChoices}
                         input={
                             <Form.Item name="school"
-                                       initialValue={user.member.school}
                                        noStyle>
                                 <Select placeholder="School"
-                                        className={styles.fullWidthInput}>
+                                        className={styles.fullWidthInput}
+                                        defaultValue={schoolChoices[user.member.school]}>
                                     <>
                                         {Object.entries(schoolChoices).map(([key, value]) =>
                                             <Select.Option key={key}
@@ -172,10 +172,10 @@ const ProfilePage = () => {
                         choices={classYearChoices}
                         input={
                             <Form.Item name="classYear"
-                                       initialValue={user.member.classYear}
                                        noStyle>
                                 <Select placeholder="Class year"
-                                        className={styles.fullWidthInput}>
+                                        className={styles.fullWidthInput}
+                                        defaultValue={classYearChoices[user.member.classYear]}>
                                     <>
                                         {Object.entries(classYearChoices).map(([key, value]) =>
                                             <Select.Option key={key}

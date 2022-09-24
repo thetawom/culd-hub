@@ -3,6 +3,7 @@ import {Show} from "../../../../types/types";
 export interface ShowContextInterface {
     shows: Show[],
     showPriorityChoices: object,
+    showStatusChoices: object,
     openFilter: string,
     needsRefresh: boolean,
     setOpenFilter: (openFilter: string) => void,

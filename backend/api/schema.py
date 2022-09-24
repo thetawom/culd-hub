@@ -6,15 +6,7 @@ from django.dispatch import receiver
 from graphql_jwt.decorators import login_required, staff_member_required
 from graphql_jwt.refresh_token.signals import refresh_token_rotated
 
-from shows.models import (
-    Member,
-    Show,
-    SCHOOL_CHOICES,
-    CLASS_YEAR_CHOICES,
-    MEMBERSHIP_CHOICES,
-    SHOW_PRIORITY_CHOICES,
-    PERFORMANCE_ROLE_CHOICES,
-)
+from shows.models import Member, Show, Role
 from users.models import User
 from .mutations import (
     CreateRoleMutation,
@@ -47,6 +39,7 @@ class Query(graphene.ObjectType):
     class_year_choices = graphene.String()
     membership_choices = graphene.String()
     show_priority_choices = graphene.String()
+    show_status_choices = graphene.String()
     performance_role_choices = graphene.String()
 
     @staticmethod
@@ -61,7 +54,7 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_shows(root, info, **kwargs):
-        return Show.objects.filter(is_published=True)
+        return Show.objects.filter(status__gt=Show.STATUSES.draft)
 
     @staticmethod
     @login_required
@@ -70,23 +63,27 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_school_choices(root, info, **kwargs):
-        return tuple_to_json(SCHOOL_CHOICES)
+        return tuple_to_json(Member.SCHOOLS)
 
     @staticmethod
     def resolve_class_year_choices(root, info, **kwargs):
-        return tuple_to_json(CLASS_YEAR_CHOICES)
+        return tuple_to_json(Member.CLASS_YEARS)
 
     @staticmethod
     def resolve_membership_choices(root, info, **kwargs):
-        return tuple_to_json(MEMBERSHIP_CHOICES)
+        return tuple_to_json(Member.POSITIONS)
 
     @staticmethod
     def resolve_show_priority_choices(root, info, **kwargs):
-        return tuple_to_json(SHOW_PRIORITY_CHOICES)
+        return tuple_to_json(Show.PRIORITIES)
+
+    @staticmethod
+    def resolve_show_status_choices(root, info, **kwargs):
+        return tuple_to_json(Show.STATUSES)
 
     @staticmethod
     def resolve_performance_role_choices(root, info, **kwargs):
-        return tuple_to_json(PERFORMANCE_ROLE_CHOICES)
+        return tuple_to_json(Role.ROLES)
 
 
 class Mutation(graphene.ObjectType):
@@ -105,4 +102,4 @@ class Mutation(graphene.ObjectType):
     reset_password = ResetPasswordMutation.Field()
 
 
-schema = graphene.Schema(query=Query, mutation=Mutation)
+schema = graphene.Schema(query=Query, mutation=Mutation)  # noqa

@@ -8,9 +8,9 @@ export const GET_ME_QUERY = gql`
 			lastName
 			member {
 			    id
+			    position
 				school
 				classYear
-				membership
 			}
 			email
 			phone

@@ -35,6 +35,7 @@ export const GET_SHOWS_QUERY = gql`
 				email
 			}
 			isCampus
+			status
 			isOpen
 		}
 	}
@@ -81,5 +82,11 @@ export const DELETE_ROLE_MUTATION = gql`
 export const GET_SHOW_PRIORITY_CHOICES_QUERY = gql`
 	{
 		showPriorityChoices
+	}
+`;
+
+export const GET_SHOW_STATUS_CHOICES_QUERY = gql`
+	{
+		showStatusChoices
 	}
 `;

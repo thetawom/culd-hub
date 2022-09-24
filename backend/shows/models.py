@@ -41,9 +41,9 @@ class Member(models.Model):
         (2, "junior", _("Junior")),
         (3, "senior", _("Senior")),
         (4, "masters", _("Masters")),
-        (4, "doctorate", _("Doctorate")),
-        (5, "alumni", _("Alumni")),
-        (6, "other", _("Other")),
+        (5, "doctorate", _("Doctorate")),
+        (6, "alumni", _("Alumni")),
+        (7, "other", _("Other")),
     )
 
     user = models.OneToOneField(
@@ -246,6 +246,9 @@ class Show(models.Model):
     @admin.display(description="Slack", boolean=True)
     def has_slack_channel(self):
         return hasattr(self, "channel")
+
+    def is_open(self):
+        return self.STATUSES.draft < self.status < self.STATUSES.closed
 
 
 class Round(models.Model):

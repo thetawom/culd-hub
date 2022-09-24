@@ -1,8 +1,19 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {message} from "antd";
-import {handleApolloError, useAuthLazyQuery, useAuthMutation, useAuthQuery} from "../../../../services/graphql";
+import {
+    handleApolloError,
+    useAuthLazyQuery,
+    useAuthMutation,
+    useAuthQuery
+} from "../../../../services/graphql";
 import {AuthContext} from "../../../../context/AuthContext";
-import {CREATE_ROLE_MUTATION, DELETE_ROLE_MUTATION, GET_SHOW_PRIORITY_CHOICES_QUERY, GET_SHOWS_QUERY} from "./queries";
+import {
+    CREATE_ROLE_MUTATION,
+    DELETE_ROLE_MUTATION,
+    GET_SHOW_PRIORITY_CHOICES_QUERY,
+    GET_SHOW_STATUS_CHOICES_QUERY,
+    GET_SHOWS_QUERY
+} from "./queries";
 import {Show} from "../../../../types/types";
 import {ShowContextInterface} from "./types";
 
@@ -23,6 +34,13 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
     useAuthQuery(GET_SHOW_PRIORITY_CHOICES_QUERY, {
         onCompleted: ({showPriorityChoices}) => {
             setShowPriorityChoices(JSON.parse(showPriorityChoices));
+        },
+    });
+
+    const [showStatusChoices, setShowStatusChoices] = useState(null);
+    useAuthQuery(GET_SHOW_STATUS_CHOICES_QUERY, {
+        onCompleted: ({showStatusChoices}) => {
+            setShowStatusChoices(JSON.parse(showStatusChoices));
         },
     });
 
@@ -91,6 +109,7 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
     const contextData: ShowContextInterface = {
         shows: shows,
         showPriorityChoices: showPriorityChoices,
+        showStatusChoices: showStatusChoices,
         openFilter: openFilter,
         needsRefresh: needsRefresh,
         setOpenFilter: setOpenFilter,

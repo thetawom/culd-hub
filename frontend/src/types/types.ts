@@ -9,8 +9,9 @@ export type User = {
 
 export type Member = {
     user: User,
-    school: string,
-    classYear: string
+    school: number,
+    classYear: number,
+    position: number,
 }
 
 export type Show = {
@@ -27,6 +28,7 @@ export type Show = {
     contact: Contact,
     isCampus: boolean,
     isOpen: boolean,
+    status: number,
 }
 
 export type Round = {

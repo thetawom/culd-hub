@@ -15,7 +15,8 @@ const ShowDetails = ({show}: { show: Show }) => {
             <Descriptions.Item label="Time(s)">
                 <Space>
                     {show.rounds?.map((round, i) =>
-                        <span key={i}>{dayjs(round.time, "HH:mm:ss").format("h:mm A")}</span>)}
+                        <span
+                            key={i}>{dayjs(round.time, "HH:mm:ss").format("h:mm A")}</span>)}
                 </Space>
             </Descriptions.Item>
             <Descriptions.Item label="Contact Information">
@@ -24,7 +25,7 @@ const ShowDetails = ({show}: { show: Show }) => {
                 <p>{show.contact ? show.contact.email && `Email: ${show.contact.email}` : ""}</p>
             </Descriptions.Item>
             <Descriptions.Item label="Point Person">
-                {`${show.point.user?.firstName} ${show.point.user?.lastName}`}
+                {`${show.point?.user.firstName} ${show.point?.user.lastName}`}
             </Descriptions.Item>
             <Descriptions.Item label="Number of Lions">
                 {show.lions || ""}

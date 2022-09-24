@@ -1,3 +1,4 @@
+import graphene
 from graphene import Scalar
 from graphene_django import DjangoObjectType
 from graphene_django.utils import camelize
@@ -19,12 +20,13 @@ class MemberType(DjangoObjectType):
         fields = (
             "id",
             "user",
-            "membership",
+            "position",
             "school",
             "class_year",
             "performed_shows",
             "pointed_shows",
         )
+        convert_choices_to_enum = False
 
 
 class ShowType(DjangoObjectType):
@@ -43,8 +45,14 @@ class ShowType(DjangoObjectType):
             "performers",
             "is_campus",
             "priority",
-            "is_open",
+            "status",
         )
+        convert_choices_to_enum = False
+
+    is_open = graphene.Boolean()
+
+    def resolve_is_open(self, info):
+        return self.is_open()  # noqa
 
 
 class RoundType(DjangoObjectType):

@@ -164,8 +164,8 @@ class SlackChannel(models.Model):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"Hi everyone! Thank you for signing up to perform at {name}. \
-                    Below is a quick rundown of important information about the show. Please read carefully.",
+                    "text": f"Hi everyone! Thank you for signing up to perform at {name}. "
+                    "Below is a quick rundown of important information about the show. Please read carefully.",
                 },
             },
             {
