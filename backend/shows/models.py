@@ -174,6 +174,12 @@ class Show(models.Model):
             else:
                 if updated_fields:
                     channel.send_or_update_briefing()
+                    channel.send_update_message(
+                        [
+                            self._meta.get_field(field).verbose_name.lower()
+                            for field in updated_fields
+                        ]
+                    )
                     if "name" in updated_fields or "date" in updated_fields:
                         channel.update_name()
 

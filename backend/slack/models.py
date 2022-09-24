@@ -4,6 +4,7 @@ from typing import Union, List, Optional
 from django.db import models
 from django.utils.translation import gettext as _
 
+from common.exceptions import WrongUsage
 from slack.managers import SlackUserManager, SlackChannelManager
 from slack.service import slack_boss
 
@@ -57,6 +58,7 @@ class SlackChannel(models.Model):
         Args:
             name: The name to use for the Slack channel.
         """
+
         slack_boss.rename_channel(channel_id=self.id, name=name, show=self.show)
 
     def archive(self, rename: bool = True):
@@ -84,10 +86,12 @@ class SlackChannel(models.Model):
         Args:
             users: The Slack user or users to invite.
         """
+
         slack_boss.invite_users_to_channel(channel_id=self.id, users=users)
 
     def invite_performers(self):
         """Invites all registered performers to the Slack channel."""
+
         if self.show.performers.count() > 0:
             self.invite_users(
                 [
@@ -102,7 +106,38 @@ class SlackChannel(models.Model):
         Args:
             users: The Slack user or users to remove.
         """
+
         slack_boss.remove_users_from_channel(channel_id=self.id, users=users)
+
+    def send_update_message(self, updated_fields):
+        """Sends message to the Slack channel.
+
+        Args:
+            updated_fields: The fields of the show that have been updated.
+        """
+
+        if self.briefing_ts is None:
+            raise WrongUsage(
+                "Update message should not be sent if briefing does not exist."
+            )
+
+        delta_since_briefing = datetime.now() - datetime.fromtimestamp(
+            int(self.briefing_ts.split(".")[0])
+        )
+        if delta_since_briefing.total_seconds() > 10:
+            field_str = (
+                f"{', '.join(updated_fields[: -1])} and {updated_fields[-1]}"
+                if len(updated_fields) > 1
+                else updated_fields[0]
+            )
+            message = f"Note! The {field_str} {'has' if len(updated_fields) == 1 else 'have'} been updated."
+            slack_boss.send_message_in_channel(
+                channel_id=self.id,
+                blocks=[
+                    {"type": "section", "text": {"type": "mrkdwn", "text": message}}
+                ],
+                text=message,
+            )
 
     def send_or_update_briefing(self):
         """Sends show briefing to Slack channel, or updates existing briefing."""
@@ -142,5 +177,6 @@ class SlackChannel(models.Model):
             text=f"New show on {date}",
         )
         if created:
+            slack_boss.pin_message_in_channel(channel_id=self.id, ts=ts)
             self.briefing_ts = ts
             self.save()
