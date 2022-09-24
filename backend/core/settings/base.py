@@ -14,6 +14,7 @@ from datetime import timedelta
 
 import django
 import environ
+from django.core.management.utils import get_random_secret_key
 from django.utils.encoding import force_str
 
 django.utils.encoding.force_text = force_str
@@ -26,7 +27,7 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY", default=get_random_secret_key())
 
 # Application definition
 
@@ -171,12 +172,12 @@ PHONENUMBER_DEFAULT_REGION = "US"
 
 PASSWORD_RESET_TIMEOUT_DAYS = 1
 
-SLACK_TOKEN = env("SLACK_TOKEN")
+SLACK_TOKEN = env("SLACK_TOKEN", default=None)
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default=None)
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default=None)
 DEFAULT_FROM_EMAIL = "CU Lion Dance"

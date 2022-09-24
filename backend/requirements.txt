@@ -27,3 +27,4 @@ sqlparse==0.4.2
 text-unidecode==1.3
 tomli==2.0.1
 untokenize==0.1.1
+whitenoise==6.2.0

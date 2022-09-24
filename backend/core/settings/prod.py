@@ -4,9 +4,9 @@ from core.settings.base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = [env("PRODUCTION_HOST")]
+ALLOWED_HOSTS = [env("PRODUCTION_HOST")] if "PRODUCTION_HOST" in env else []
 
-CSRF_TRUSTED_ORIGINS = [env("PRODUCTION_ORIGIN")]
+CSRF_TRUSTED_ORIGINS = [env("PRODUCTION_ORIGIN")] if "PRODUCTION_ORIGIN" in env else []
 
 INSTALLED_APPS.extend(["whitenoise.runserver_nostatic"])
 
@@ -22,7 +22,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
 WHITENOISE_ROOT = os.path.join(BASE_DIR, "../", "frontend", "build", "root")
 
-DATABASE_URL = env("DATABASE_URL")
+DATABASE_URL = env("DATABASE_URL", default=None)
 db_from_env = dj_database_url.config(
     default=DATABASE_URL, conn_max_age=500, ssl_require=True
 )

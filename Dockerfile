@@ -1,5 +1,8 @@
 FROM python:3.9
 
+ARG SLACK_TOKEN_ARG
+ENV SLACK_TOKEN $SLACK_TOKEN_ARG
+
 # Install curl, node, & yarn
 RUN apt-get -y install curl \
   && curl -sL https://deb.nodesource.com/setup_16.x | bash \
@@ -35,10 +38,9 @@ RUN mkdir /app/backend/staticfiles
 
 WORKDIR /app
 
-# SECRET_KEY is only included here to avoid raising an error when generating static files.
+# Secrets are only included here to avoid raising an error when generating static files.
 # Be sure to add a real SECRET_KEY config variable in Heroku.
 RUN DJANGO_SETTINGS_MODULE=core.settings.prod \
-    SECRET_KEY="ThisIsTopSecret" \
     python3 backend/manage.py collectstatic --noinput
 
 EXPOSE $PORT
