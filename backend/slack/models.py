@@ -86,6 +86,16 @@ class SlackChannel(models.Model):
         """
         slack_boss.invite_users_to_channel(channel_id=self.id, users=users)
 
+    def invite_performers(self):
+        """Invites all registered performers to the Slack channel."""
+        if self.show.performers.count() > 0:
+            self.invite_users(
+                [
+                    performer.fetch_slack_user()
+                    for performer in self.show.performers.all()
+                ]
+            )
+
     def remove_users(self, users: Union[SlackUser, List[SlackUser]]):
         """Removes Slack user or users from the Slack channel.
 
@@ -93,3 +103,44 @@ class SlackChannel(models.Model):
             users: The Slack user or users to remove.
         """
         slack_boss.remove_users_from_channel(channel_id=self.id, users=users)
+
+    def send_or_update_briefing(self):
+        """Sends show briefing to Slack channel, or updates existing briefing."""
+
+        date, time, point, lions = (
+            self.show.formatted_date(),
+            self.show.formatted_time(),
+            self.show.point,
+            self.show.lions,
+        )
+
+        briefing = [
+            {
+                "type": "section",
+                "text": {
+                    "text": "*Show Information*",
+                    "type": "mrkdwn",
+                },
+                "fields": [
+                    {"type": "mrkdwn", "text": f"*Date:* {date if date else 'TBD'}"},
+                    {"type": "mrkdwn", "text": f"*Time:* {time if time else 'TBD'}"},
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Point Person:* {point if point else 'TBD'}",
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Lions:* {lions if lions else 'TBD'}",
+                    },
+                ],
+            }
+        ]
+        ts, created = slack_boss.send_message_in_channel(
+            channel_id=self.id,
+            ts=self.briefing_ts,
+            blocks=briefing,
+            text=f"New show on {date}",
+        )
+        if created:
+            self.briefing_ts = ts
+            self.save()

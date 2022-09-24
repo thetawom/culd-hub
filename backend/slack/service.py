@@ -52,10 +52,10 @@ class SlackBoss:
         self.client = WebClient(token=self.token)
 
     def fetch_user(
-        self,
-        email: Optional[str] = None,
-        user: Optional[User] = None,
-        member: Optional[Member] = None,
+            self,
+            email: Optional[str] = None,
+            user: Optional[User] = None,
+            member: Optional[Member] = None,
     ) -> Optional[str]:
         """Fetches Slack user ID for the specified member by email.
 
@@ -73,7 +73,8 @@ class SlackBoss:
             SlackBossException: If there was an error fetching the user ID.
         """
 
-        email, member_label = self._get_email_arg(email=email, user=user, member=member)
+        email, member_label = self._get_email_arg(email=email, user=user,
+                                                  member=member)
 
         logging.info(f"Fetching Slack user for {member_label} ...")
         try:
@@ -90,7 +91,8 @@ class SlackBoss:
                 raise SlackBossException("Error fetching Slack user ID")
             return response["user"]["id"]
 
-    def create_channel(self, name: Optional[str] = None, show: Optional[Show] = None):
+    def create_channel(self, name: Optional[str] = None,
+                       show: Optional[Show] = None):
         """Creates Slack channel for the specified show.
 
         One of name or show should be provided.
@@ -110,7 +112,8 @@ class SlackBoss:
 
         logging.info(f"Creating Slack channel for {show_label} ...")
         try:
-            response = self.client.conversations_create(name=name, is_private=False)
+            response = self.client.conversations_create(name=name,
+                                                        is_private=False)
         except SlackApiError as api_error:
             error = api_error.response.get("error")
             raise SlackBossException(error)
@@ -121,10 +124,10 @@ class SlackBoss:
             return response["channel"]["id"]
 
     def archive_channel(
-        self,
-        channel_id: Optional[str] = None,
-        channel: Optional[SlackChannel] = None,
-        show: Optional[Show] = None,
+            self,
+            channel_id: Optional[str] = None,
+            channel: Optional[SlackChannel] = None,
+            show: Optional[Show] = None,
     ):
         """Archives the specified Slack channel.
 
@@ -156,11 +159,11 @@ class SlackBoss:
         return True
 
     def rename_channel(
-        self,
-        channel_id: Optional[str] = None,
-        channel: Optional[SlackChannel] = None,
-        show: Optional[Show] = None,
-        name: Optional[str] = None,
+            self,
+            channel_id: Optional[str] = None,
+            channel: Optional[SlackChannel] = None,
+            show: Optional[Show] = None,
+            name: Optional[str] = None,
     ):
         """Renames the specified Slack channel.
 
@@ -197,12 +200,12 @@ class SlackBoss:
             return response["channel"]["id"]
 
     def invite_users_to_channel(
-        self,
-        channel_id: Optional[str] = None,
-        channel: Optional[SlackChannel] = None,
-        show: Optional[Show] = None,
-        user_ids: Union[str, List[str]] = None,
-        users: Union[SlackUser, List[SlackUser]] = None,
+            self,
+            channel_id: Optional[str] = None,
+            channel: Optional[SlackChannel] = None,
+            show: Optional[Show] = None,
+            user_ids: Union[str, List[str]] = None,
+            users: Union[SlackUser, List[SlackUser]] = None,
     ):
         """Invites specified Slack users to the specified channel.
 
@@ -245,12 +248,12 @@ class SlackBoss:
         return True
 
     def remove_users_from_channel(
-        self,
-        channel_id: Optional[str] = None,
-        channel: Optional[SlackChannel] = None,
-        show: Optional[Show] = None,
-        user_ids: Union[str, List[str]] = None,
-        users: Union[SlackUser, List[SlackUser]] = None,
+            self,
+            channel_id: Optional[str] = None,
+            channel: Optional[SlackChannel] = None,
+            show: Optional[Show] = None,
+            user_ids: Union[str, List[str]] = None,
+            users: Union[SlackUser, List[SlackUser]] = None,
     ):
         """Removes specified Slack users from the specified channel.
 
@@ -275,7 +278,8 @@ class SlackBoss:
             user_ids=user_ids, users=users
         )
 
-        logging.info(f"Removing {members_label} from channel {channel_label} ...")
+        logging.info(
+            f"Removing {members_label} from channel {channel_label} ...")
         if not isinstance(user_ids, list):
             user_ids = [user_ids]
         for user_id in user_ids:
@@ -292,14 +296,77 @@ class SlackBoss:
             else:
                 logging.debug(response)
                 if not response.get("ok", False):
-                    raise SlackBossException("Error removing users from channel")
+                    raise SlackBossException(
+                        "Error removing users from channel")
         return True
+
+    def send_message_in_channel(
+            self,
+            channel_id: Optional[str] = None,
+            channel: Optional[SlackChannel] = None,
+            show: Optional[Show] = None,
+            ts: Optional[str] = None,
+            blocks: List = None,
+            text: str = None,
+    ) -> Tuple[str, bool]:
+        """Sends or updates a message in the specified channel.
+
+        If ts is provided, the message with timestamp ts will be updated.
+        Otherwise, a new message will be sent.
+
+        One of channel_id, channel, or show should be provided.
+
+        Args:
+            channel_id: The Slack ID for the channel to remove users from.
+            channel: The Slack channel to remove users from.
+            show: The show to removes users from the Slack channel for.
+            ts: The unique Slack timestamp of the message to update.
+            blocks: the Slack blocks for the message
+            text: the text to use for Slack message notifications
+
+        Returns:
+            The ts of the message that was sent or updated, along with a bool
+            indicating whether a new message was sent.
+
+        Raises:
+            SlackBossException: If there was an error removing the users.
+        """
+
+        if not blocks:
+            raise WrongUsage("Blocks must be provided")
+
+        channel_id, channel_label = self._get_slack_channel_id_arg(
+            channel_id=channel_id, channel=channel, show=show
+        )
+        ts, _ = self._get_message_timestamp_arg(ts=ts)
+
+        is_new_message = ts is None
+
+        try:
+            if is_new_message:
+                logging.info(f"Sending message in channel {channel_label} ...")
+                response = self.client.chat_postMessage(
+                    channel=channel_id, blocks=blocks, text=text
+                )
+            else:
+                logging.info(f"Updating message in channel {channel_label} ...")
+                response = self.client.chat_update(
+                    channel=channel_id, ts=ts, blocks=blocks, text=text
+                )
+        except SlackApiError as api_error:
+            error = api_error.response.get("error")
+            raise SlackBossException(error)
+        else:
+            logging.debug(response)
+            if not response.get("ok", False):
+                raise SlackBossException("Error posting Slack message")
+            return response["ts"], is_new_message
 
     @staticmethod
     def _get_email_arg(
-        email: Optional[str] = None,
-        user: Optional[User] = None,
-        member: Optional[Member] = None,
+            email: Optional[str] = None,
+            user: Optional[User] = None,
+            member: Optional[Member] = None,
     ) -> Tuple[str, str]:
         """Processes email argument from various types.
 
@@ -326,12 +393,13 @@ class SlackBoss:
             raise SlackBossException(
                 f"Member {member} does not have an associated user"
             )
-        raise WrongUsage("At least one of email, user, or member must be specified")
+        raise WrongUsage(
+            "At least one of email, user, or member must be specified")
 
     @staticmethod
     def _get_channel_name_arg(
-        name: Optional[str] = None,
-        show: Optional[Show] = None,
+            name: Optional[str] = None,
+            show: Optional[Show] = None,
     ) -> Tuple[str, str]:
         """Processes Slack channel name argument from various types.
 
@@ -356,9 +424,9 @@ class SlackBoss:
 
     @staticmethod
     def _get_slack_channel_id_arg(
-        channel_id: Optional[str] = None,
-        channel: Optional[SlackChannel] = None,
-        show: Optional[Show] = None,
+            channel_id: Optional[str] = None,
+            channel: Optional[SlackChannel] = None,
+            show: Optional[Show] = None,
     ) -> Tuple[str, str]:
         """Processes Slack channel ID argument from various types.
 
@@ -382,15 +450,16 @@ class SlackBoss:
         elif show is not None:
             if hasattr(show, "channel"):
                 return show.channel.id, show.default_channel_name()
-            raise SlackBossException(f"Show {show} does not have a Slack channel")
+            raise SlackBossException(
+                f"Show {show} does not have a Slack channel")
         raise WrongUsage(
             "At least one of channel_id, channel, or show must be specified"
         )
 
     @staticmethod
     def _get_slack_user_ids_arg(
-        user_ids: Optional[Union[str, List[str]]] = None,
-        users: Optional[Union[SlackUser, List[SlackUser]]] = None,
+            user_ids: Optional[Union[str, List[str]]] = None,
+            users: Optional[Union[SlackUser, List[SlackUser]]] = None,
     ) -> Tuple[Union[str, List[str]], str]:
         """Processes Slack user ID arguments from various types.
 
@@ -410,20 +479,21 @@ class SlackBoss:
             return user_ids, str(user_ids)
         elif users is not None:
             if isinstance(users, list):
-                return [user.id for user in users], str([user.member for user in users])
+                return [user.id for user in users], str(
+                    [user.member for user in users])
             return users.id, str(users)
         raise WrongUsage("At least one of user_ids or users must be specified")
 
     @staticmethod
     def _get_show_arg(
-        show: Optional[Show] = None,
-        channel: Optional[SlackChannel] = None,
+            show: Optional[Show] = None,
+            channel: Optional[SlackChannel] = None,
     ) -> Tuple[Show, str]:
         """Processes show argument from various types.
 
         Args:
             show: The show to return.
-            channel: The channel to the show for.
+            channel: The channel to get the show for.
 
         Returns:
             A tuple containing the show along with a show label depending on
@@ -440,6 +510,24 @@ class SlackBoss:
                 return channel.show, str(channel.show)
             raise SlackBossException(f"Channel {channel} does not have a Show")
         raise WrongUsage("At least one of show or channel must be specified")
+
+    @staticmethod
+    def _get_message_timestamp_arg(
+            ts: Optional[str] = None,
+    ) -> Tuple[Optional[str], str]:
+        """Processes Slack ts argument from various types.
+
+        Args:
+            ts: The unique Slack timestamp of the message.
+
+        Returns:
+            A tuple containing the timestamp along with a timestamp label
+            depending on input type to use for logging purposes.
+        """
+
+        if ts is not None and ts != "":
+            return ts, ts
+        return None, ""
 
 
 slack_boss = SlackBoss()

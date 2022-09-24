@@ -1,14 +1,12 @@
 import logging
 from datetime import datetime
 
-from django.conf import settings
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 from shows.decorators import requires_slack_channel
 from shows.models import Show, Member
-from slack.exceptions import SlackBossException
-from slack.models import SlackChannel, SlackUser
+from slack.models import SlackChannel
 
 
 class SlackBoss(object):
@@ -187,30 +185,31 @@ class SlackBoss(object):
 
     @staticmethod
     def _build_briefing(show):
-        time = show.time.strftime("%I:%M %p") if show.time else "TBD"
-        briefing = [
-            {
-                "type": "section",
-                "text": {
-                    "text": "*Show Information*",
-                    "type": "mrkdwn",
-                },
-                "fields": [
-                    {"type": "mrkdwn", "text": f"*Date:* {show.date}"},
-                    {"type": "mrkdwn", "text": f"*Time:* {time}"},
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Point Person:* {show.point}",
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Lions:* {show.lions}",
-                    },
-                ],
-            }
-        ]
-        text = f"New show on {show.date}!"
-        return briefing, text
+        # time = show.time.strftime("%I:%M %p") if show.time else "TBD"
+        # briefing = [
+        #     {
+        #         "type": "section",
+        #         "text": {
+        #             "text": "*Show Information*",
+        #             "type": "mrkdwn",
+        #         },
+        #         "fields": [
+        #             {"type": "mrkdwn", "text": f"*Date:* {show.date}"},
+        #             {"type": "mrkdwn", "text": f"*Time:* {time}"},
+        #             {
+        #                 "type": "mrkdwn",
+        #                 "text": f"*Point Person:* {show.point}",
+        #             },
+        #             {
+        #                 "type": "mrkdwn",
+        #                 "text": f"*Lions:* {show.lions}",
+        #             },
+        #         ],
+        #     }
+        # ]
+        # text = f"New show on {show.date}!"
+        # return briefing, text
+        pass
 
     @staticmethod
     def _build_update_message(show, update_fields):

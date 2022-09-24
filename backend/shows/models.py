@@ -165,20 +165,17 @@ class Show(models.Model):
             if getattr(self, field) != getattr(old_instance, field, None)
         ]
 
-        # attr changed
         super().save(*args, **kwargs)
         if self.status > Show.STATUSES.draft:
             channel, created = self.fetch_slack_channel()
             if created:
-                if self.performers.count() > 0:
-                    slack_users = [
-                        performer.fetch_slack_user()
-                        for performer in self.performers.all()
-                    ]
-                    channel.invite_users(slack_users)
+                channel.send_or_update_briefing()
+                channel.invite_performers()
             else:
-                if "name" in updated_fields or "date" in updated_fields:
-                    channel.update_name()
+                if updated_fields:
+                    channel.send_or_update_briefing()
+                    if "name" in updated_fields or "date" in updated_fields:
+                        channel.update_name()
 
     def delete(self, *args, **kwargs):
         self.status = self.STATUSES.draft
