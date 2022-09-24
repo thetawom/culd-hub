@@ -158,8 +158,8 @@ chmod u+x scripts/make_migrations.sh
 scripts/make_migrations.sh -c
 ```
 
-If you already have [mock data][mock-data-url] (
-e.g. `scripts/mock-data.json`), you can load it into the database.
+If you already have [mock data][mock-data-url] (e.g. `scripts/mock-data.json`),
+you can load it into the database.
 
 ```sh
 python manage.py loaddata scripts/data.json
@@ -194,12 +194,14 @@ cd frontend && yarn start
 
 You may need to temporarily point the backend proxy used by your development
 server to your backend on port 8000.
-Restart the server after modifying the following in `package.json`.
+Restart the server after modifying the following in `frontend/src/setupProxy.js`
+.
 
-```json
-{
-  "proxy": "http://localhost:8000"
-}
+```javascript
+createProxyMiddleware({
+    target: "http://127.0.0.1:8000",
+    changeOrigin: true,
+})
 ```
 
 Navigate to http://localhost:3000/ to see the results.
