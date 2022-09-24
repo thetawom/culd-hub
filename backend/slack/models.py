@@ -26,6 +26,9 @@ class SlackUser(models.Model):
     def __str__(self):
         return str(self.id)
 
+    def mention(self) -> str:
+        return f"<@{self.id}>"
+
 
 class SlackChannel(models.Model):
     """Model for a show channel in the Slack workspace.
@@ -130,7 +133,7 @@ class SlackChannel(models.Model):
                 if len(updated_fields) > 1
                 else updated_fields[0]
             )
-            message = f"Note! The {field_str} {'has' if len(updated_fields) == 1 else 'have'} been updated."
+            message = f"<!channel> The {field_str} {'has' if len(updated_fields) == 1 else 'have'} been updated."
             slack_boss.send_message_in_channel(
                 channel_id=self.id,
                 blocks=[
@@ -142,33 +145,58 @@ class SlackChannel(models.Model):
     def send_or_update_briefing(self):
         """Sends show briefing to Slack channel, or updates existing briefing."""
 
-        date, time, point, lions = (
+        name, date, time, point, lions = (
+            self.show.name,
             self.show.formatted_date(),
             self.show.formatted_time(),
             self.show.point,
             self.show.lions,
         )
 
+        if point is not None:
+            slack_user = point.fetch_slack_user()
+            formatted_point = slack_user.mention() if slack_user else str(point)
+        else:
+            formatted_point = "TBD"
+
         briefing = [
             {
                 "type": "section",
                 "text": {
-                    "text": "*Show Information*",
                     "type": "mrkdwn",
+                    "text": f"Hi everyone! Thank you for signing up to perform at {name}. \
+                    Below is a quick rundown of important information about the show. Please read carefully.",
                 },
+            },
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": ":lion_face:  Show Info",
+                },
+            },
+            {
+                "type": "section",
                 "fields": [
                     {"type": "mrkdwn", "text": f"*Date:* {date if date else 'TBD'}"},
                     {"type": "mrkdwn", "text": f"*Time:* {time if time else 'TBD'}"},
                     {
                         "type": "mrkdwn",
-                        "text": f"*Point Person:* {point if point else 'TBD'}",
+                        "text": f"*Point Person:* {formatted_point}",
                     },
                     {
                         "type": "mrkdwn",
                         "text": f"*Lions:* {lions if lions else 'TBD'}",
                     },
                 ],
-            }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "<!channel> Please react :thumbsup: to this message to confirm that you can make it.",
+                },
+            },
         ]
         ts, created = slack_boss.send_message_in_channel(
             channel_id=self.id,
