@@ -12,9 +12,9 @@ export const GET_CLASS_YEAR_CHOICES_QUERY = gql`
 	}
 `;
 
-export const GET_MEMBERSHIP_CHOICES_QUERY = gql`
+export const GET_POSITION_CHOICES_QUERY = gql`
     {
-        membershipChoices
+        positionChoices
     }
 `;
 

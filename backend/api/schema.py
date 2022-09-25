@@ -37,7 +37,7 @@ class Query(graphene.ObjectType):
 
     school_choices = graphene.String()
     class_year_choices = graphene.String()
-    membership_choices = graphene.String()
+    position_choices = graphene.String()
     show_priority_choices = graphene.String()
     show_status_choices = graphene.String()
     performance_role_choices = graphene.String()
@@ -70,7 +70,7 @@ class Query(graphene.ObjectType):
         return tuple_to_json(Member.CLASS_YEARS)
 
     @staticmethod
-    def resolve_membership_choices(root, info, **kwargs):
+    def resolve_position_choices(root, info, **kwargs):
         return tuple_to_json(Member.POSITIONS)
 
     @staticmethod

@@ -76,9 +76,9 @@ const ShowsTable = ({user}: { user: User }) => {
 				</span>),
         dataIndex: "priority",
         key: "priority",
-        render: (priority: string, show: Show) => {
+        render: (priority: number, show: Show) => {
             return (<Tag
-                color={!show.isOpen ? "purple" : priority === "F" ? "geekblue" : priority === "N" ? "green" : "red"}
+                color={!show.isOpen ? "purple" : priority == 0 ? "geekblue" : priority == 1 ? "green" : "red"}
                 key={priority}
                 style={{width: "5.5em", textAlign: "center"}}
             >

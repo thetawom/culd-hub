@@ -31,7 +31,7 @@ import {
 import styles from "./style.module.css";
 import {
     GET_CLASS_YEAR_CHOICES_QUERY,
-    GET_MEMBERSHIP_CHOICES_QUERY,
+    GET_POSITION_CHOICES_QUERY,
     GET_SCHOOL_CHOICES_QUERY
 } from "./queries";
 import Loader from "../../components/Loader";
@@ -42,7 +42,7 @@ const ProfilePage = () => {
     const {user} = useContext(UserContext);
     const [schoolChoices, setSchoolChoices] = useState(null);
     const [classYearChoices, setClassYearChoices] = useState(null);
-    const [membershipChoices, setMembershipChoices] = useState(null);
+    const [positionChoices, setPositionChoices] = useState(null);
 
     const {loading: schoolChoicesLoading}: QueryResult = useAuthQuery(GET_SCHOOL_CHOICES_QUERY, {
         onCompleted: ({schoolChoices}: { schoolChoices: string }) => {
@@ -56,14 +56,14 @@ const ProfilePage = () => {
         },
     });
 
-    const {loading: membershipChoicesLoading}: QueryResult = useAuthQuery(GET_MEMBERSHIP_CHOICES_QUERY, {
-        onCompleted: ({membershipChoices}: { membershipChoices: string }) => {
-            setMembershipChoices(JSON.parse(membershipChoices));
+    const {loading: positionChoicesLoading}: QueryResult = useAuthQuery(GET_POSITION_CHOICES_QUERY, {
+        onCompleted: ({positionChoices}: { positionChoices: string }) => {
+            setPositionChoices(JSON.parse(positionChoices));
         },
     });
 
-    const isLoading: boolean = classYearChoicesLoading || schoolChoicesLoading || membershipChoicesLoading
-        || !classYearChoices || !schoolChoices || !membershipChoices;
+    const isLoading: boolean = classYearChoicesLoading || schoolChoicesLoading || positionChoicesLoading
+        || !classYearChoices || !schoolChoices || !positionChoices;
 
     return <Layout>
         <Header/>
@@ -74,7 +74,7 @@ const ProfilePage = () => {
                     <SmileOutlined className={styles.icon}/>Member Profile
                 </Typography.Title>
                 <Typography className={styles.subtitle}>
-                    {membershipChoices ? membershipChoices[user.member.membership] : ""}
+                    {positionChoices ? positionChoices[user.member.position] : ""}
                 </Typography>
             </Row>
             <Divider className={styles.divider}/>

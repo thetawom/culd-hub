@@ -15,9 +15,9 @@ export type Member = {
 }
 
 export type Show = {
-    id: number,
+    id: number, s
     name: string,
-    priority: string,
+    priority: number,
     date: string,
     time: string,
     rounds: Round[],
