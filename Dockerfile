@@ -1,8 +1,5 @@
 FROM python:3.9
 
-ARG SLACK_TOKEN_ARG
-ENV SLACK_TOKEN $SLACK_TOKEN_ARG
-
 # Install curl, node, & yarn
 RUN apt-get -y install curl \
   && curl -sL https://deb.nodesource.com/setup_16.x | bash \

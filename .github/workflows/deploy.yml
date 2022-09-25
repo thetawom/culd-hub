@@ -1,23 +1,83 @@
-name: Heroku Deploy
+name: Deployment
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build:
+
+  backend_build:
+    name: "Backend Build"
     runs-on: ubuntu-latest
+    environment: development
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [ "3.9" ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Make Migrations
+        working-directory: ./backend
+        run: |
+          python manage.py makemigrations
+          python manage.py migrate
+      - name: Run Unit Tests
+        working-directory: ./backend
+        run: |
+          coverage run manage.py test
+          coverage xml
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          version: "v0.1.15"
+
+  frontend_build:
+    name: "Frontend Build"
+    runs-on: ubuntu-latest
+    environment: development
+    strategy:
+      matrix:
+        node-version: [ "14.x", "16.x" ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: yarn install --frozen-lockfile
+      - name: Build
+        working-directory: ./frontend
+        run: yarn run build --if-present
+      - name: Test
+        working-directory: ./frontend
+        run: yarn run test --passWithNoTests
+
+  deploy:
+    name: "Deploy to Heroku"
+    needs: [ frontend_build, backend_build ]
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://culd-hub.herokuapp.com
     steps:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: 'culd-hub'
-          heroku_email: 'ew2664@columbia.edu'
+          heroku_app_name: "culd-hub"
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
           usedocker: true
-          docker_build_args: |
-            SLACK_TOKEN_ARG
-        env:
-          SLACK_TOKEN_ARG: ${{secrets.SLACK_TOKEN_ENV}}
