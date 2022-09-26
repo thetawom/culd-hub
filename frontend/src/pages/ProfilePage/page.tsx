@@ -152,16 +152,14 @@ const ProfilePage = () => {
                         choices={schoolChoices}
                         input={
                             <Form.Item name="school"
-                                       noStyle>
+                                       noStyle
+                                       initialValue={user.member.school}>
                                 <Select placeholder="School"
                                         className={styles.fullWidthInput}
-                                        defaultValue={schoolChoices[user.member.school]}>
-                                    <>
-                                        {Object.entries(schoolChoices).map(([key, value]) =>
-                                            <Select.Option key={key}
-                                                           value={key}>{value.toString()}</Select.Option>)}
-                                    </>
-                                </Select>
+                                        options={Object.entries(schoolChoices).map(([key, value]) => ({
+                                            label: value.toString(),
+                                            value: parseInt(key)
+                                        }))}/>
                             </Form.Item>
                         }
                     />
@@ -172,16 +170,14 @@ const ProfilePage = () => {
                         choices={classYearChoices}
                         input={
                             <Form.Item name="classYear"
-                                       noStyle>
+                                       noStyle
+                                       initialValue={user.member.classYear}>
                                 <Select placeholder="Class year"
                                         className={styles.fullWidthInput}
-                                        defaultValue={classYearChoices[user.member.classYear]}>
-                                    <>
-                                        {Object.entries(classYearChoices).map(([key, value]) =>
-                                            <Select.Option key={key}
-                                                           value={key}>{value.toString()}</Select.Option>)}
-                                    </>
-                                </Select>
+                                        options={Object.entries(classYearChoices).map(([key, value]) => ({
+                                            label: value.toString(),
+                                            value: parseInt(key)
+                                        }))}/>
                             </Form.Item>
                         }
                     />

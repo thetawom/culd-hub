@@ -2,7 +2,11 @@ import React, {useState} from "react";
 import {Button, Card, Form, Input, message} from "antd";
 import {CheckOutlined, EditTwoTone} from "@ant-design/icons";
 import styles from "./style.module.css";
-import {APIInterface, handleApolloError, useAuthMutation} from "../../../../services/graphql";
+import {
+    APIInterface,
+    handleApolloError,
+    useAuthMutation
+} from "../../../../services/graphql";
 import {UPDATE_PROFILE_MUTATION} from "../../queries";
 import {User} from "../../../../types/types";
 
@@ -50,7 +54,7 @@ const ProfileItem: React.FC<Props> = ({
     const onSubmit = async (formValues: StringDict) => {
         let modified = false;
         for (const prop in formValues) {
-            if (formValues[prop] !== values[prop]) {
+            if (values[prop] != formValues[prop]) {
                 modified = true;
                 break;
             }
