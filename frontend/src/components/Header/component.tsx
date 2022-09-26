@@ -1,7 +1,12 @@
 import React, {useContext} from "react";
 import {Link} from "react-router-dom";
 import {Layout, Menu, Tooltip} from "antd";
-import {HomeFilled, LogoutOutlined, SettingFilled, SmileOutlined,} from "@ant-design/icons";
+import {
+    HomeFilled,
+    LogoutOutlined,
+    SettingFilled,
+    SmileOutlined,
+} from "@ant-design/icons";
 import {AuthContext} from "../../context/AuthContext";
 import {UserContext} from "../../context/UserContext";
 import styles from "./style.module.css";
@@ -28,7 +33,7 @@ const Header: React.FC<Props> = ({newUserTooltip}: Props) => {
             icon: <HomeFilled/>,
         },
         {
-            label: <Link to="/admin/">Admin</Link>,
+            label: <a href="/admin/" target="_blank">Admin</a>,
             key: "admin",
             icon: <SettingFilled/>,
         },
@@ -59,7 +64,8 @@ const Header: React.FC<Props> = ({newUserTooltip}: Props) => {
 
     return (
         <Layout.Header>
-            <Menu items={items} theme="dark" mode="horizontal" onClick={onClick} selectedKeys={[]}/>
+            <Menu items={items} theme="dark" mode="horizontal" onClick={onClick}
+                  selectedKeys={[]}/>
         </Layout.Header>
     );
 };

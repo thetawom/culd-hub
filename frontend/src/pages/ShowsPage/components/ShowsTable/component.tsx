@@ -214,7 +214,7 @@ const ShowsTable = ({user}: { user: User }) => {
                     </Space>
                     <Progress
                         type="circle"
-                        percent={Math.round((performers.length / (show.lions * 2 + 2)) * 100)}
+                        percent={show.lions == null ? 0 : Math.round((performers.length / (show.lions * 2 + 2)) * 100)}
                         format={() => `${performers.length}`}
                         width={32}
                         style={{
