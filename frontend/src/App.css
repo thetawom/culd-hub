@@ -16,5 +16,5 @@
 }
 
 .ant-table-content {
-    overflow: scroll;
+    overflow-x: auto;
 }

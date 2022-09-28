@@ -5,9 +5,9 @@ import {UserContext} from "../../context/UserContext";
 import Header from "../../components/Header";
 import ShowsTable from "./components/ShowsTable";
 import {ShowsTableProvider} from "./context/ShowsTableContext";
-import ShowsTableControls from "./components/ShowsTableControls";
 import {User} from "../../types/types";
 import styles from "./style.module.css";
+import ShowsTableControls from "./components/ShowsTableControls";
 
 const ShowsPage = () => {
 
@@ -18,7 +18,8 @@ const ShowsPage = () => {
             <Header newUserTooltip/>
             <Layout.Content className={styles.content}>
                 <ShowsTableProvider>
-                    <Row justify="space-between" align="bottom" className={styles.heading}>
+                    <Row justify="space-between" align="bottom"
+                         className={styles.heading}>
                         <Typography.Title className={styles.title} level={2}>
                             <AppstoreAddOutlined className={styles.icon}/>
                             Performance Sign-ups

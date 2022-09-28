@@ -3,6 +3,7 @@ import {Button, Segmented, Space, Tooltip} from "antd";
 import {SyncOutlined} from "@ant-design/icons";
 import ShowsTableContext from "../../context/ShowsTableContext";
 import {OPTIONS_ENUM} from "./constants";
+import styles from "./style.module.css";
 
 const ShowsTableControls = () => {
 
@@ -10,7 +11,7 @@ const ShowsTableControls = () => {
         useContext(ShowsTableContext);
 
     return (
-        <Space style={{marginTop: "1em", overflow: "scroll"}}>
+        <Space className={styles.space}>
             <Tooltip title="Refetch shows" placement="bottom">
                 <Button onClick={() => setNeedsRefresh(true)}>
                     <SyncOutlined/>
