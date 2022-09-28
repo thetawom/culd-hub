@@ -38,6 +38,8 @@ const ShowsTable = ({user}: { user: User }) => {
         removeFromShowRoster,
     }: ShowContextInterface = useContext(ShowsTableContext);
 
+    const performersNeeded = (show: Show) => show.lions * 2 + 2;
+
     const columns = [{
         title: "",
         key: "check",
@@ -77,13 +79,18 @@ const ShowsTable = ({user}: { user: User }) => {
         dataIndex: "priority",
         key: "priority",
         render: (priority: number, show: Show) => {
-            return (<Tag
-                color={!show.isOpen ? "purple" : priority == 0 ? "geekblue" : priority == 1 ? "green" : "red"}
-                key={priority}
-                style={{width: "5.5em", textAlign: "center"}}
-            >
-                {(!show.isOpen ? "closed" : showPriorityChoices[priority] ?? priority).toUpperCase()}
-            </Tag>);
+            return (
+                <Tag
+                    color={!show.isOpen ? "purple" : priority == 0 ? "geekblue" : priority == 1 ? "green" : "red"}
+                    key={priority}
+                    style={{
+                        width: "5.5em",
+                        textAlign: "center",
+                        cursor: "default"
+                    }}
+                >
+                    {(!show.isOpen ? "closed" : showPriorityChoices[priority] ?? priority).toUpperCase()}
+                </Tag>);
         },
         width: "4%",
     }, {
@@ -195,36 +202,42 @@ const ShowsTable = ({user}: { user: User }) => {
                             .sort((a: Member, b: Member) => {
                                 return a.user.id === show.point?.user.id ? -1 : b.user.id === show.point?.user.id ? 1 : a.user.firstName.localeCompare(b.user.firstName);
                             })
-                            .map((performer: Member) => (<Tooltip
-                                title={`${performer.user.firstName} ${performer.user.lastName}`}
-                                placement="bottom"
-                                trigger="click"
-                                key={performer.user.id}
-                            >
-                                <Tag
-                                    style={{
-                                        marginRight: "0px",
-                                        cursor: "pointer"
-                                    }}
-                                    color={performer.user.id === show.point?.user.id ? "volcano" : null}
+                            .map((performer: Member) => (
+                                <Tooltip
+                                    title={`${performer.user.firstName} ${performer.user.lastName}`}
+                                    placement="bottom"
+                                    key={performer.user.id}
                                 >
-                                    {performer.user.firstName}
-                                </Tag>
-                            </Tooltip>))}
+                                    <Tag
+                                        style={{
+                                            marginRight: "0px",
+                                            cursor: "default"
+                                        }}
+                                        color={performer.user.id === show.point?.user.id ? "volcano" : null}
+                                    >
+                                        {performer.user.firstName}
+                                    </Tag>
+                                </Tooltip>))}
                     </Space>
-                    <Progress
-                        type="circle"
-                        percent={show.lions == null ? 0 : Math.round((performers.length / (show.lions * 2 + 2)) * 100)}
-                        format={() => `${performers.length}`}
-                        width={32}
-                        style={{
-                            marginLeft: "auto",
-                            marginRight: "10px",
-                            marginTop: "auto",
-                            marginBottom: "auto",
-                            paddingLeft: "10px",
-                        }}
-                    />
+                    <Tooltip
+                        title={show.lions ? `${performers.length} of ${performersNeeded(show)} performers` : `${performers.length} performer${performers.length == 1 ? "" : "s"}`}
+                        placement="bottom"
+                    >
+                        <Progress
+                            type="circle"
+                            percent={show.lions == null ? 0 : Math.round((performers.length / performersNeeded(show)) * 100)}
+                            format={() => `${performers.length}`}
+                            width={32}
+                            style={{
+                                marginLeft: "auto",
+                                marginRight: "10px",
+                                marginTop: "auto",
+                                marginBottom: "auto",
+                                paddingLeft: "10px",
+                                cursor: "default",
+                            }}
+                        />
+                    </Tooltip>
                 </div>),
             width: "35%",
         },];
