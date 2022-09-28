@@ -19,7 +19,7 @@ export const UserProvider: React.FC<Props> = ({children}: Props) => {
     const [isNewUser, setNewUser] = useState(false);
 
     const checkIsNewUser = (user: User) => {
-        return !user.phone || !user.member.school || !user.member.classYear;
+        return !user.phone || user.member.school == null || user.member.classYear == null;
     };
 
     const {loading}: QueryResult = useAuthQuery(GET_ME_QUERY, {
