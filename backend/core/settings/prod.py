@@ -8,9 +8,6 @@ ALLOWED_HOSTS = [env("PRODUCTION_HOST")] if "PRODUCTION_HOST" in env else []
 
 CSRF_TRUSTED_ORIGINS = [env("PRODUCTION_ORIGIN")] if "PRODUCTION_ORIGIN" in env else []
 
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = True
-
 INSTALLED_APPS.extend(["whitenoise.runserver_nostatic"])
 
 # Must insert after SecurityMiddleware, which is first in settings/common.py
