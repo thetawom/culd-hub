@@ -211,9 +211,9 @@ Navigate to http://localhost:3000/ to see the results.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://github.com/Ileriayo/markdown-badges -->
 
-[build-shield]: https://img.shields.io/github/workflow/status/ew2664/culd-hub/Django%20CI?style=flat-square
+[build-shield]: https://img.shields.io/github/workflow/status/ew2664/culd-hub/Deployment?style=flat-square
 
-[build-url]: https://github.com/ew2664/culd-hub/actions/workflows/django.yml
+[build-url]: https://github.com/ew2664/culd-hub/actions/workflows/deploy.yml
 
 [coverage-shield]: https://img.shields.io/codecov/c/github/ew2664/culd-app?style=flat-square&token=XU966851SF
 
