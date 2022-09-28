@@ -4,9 +4,9 @@ from core.settings.base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = [env("PRODUCTION_HOST")] if "PRODUCTION_HOST" in env else []
+ALLOWED_HOSTS = ["hub.culiondance.org"]
 
-CSRF_TRUSTED_ORIGINS = [env("PRODUCTION_ORIGIN")] if "PRODUCTION_ORIGIN" in env else []
+CSRF_TRUSTED_ORIGINS = ["https://hub.culiondance.org", "http://hub.culiondance.org"]
 
 INSTALLED_APPS.extend(["whitenoise.runserver_nostatic"])
 
