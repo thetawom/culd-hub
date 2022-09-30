@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.validators import validate_email
@@ -16,7 +16,6 @@ class UserManager(BaseUserManager):
         self,
         email: str,
         password: str,
-        activate: Optional[bool] = False,
         **extra_fields,
     ) -> User:
         if not email:
@@ -26,8 +25,6 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
-        if activate:
-            user.activate()
         return user
 
     def create_superuser(self, email: str, password: str, **extra_fields) -> User:
@@ -38,7 +35,7 @@ class UserManager(BaseUserManager):
             raise ValueError(_("Superuser must have is_staff=True."))
         if extra_fields.get("is_superuser") is not True:
             raise ValueError(_("Superuser must have is_superuser=True."))
-        return self.create(email, password, activate=True, **extra_fields)
+        return self.create(email, password, **extra_fields)
 
     def activate(self) -> QuerySet:
         user_set = self.all()

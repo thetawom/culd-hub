@@ -26,7 +26,6 @@ class TestUserAdmin(PatchSlackBossMixin, TestCase):
             password=self.user_data["password"],
             first_name=self.user_data["first_name"],
             last_name=self.user_data["last_name"],
-            activate=True,
         )
 
         self.site = AdminSite()

@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from faker import Faker
 
+from shows.models import Member
 from slack.tests.utils import PatchSlackBossMixin
 from users.tests.utils import fake_user_data
 
@@ -22,7 +23,7 @@ class TestUserModel(PatchSlackBossMixin, TestCase):
 
         self.user_data = fake_user_data(faker)
 
-    def test_create_and_activate_user(self):
+    def test_create_user(self):
         user = User.objects.create(
             email=self.user_data["email"],
             password=self.user_data["password"],
@@ -33,20 +34,23 @@ class TestUserModel(PatchSlackBossMixin, TestCase):
             str(user),
             f"{self.user_data['first_name']} " f"{self.user_data['last_name']}",
         )
-        self.assertFalse(user.is_active)
-
-        user.activate()
         self.assertTrue(user.is_active)
         self.assertTrue(hasattr(user, "member") and user.member is not None)
 
-    def test_create_user_with_activate(self):
+        self.assertFalse(user.activate())
+        self.assertTrue(user.is_active)
+
+    def test_activate_user(self):
         user = User.objects.create(
             email=self.user_data["email"],
             password=self.user_data["password"],
             first_name=self.user_data["first_name"],
             last_name=self.user_data["last_name"],
-            activate=True,
+            is_active=False,
         )
+        self.assertFalse(user.is_active)
+        self.assertEqual(Member.objects.filter(user=user).count(), 0)
+        self.assertTrue(user.activate())
         self.assertTrue(user.is_active)
         self.assertTrue(hasattr(user, "member") and user.member is not None)
 
