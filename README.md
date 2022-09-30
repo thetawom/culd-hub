@@ -45,7 +45,7 @@ logistics. Previously, a Google Sheets setup was used for members to register
 for shows, but this grew increasingly
 cumbersome with scale and became hard to maintain. Even with Apps Script, it was
 also not fully customizable to the
-needs of members. From there, the CU Lion Dance Hub was born — fully suited to the club's needs.
+needs of members. From there, the CU Lion Dance Hub was born.
 
 <div align="center">
 
