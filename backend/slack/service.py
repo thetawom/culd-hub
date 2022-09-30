@@ -8,7 +8,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 from common.exceptions import WrongUsage
-from slack.exceptions import SlackBossException
+from slack.exceptions import SlackBossException, SlackTokenException
 
 if TYPE_CHECKING:
     from users.models import User
@@ -38,13 +38,16 @@ class SlackBoss:
 
         Args:
             token: Slack access token to configure the WebClient
+
+        Raises:
+            SlackTokenException: If no Slack token is configured.
         """
 
         if not token:
             if hasattr(settings, "SLACK_TOKEN"):
                 token = settings.SLACK_TOKEN
             else:
-                raise SlackBossException(
+                raise SlackTokenException(
                     "SLACK_TOKEN must be configured in default settings if slack_token is None"
                 )
 
@@ -86,8 +89,6 @@ class SlackBoss:
                 raise SlackBossException(error)
         else:
             logging.debug(response)
-            if not response.get("ok", False):
-                raise SlackBossException("Error fetching Slack user ID")
             return response["user"]["id"]
 
     def create_channel(self, name: Optional[str] = None, show: Optional[Show] = None):
@@ -116,8 +117,6 @@ class SlackBoss:
             raise SlackBossException(error)
         else:
             logging.debug(response)
-            if not response.get("ok", False):
-                raise SlackBossException("Error creating Slack channel")
             return response["channel"]["id"]
 
     def archive_channel(
@@ -151,8 +150,6 @@ class SlackBoss:
             raise SlackBossException(error)
         else:
             logging.debug(response)
-            if not response.get("ok", False):
-                raise SlackBossException("Error renaming Slack channel")
         return True
 
     def rename_channel(
@@ -184,16 +181,12 @@ class SlackBoss:
 
         logging.info(f"Renaming channel {channel_label} ...")
         try:
-            response = self.client.conversations_rename(
-                channel=show.channel.id, name=name
-            )
+            response = self.client.conversations_rename(channel=channel_id, name=name)
         except SlackApiError as api_error:
             error = api_error.response.get("error")
             raise SlackBossException(error)
         else:
             logging.debug(response)
-            if not response.get("ok", False):
-                raise SlackBossException("Error renaming Slack channel")
             return response["channel"]["id"]
 
     def invite_users_to_channel(
@@ -240,8 +233,6 @@ class SlackBoss:
                 raise SlackBossException(error)
         else:
             logging.debug(response)
-            if not response.get("ok", False):
-                raise SlackBossException("Error inviting users to channel")
         return True
 
     def remove_users_from_channel(
@@ -291,8 +282,6 @@ class SlackBoss:
                     raise SlackBossException(error)
             else:
                 logging.debug(response)
-                if not response.get("ok", False):
-                    raise SlackBossException("Error removing users from channel")
         return True
 
     def send_message_in_channel(
@@ -353,8 +342,6 @@ class SlackBoss:
             raise SlackBossException(error)
         else:
             logging.debug(response)
-            if not response.get("ok", False):
-                raise SlackBossException("Error posting Slack message")
             return response["ts"], is_new_message
 
     def pin_message_in_channel(
@@ -399,8 +386,6 @@ class SlackBoss:
                 raise SlackBossException(error)
         else:
             logging.debug(response)
-            if not response.get("ok", False):
-                raise SlackBossException("Error inviting users to channel")
         return True
 
     @staticmethod
@@ -429,11 +414,9 @@ class SlackBoss:
         elif user is not None:
             return user.email, str(user)
         elif member is not None:
-            if hasattr(member, "user"):
+            if member.user:
                 return member.user.email, str(member)
-            raise SlackBossException(
-                f"Member {member} does not have an associated user"
-            )
+            raise SlackBossException(f"Member does not have an associated user")
         raise WrongUsage("At least one of email, user, or member must be specified")
 
     @staticmethod
