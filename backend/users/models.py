@@ -31,21 +31,18 @@ class User(AbstractUser):
         return self.get_full_name()
 
     def save(self, *args, **kwargs):
-        if self._state.adding and not self.is_superuser:
-            self.is_active = False
         old_instance = User.objects.filter(pk=self.pk).first()
-        activated = self.is_active and not getattr(old_instance, "is_active",
-                                                   False)
+        was_active = getattr(old_instance, "is_active", False)
         super().save(*args, **kwargs)
-        if activated:
+        if self.is_active and not was_active:
             signals.user_activated.send(sender=User, user=self)
 
     def activate(self):
-        already_active = self.is_active
-        if not already_active:
+        was_active = self.is_active
+        if not was_active:
             self.is_active = True
             self.save()
-        return not already_active
+        return not was_active
 
     @classmethod
     def email_is_free(cls, email):
