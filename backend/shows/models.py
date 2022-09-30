@@ -10,7 +10,8 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from slack.models import SlackUser, SlackChannel
 
-User = get_user_model()
+# User = get_user_model()
+from users.models import User
 
 
 class Member(models.Model):

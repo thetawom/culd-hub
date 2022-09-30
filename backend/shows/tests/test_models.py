@@ -29,7 +29,9 @@ class TestMemberModel(PatchSlackBossMixin, TestCase):
             password=self.user_data["password"],
             first_name=self.user_data["first_name"],
             last_name=self.user_data["last_name"],
+            activate=True,
         )
+        self.user.save()
 
     def test_create_member_from_user(self):
         self.assertEqual(Member.objects.count(), 1)
@@ -61,6 +63,7 @@ class TestShowModel(PatchSlackBossMixin, TestCase):
                 password=user["password"],
                 first_name=user["first_name"],
                 last_name=user["last_name"],
+                activate=True,
             )
             for user in self.user_data
         ]

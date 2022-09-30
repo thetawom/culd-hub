@@ -4,8 +4,17 @@ import {useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
 import {AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_EMAIL,} from "./constants";
-import {LOGOUT_USER_MUTATION, REFRESH_TOKEN_MUTATION, TOKEN_AUTH_MUTATION} from "./queries";
-import {ApolloClient, ApolloError, createHttpLink, InMemoryCache} from "@apollo/client";
+import {
+    LOGOUT_USER_MUTATION,
+    REFRESH_TOKEN_MUTATION,
+    TOKEN_AUTH_MUTATION
+} from "./queries";
+import {
+    ApolloClient,
+    ApolloError,
+    createHttpLink,
+    InMemoryCache
+} from "@apollo/client";
 import {setContext} from "@apollo/client/link/context";
 
 export const AuthContext = createContext(undefined);
@@ -20,6 +29,7 @@ export const AuthProvider: React.FC<Props> = ({children}: Props) => {
     const location = useLocation();
 
     const [invalidCredentials, setInvalidCredentials] = useState(false);
+    const [inactiveUser, setInactiveUser] = useState(false);
 
     const [authTokens, setAuthTokens] = useState(() =>
         localStorage.getItem(AUTH_TOKEN) && localStorage.getItem(REFRESH_TOKEN)
@@ -47,6 +57,9 @@ export const AuthProvider: React.FC<Props> = ({children}: Props) => {
         onError: handleApolloError((error: ApolloError) => {
             if (error.message === "Please enter valid credentials") {
                 setInvalidCredentials(true);
+                return true;
+            } else if (error.message === "User is not active") {
+                setInactiveUser(true);
                 return true;
             }
         }),
@@ -137,9 +150,11 @@ export const AuthProvider: React.FC<Props> = ({children}: Props) => {
         authTokens: authTokens,
         client: client,
         invalidCredentials: invalidCredentials,
+        inactiveUser: inactiveUser,
         loginUser: loginUser,
         logoutUser: logoutUser,
         setInvalidCredentials: setInvalidCredentials,
+        setInactiveUser: setInactiveUser,
     };
 
     return (

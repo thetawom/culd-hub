@@ -18,7 +18,7 @@ class TestUserAdmin(PatchSlackBossMixin, TestCase):
         super().setUp()
 
         faker = Faker()
-        Faker.seed(0)
+        Faker.seed(1234)
 
         self.user_data = fake_user_data(faker)
         self.user = User.objects.create(
@@ -26,6 +26,7 @@ class TestUserAdmin(PatchSlackBossMixin, TestCase):
             password=self.user_data["password"],
             first_name=self.user_data["first_name"],
             last_name=self.user_data["last_name"],
+            activate=True,
         )
 
         self.site = AdminSite()

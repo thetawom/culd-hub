@@ -8,5 +8,3 @@ class ShowsConfig(AppConfig):
 
     def ready(self):
         import shows.signals.handlers  # noqa
-
-        # import shows.signals.slack  # noqa

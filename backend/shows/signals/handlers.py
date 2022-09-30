@@ -5,14 +5,14 @@ from django.dispatch import receiver
 
 from common.decorators import disable_for_loaddata
 from shows.models import Member, Round, Show
+from users.signals.signals import user_activated
 
 User = get_user_model()
 
 
-@receiver(post_save, sender=User)
-def create_member_for_user(sender, instance, created, **kwargs):
-    if created:
-        Member.objects.create(user=instance)
+@receiver(user_activated)
+def create_member_for_user(sender, user, **kwargs):
+    Member.objects.get_or_create(user=user)
 
 
 @receiver(post_save, sender=Round)

@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
 from users.managers import UserManager
+from users.signals import signals
 from users.tokens import action_token, TokenAction
 
 
@@ -28,6 +29,23 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.get_full_name()
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.is_superuser:
+            self.is_active = False
+        old_instance = User.objects.filter(pk=self.pk).first()
+        activated = self.is_active and not getattr(old_instance, "is_active",
+                                                   False)
+        super().save(*args, **kwargs)
+        if activated:
+            signals.user_activated.send(sender=User, user=self)
+
+    def activate(self):
+        already_active = self.is_active
+        if not already_active:
+            self.is_active = True
+            self.save()
+        return not already_active
 
     @classmethod
     def email_is_free(cls, email):
@@ -47,7 +65,6 @@ class User(AbstractUser):
         )
 
     def get_email_context(self, info, path, action, **kwargs):
-        # token = get_token(self, action, **kwargs)
         token = action_token.make_token(self, action)
         site = get_current_site(info.context)
         return {

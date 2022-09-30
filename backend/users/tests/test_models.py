@@ -22,7 +22,7 @@ class TestUserModel(PatchSlackBossMixin, TestCase):
 
         self.user_data = fake_user_data(faker)
 
-    def test_create_user(self):
+    def test_create_and_activate_user(self):
         user = User.objects.create(
             email=self.user_data["email"],
             password=self.user_data["password"],
@@ -33,6 +33,22 @@ class TestUserModel(PatchSlackBossMixin, TestCase):
             str(user),
             f"{self.user_data['first_name']} " f"{self.user_data['last_name']}",
         )
+        self.assertFalse(user.is_active)
+
+        user.activate()
+        self.assertTrue(user.is_active)
+        self.assertTrue(hasattr(user, "member") and user.member is not None)
+
+    def test_create_user_with_activate(self):
+        user = User.objects.create(
+            email=self.user_data["email"],
+            password=self.user_data["password"],
+            first_name=self.user_data["first_name"],
+            last_name=self.user_data["last_name"],
+            activate=True,
+        )
+        self.assertTrue(user.is_active)
+        self.assertTrue(hasattr(user, "member") and user.member is not None)
 
     def test_create_user_invalid_email_error(self):
         with self.assertRaises(ValueError):
@@ -54,17 +70,18 @@ class TestUserModel(PatchSlackBossMixin, TestCase):
         self.assertTrue(superuser.is_staff)
         self.assertTrue(superuser.is_superuser)
         self.assertTrue(superuser.is_active)
+        self.assertTrue(hasattr(superuser, "member") and superuser.member is not None)
 
     def test_create_superuser_error(self):
         with self.assertRaises(ValueError):
             User.objects.create_superuser(
                 email=self.user_data["email"],
                 password=self.user_data["password"],
-                is_superuser=False,
+                is_staff=False,
             )
         with self.assertRaises(ValueError):
             User.objects.create_superuser(
                 email=self.user_data["email"],
                 password=self.user_data["password"],
-                is_staff=False,
+                is_superuser=False,
             )

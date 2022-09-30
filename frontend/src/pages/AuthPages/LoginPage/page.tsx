@@ -4,17 +4,27 @@ import {Alert, Button, Form, Input} from "antd";
 import {LockOutlined, MailOutlined} from "@ant-design/icons";
 import {AuthContext, REMEMBER_EMAIL} from "../../../context/AuthContext";
 import AuthPage from "../template";
-import {EMAIL_VALIDATION_RULES, PASSWORD_VALIDATION_RULES} from "../../../services/validation";
+import {
+    EMAIL_VALIDATION_RULES,
+    PASSWORD_VALIDATION_RULES
+} from "../../../services/validation";
 
 export const LoginPage: React.FC = () => {
 
-    const {loginUser, invalidCredentials, setInvalidCredentials} =
+    const {
+        loginUser,
+        invalidCredentials,
+        setInvalidCredentials,
+        inactiveUser,
+        setInactiveUser
+    } =
         useContext(AuthContext);
 
     const [form] = Form.useForm();
 
     const onChange: (() => void) = () => {
         setInvalidCredentials(false);
+        setInactiveUser(false);
     };
 
     const subtitle: React.ReactNode = (
@@ -29,6 +39,10 @@ export const LoginPage: React.FC = () => {
     const alert: React.ReactNode = invalidCredentials ? (
         <Alert type="error" message="Username or password are incorrect."
                banner/>
+    ) : inactiveUser ? (
+        <Alert type="warning"
+               message="Please wait for your account to be approved."
+               banner/>
     ) : null;
 
     return (
@@ -41,7 +55,6 @@ export const LoginPage: React.FC = () => {
                 <Form.Item
                     name="email"
                     rules={EMAIL_VALIDATION_RULES}
-                    validateTrigger="onBlur"
                     validateStatus={invalidCredentials ? "error" : ""}
                     hasFeedback={invalidCredentials}
                     initialValue={
@@ -56,7 +69,6 @@ export const LoginPage: React.FC = () => {
                 <Form.Item
                     name="password"
                     rules={PASSWORD_VALIDATION_RULES}
-                    validateTrigger="onBlur"
                     validateStatus={invalidCredentials ? "error" : ""}
                     hasFeedback={invalidCredentials}
                 >

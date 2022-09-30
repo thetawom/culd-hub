@@ -51,6 +51,7 @@ class UserAdmin(BaseUserAdmin):
         "last_name",
         "board",
         "is_staff",
+        "is_active",
     )
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
