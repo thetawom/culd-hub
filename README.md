@@ -12,7 +12,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/ew2664/culd-app">
+  <a href="https://github.com/ew2664/culd-hub">
     <img src="frontend/src/assets/logo.png" alt="Logo" width="200" height="200">
   </a>
 
@@ -26,9 +26,9 @@
     <br />
     <a href="https://hub.culiondance.org/">View Site</a>
     ·
-    <a href="https://github.com/ew2664/culd-app/issues">Report Bug</a>
+    <a href="https://github.com/ew2664/culd-hub/issues">Report Bug</a>
     ·
-    <a href="https://github.com/ew2664/culd-app/issues">Request Feature</a>
+    <a href="https://github.com/ew2664/culd-hub/issues">Request Feature</a>
   </p>
 </div>
 
@@ -215,9 +215,9 @@ Navigate to http://localhost:3000/ to see the results.
 
 [build-url]: https://github.com/ew2664/culd-hub/actions/workflows/deploy.yml
 
-[coverage-shield]: https://img.shields.io/codecov/c/github/ew2664/culd-app?style=flat-square&token=XU966851SF
+[coverage-shield]: https://img.shields.io/codecov/c/github/ew2664/culd-hub?style=flat-square&token=XU966851SF
 
-[coverage-url]: https://app.codecov.io/gh/ew2664/culd-app
+[coverage-url]: https://app.codecov.io/gh/ew2664/culd-hub
 
 [issues-shield]: https://img.shields.io/github/issues/ew2664/culd-hub.svg?style=flat-square
 
