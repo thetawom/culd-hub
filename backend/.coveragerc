@@ -4,3 +4,9 @@ omit =
     manage.py
     */migrations/*
     core/settings/*
+    */test*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if TYPE_CHECKING:
