@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Union
 from unittest.mock import patch, MagicMock
 
 from django.conf import settings
@@ -278,3 +278,154 @@ class TestSlackBoss(TestCase):
             self.slack_boss.rename_channel(
                 name=show_name, channel_id=fake_slack_id(self.faker)
             )
+
+    def test_invite_users_to_channel(self):
+        channel_id = fake_slack_id(self.faker)
+        user_ids = fake_slack_id(self.faker, count=2)
+
+        def mock_conversations_invite(channel: str, users=Union[str, List[str]]):
+            for user in users if isinstance(users, list) else [users]:
+                if user == user_ids[0]:
+                    raise SlackApiError(
+                        message="", response={"error": "already_in_channel"}
+                    )
+            return {"ok": True}
+
+        self.mock_client.conversations_invite.side_effect = mock_conversations_invite
+
+        invite_success = self.slack_boss.invite_users_to_channel(
+            channel_id=channel_id, user_ids=user_ids[1:]
+        )
+        self.mock_client.conversations_invite.assert_called_with(
+            channel=channel_id, users=user_ids[1:]
+        )
+        self.assertTrue(invite_success)
+
+        invite_success = self.slack_boss.invite_users_to_channel(
+            channel_id=channel_id, user_ids=user_ids
+        )
+        self.mock_client.conversations_invite.assert_called_with(
+            channel=channel_id, users=user_ids
+        )
+        self.assertTrue(invite_success)
+
+        self.mock_client.conversations_invite.side_effect = self.generic_slack_api_error
+        with self.assertRaises(SlackBossException):
+            self.slack_boss.invite_users_to_channel(
+                channel_id=channel_id, user_ids=user_ids
+            )
+
+    def test_remove_users_from_channel(self):
+        channel_id = fake_slack_id(self.faker)
+        user_ids = fake_slack_id(self.faker, count=2)
+
+        def mock_conversations_kick(channel: str, user: str):
+            if user == user_ids[-1]:
+                raise SlackApiError(message="", response={"error": "not_in_channel"})
+            return {"ok": True}
+
+        self.mock_client.conversations_kick.side_effect = mock_conversations_kick
+
+        kick_success = self.slack_boss.remove_users_from_channel(
+            channel_id=channel_id, user_ids=user_ids[0]
+        )
+        self.mock_client.conversations_kick.assert_called_once_with(
+            channel=channel_id, user=user_ids[0]
+        )
+        self.assertTrue(kick_success)
+
+        kick_success = self.slack_boss.remove_users_from_channel(
+            channel_id=channel_id, user_ids=user_ids
+        )
+        self.assertEqual(self.mock_client.conversations_kick.call_count, 3)
+        self.assertTrue(kick_success)
+
+        self.mock_client.conversations_kick.side_effect = self.generic_slack_api_error
+        with self.assertRaises(SlackBossException):
+            self.slack_boss.remove_users_from_channel(
+                channel_id=channel_id, user_ids=user_ids
+            )
+
+    def test_send_message_in_channel(self):
+        channel_id = fake_slack_id(self.faker)
+        message_ts = fake_slack_timestamp(self.faker)
+        message_blocks, message_text = [{"blocks"}], "text"
+
+        def mock_chat_postMessage(channel: str, blocks: List, text: str):
+            if channel == channel_id:
+                return {"ok": True, "ts": message_ts}
+            raise self.generic_slack_api_error
+
+        def mock_chat_update(channel: str, ts: str, blocks: List, text: str):
+            if channel == channel_id:
+                return {"ok": True, "ts": message_ts}
+            raise self.generic_slack_api_error
+
+        self.mock_client.chat_postMessage.side_effect = mock_chat_postMessage
+        self.mock_client.chat_update.side_effect = mock_chat_update
+
+        with self.assertRaises(WrongUsage):
+            self.slack_boss.send_message_in_channel(channel_id=channel_id)
+
+        sent_ts, is_new_message = self.slack_boss.send_message_in_channel(
+            channel_id=channel_id, blocks=message_blocks, text=message_text
+        )
+        self.mock_client.chat_postMessage.assert_called_with(
+            channel=channel_id, blocks=message_blocks, text=message_text
+        )
+        self.mock_client.chat_update.assert_not_called()
+        self.assertTrue(is_new_message)
+        self.assertEqual(sent_ts, message_ts)
+
+        sent_ts, is_new_message = self.slack_boss.send_message_in_channel(
+            channel_id=channel_id,
+            ts=message_ts,
+            blocks=message_blocks,
+        )
+        self.mock_client.chat_update.assert_called_with(
+            channel=channel_id, ts=message_ts, blocks=message_blocks, text=None
+        )
+        self.assertFalse(is_new_message)
+        self.assertEqual(sent_ts, message_ts)
+
+        with self.assertRaises(SlackBossException):
+            self.slack_boss.send_message_in_channel(
+                channel_id=fake_slack_id(self.faker), blocks=message_blocks
+            )
+
+    def test_pin_message_in_channel(self):
+        channel_id = fake_slack_id(self.faker)
+
+        with self.assertRaises(WrongUsage):
+            self.slack_boss.pin_message_in_channel(channel_id=channel_id)
+
+        message_ts = fake_slack_timestamp(self.faker)
+        self.mock_client.pins_add.return_value = {"ok": True}
+        pin_success = self.slack_boss.pin_message_in_channel(
+            channel_id=channel_id, ts=message_ts
+        )
+        self.mock_client.pins_add.assert_called_with(
+            channel=channel_id, timestamp=message_ts
+        )
+        self.assertTrue(pin_success)
+
+        message_ts = fake_slack_timestamp(self.faker)
+        self.mock_client.pins_add.side_effect = SlackApiError(
+            message="", response={"error": "already_pinned"}
+        )
+        self.assertFalse(
+            self.slack_boss.pin_message_in_channel(channel_id=channel_id, ts=message_ts)
+        )
+
+        message_ts = fake_slack_timestamp(self.faker)
+        self.mock_client.pins_add.side_effect = SlackApiError(
+            message="", response={"error": "not_pinnable"}
+        )
+        self.assertFalse(
+            self.slack_boss.pin_message_in_channel(channel_id=channel_id, ts=message_ts)
+        )
+
+        message_ts = fake_slack_timestamp(self.faker)
+        self.mock_client.pins_add.side_effect = self.generic_slack_api_error
+        with self.assertRaises(SlackBossException):
+            self.slack_boss.pin_message_in_channel(channel_id=channel_id, ts=message_ts)

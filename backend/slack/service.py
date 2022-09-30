@@ -150,7 +150,7 @@ class SlackBoss:
             raise SlackBossException(error)
         else:
             logging.debug(response)
-        return True
+            return True
 
     def rename_channel(
         self,
@@ -291,7 +291,7 @@ class SlackBoss:
         show: Optional[Show] = None,
         ts: Optional[str] = None,
         blocks: List = None,
-        text: str = None,
+        text: Optional[str] = None,
     ) -> Tuple[str, bool]:
         """Sends or updates a message in the specified channel.
 
@@ -386,7 +386,7 @@ class SlackBoss:
                 raise SlackBossException(error)
         else:
             logging.debug(response)
-        return True
+            return True
 
     @staticmethod
     def _get_email_arg(
@@ -527,9 +527,7 @@ class SlackBoss:
         if show is not None:
             return show, str(show)
         elif channel is not None:
-            if channel.show is not None:
-                return channel.show, str(channel.show)
-            raise SlackBossException(f"Channel {channel} does not have a Show")
+            return channel.show, str(channel.show)
         raise WrongUsage("At least one of show or channel must be specified")
 
     @staticmethod

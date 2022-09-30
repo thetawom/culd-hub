@@ -8,7 +8,8 @@ from faker import Faker
 
 from shows.models import Member, Show, Round, Role, Contact
 from shows.tests.utils import fake_show_data, fake_round_data
-from slack.tests.utils import PatchSlackBossMixin
+from slack.models import SlackChannel
+from slack.tests.utils import PatchSlackBossMixin, fake_slack_id
 from users.tests.utils import fake_user_data
 
 logging.disable(logging.WARNING)
@@ -85,6 +86,8 @@ class TestShowModel(PatchSlackBossMixin, TestCase):
         for performer in self.members:
             Role.objects.create(show=self.show, performer=performer)
 
+        self.channel_id = fake_slack_id(faker)
+
     def test_show_rounds_and_performers(self):
         for show_round in self.show.rounds.all():
             self.assertEqual(
@@ -138,6 +141,28 @@ class TestShowModel(PatchSlackBossMixin, TestCase):
         with self.assertRaises(ValidationError):
             show.status = Show.STATUSES.published
             show.save()
+
+    def test_default_channel_name(self):
+        with self.assertRaises(ValueError):
+            Show(name="", date=self.show_data["date"]).default_channel_name()
+        with self.assertRaises(ValueError):
+            Show(name=self.show_data["name"]).default_channel_name()
+        name = self.show.default_channel_name()
+        self.assertTrue(name.islower() and name.replace("-", "").isalnum())
+
+    def test_has_slack_channel(self):
+        self.assertFalse(self.show.has_slack_channel())
+        SlackChannel(id=self.channel_id, show=self.show)
+        self.assertTrue(self.show.has_slack_channel())
+        self.assertEqual(self.show.channel.id, self.channel_id)
+
+    def test_is_open(self):
+        self.show.status = self.show.STATUSES.draft
+        self.assertFalse(self.show.is_open())
+        self.show.status = self.show.STATUSES.published
+        self.assertTrue(self.show.is_open())
+        self.show.status = self.show.STATUSES.closed
+        self.assertFalse(self.show.is_open())
 
 
 class TestContactModel(TestCase):
