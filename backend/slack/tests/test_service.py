@@ -1,6 +1,7 @@
 from typing import Optional
 from unittest.mock import patch, MagicMock
 
+from django.conf import settings
 from django.test import TestCase, override_settings
 from faker import Faker
 from slack_sdk.errors import SlackApiError
@@ -177,9 +178,9 @@ class TestSlackBoss(TestCase):
 
         self.generic_slack_api_error = SlackApiError(message="", response={"error": ""})
 
-    @override_settings(SLACK_TOKEN=None)
-    @patch("slack.service.WebClient")
-    def test_init_with_no_slack_token_error(self, mock_web_client):
+    @override_settings()
+    def test_init_with_no_slack_token_error(self):
+        delattr(settings, "SLACK_TOKEN")
         with self.assertRaises(SlackTokenException):
             SlackBoss()
 
