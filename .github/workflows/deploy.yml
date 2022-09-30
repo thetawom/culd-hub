@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://culd-hub.herokuapp.com
+      url: https://hub.culiondance.org
     steps:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12
