@@ -2,7 +2,7 @@ from django.utils.translation import gettext as _
 
 
 class CustomException(Exception):
-    default_message = None
+    default_message = "Custom exception thrown!"
 
     def __init__(self, message=None):
         if message is None:

@@ -112,17 +112,20 @@ class SlackChannel(models.Model):
 
         slack_boss.remove_users_from_channel(channel_id=self.id, users=users)
 
-    def send_update_message(self, updated_fields):
+    def send_update_message(self, updated_fields: list[str]):
         """Sends message to the Slack channel.
 
         Args:
             updated_fields: The fields of the show that have been updated.
         """
 
-        if self.briefing_ts is None:
+        if self.briefing_ts is None or self.briefing_ts == "":
             raise WrongUsage(
                 "Update message should not be sent if briefing does not exist."
             )
+
+        if not updated_fields:
+            raise ValueError("There are no updated fields.")
 
         delta_since_briefing = datetime.now() - datetime.fromtimestamp(
             int(self.briefing_ts.split(".")[0])

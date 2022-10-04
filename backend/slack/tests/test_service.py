@@ -2,7 +2,7 @@ from typing import Optional, List, Union
 from unittest.mock import patch, MagicMock
 
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, override_settings
 from faker import Faker
 from slack_sdk.errors import SlackApiError
 
@@ -17,7 +17,10 @@ from users.models import User
 from users.tests.utils import fake_user_data
 
 
-class TestSlackBossArgs(TestCase):
+# logging.disable(logging.WARNING)
+
+
+class TestSlackBossArgs(SimpleTestCase):
     def setUp(self):
         self.faker = Faker()
         Faker.seed(421)
@@ -167,11 +170,12 @@ class TestSlackBossArgs(TestCase):
         self.assertEqual(label, ts_arg)
 
 
-class TestSlackBoss(TestCase):
+class TestSlackBoss(SimpleTestCase):
     @patch("slack.service.WebClient")
     def setUp(self, mock_web_client):
         self.faker = Faker()
         Faker.seed(26)
+
         self.mock_client = MagicMock()
         mock_web_client.return_value = self.mock_client
         self.slack_boss = SlackBoss()

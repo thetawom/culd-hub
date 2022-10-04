@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib.admin import AdminSite
 from django.test import TestCase
 from faker import Faker
@@ -8,7 +6,8 @@ from shows.admin import ShowAdmin
 from shows.models import Show
 from shows.tests.utils import fake_show_data
 
-logging.disable(logging.WARNING)
+
+# logging.disable(logging.WARNING)
 
 
 class TestShowAdmin(TestCase):

@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
@@ -12,7 +10,7 @@ from slack.models import SlackChannel
 from slack.tests.utils import PatchSlackBossMixin, fake_slack_id
 from users.tests.utils import fake_user_data
 
-logging.disable(logging.WARNING)
+# logging.disable(logging.WARNING)
 
 User = get_user_model()
 
@@ -163,9 +161,11 @@ class TestShowModel(PatchSlackBossMixin, TestCase):
 
 
 class TestContactModel(TestCase):
+    contact: Contact
+
     def setUp(self):
-        pass
+        super().setUp()
+        self.contact = Contact.objects.create(first_name="Tom", last_name="Hanks")
 
     def test_create_contact(self):
-        contact = Contact.objects.create(first_name="Tom", last_name="Hanks")
-        self.assertEqual(str(contact), "Tom Hanks")
+        self.assertEqual(str(self.contact), "Tom Hanks")

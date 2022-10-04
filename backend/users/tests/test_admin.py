@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib.admin import AdminSite
 from django.test import TestCase
 from faker import Faker
@@ -10,7 +8,8 @@ from users.admin import UserAdmin
 from users.models import User
 from users.tests.utils import fake_user_data
 
-logging.disable(logging.WARNING)
+
+# logging.disable(logging.WARNING)
 
 
 class TestUserAdmin(PatchSlackBossMixin, TestCase):

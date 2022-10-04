@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -9,7 +7,7 @@ from shows.models import Member
 from slack.tests.utils import PatchSlackBossMixin
 from users.tests.utils import fake_user_data
 
-logging.disable(logging.WARNING)
+# logging.disable(logging.WARNING)
 
 User = get_user_model()
 
