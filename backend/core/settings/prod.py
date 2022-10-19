@@ -24,6 +24,6 @@ WHITENOISE_ROOT = os.path.join(BASE_DIR, "../", "frontend", "build", "root")
 
 DATABASE_URL = env("DATABASE_URL", default=None)
 db_from_env = dj_database_url.config(
-    default=DATABASE_URL, conn_max_age=500, ssl_require=True
+    default=DATABASE_URL, conn_max_age=0, ssl_require=True
 )
 DATABASES["default"].update(db_from_env)
