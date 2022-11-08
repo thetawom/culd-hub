@@ -36,6 +36,7 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
         if self.is_active and not was_active:
             signals.user_activated.send(sender=User, user=self)
+            self.send_user_activated_email()
 
     def activate(self):
         was_active = self.is_active
@@ -61,25 +62,36 @@ class User(AbstractUser):
             fail_silently=False,
         )
 
-    def get_email_context(self, info, path, action, **kwargs):
-        token = action_token.make_token(self, action)
-        site = get_current_site(info.context)
-        return {
+    def get_email_context(self, info=None, path=None, action=None, **kwargs):
+        context = {
             "user": self,
-            "request": info.context,
-            "token": token,
-            "port": info.context.get_port(),
             "site_name": "CU Lion Dance Hub",
-            "domain": site.domain,
-            "protocol": "https" if info.context.is_secure() else "http",
-            "path": path,
+            "domain": "hub.culiondance.org",
+            "protocol": "https",
             "timestamp": time.time(),
         }
+        if info:
+            site = get_current_site(info.context)
+            context["domain"] = site.domain
+            context["request"] = info.context
+            context["port"] = info.context.get_port()
+            context["protocol"] = "https" if info.context.is_secure() else "http"
+        if path:
+            context["path"] = path
+        if action:
+            context["token"] = action_token.make_token(self, action)
+        return context
 
     def send_password_reset_email(self, info, *args, **kwargs):
         email_context = self.get_email_context(
-            info, "password_reset", TokenAction.PASSWORD_RESET
+            info, path="password_reset", action=TokenAction.PASSWORD_RESET
         )
         template = "email/password_reset_email.html"
         subject = "email/password_reset_subject.txt"
+        return self.send(subject, template, email_context, *args, **kwargs)
+
+    def send_user_activated_email(self, *args, **kwargs):
+        email_context = self.get_email_context(path="login")
+        template = "email/user_activated_email.html"
+        subject = "email/user_activated_subject.txt"
         return self.send(subject, template, email_context, *args, **kwargs)
