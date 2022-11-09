@@ -101,34 +101,36 @@ const ShowsTable = ({user}: { user: User }) => {
         key: "name",
         render: (name: string, show: Show) => {
             return (<>
-                <span style={{fontSize: "1.05em"}}>{name}</span>
-                {show.isPending && <Tooltip
-                    title="Show pending confirmation"
-                    placement="bottom"
-                    style={{textAlign: "center"}}
-                >
-                    <WarningFilled
-                        style={{
-                            marginLeft: "8px",
-                            color: "#faad14"
-                        }}
-                    />
-                </Tooltip>}
-                <Tooltip
-                    title="More Info"
-                    placement="bottom"
-                    style={{textAlign: "center"}}
-                >
-                    <InfoCircleOutlined
-                        style={{marginLeft: "5px", color: "gray"}}
-                        onClick={() => {
-                            Modal.info({
-                                content: <ShowDetails show={show}/>,
-                                width: "80%",
-                            });
-                        }}
-                    />
-                </Tooltip>
+                <span style={{
+                    fontSize: "1.05em",
+                    marginRight: "8px"
+                }}>{name}</span>
+                <Space size={5}>
+                    {show.isPending && <Tooltip
+                        title="Show pending confirmation"
+                        placement="bottom"
+                        style={{textAlign: "center"}}
+                    >
+                        <WarningFilled
+                            style={{color: "#faad14"}}
+                        />
+                    </Tooltip>}
+                    <Tooltip
+                        title="More Info"
+                        placement="bottom"
+                        style={{textAlign: "center"}}
+                    >
+                        <InfoCircleOutlined
+                            style={{color: "gray"}}
+                            onClick={() => {
+                                Modal.info({
+                                    content: <ShowDetails show={show}/>,
+                                    width: "60%",
+                                });
+                            }}
+                        />
+                    </Tooltip>
+                </Space>
             </>);
         },
     }, {
@@ -218,7 +220,7 @@ const ShowsTable = ({user}: { user: User }) => {
                             })
                             .map((performer: Member) => (
                                 <Tooltip
-                                    title={`${performer.user.firstName} ${performer.user.lastName}`}
+                                    title={`${performer.user.firstName} ${performer.user.lastName}${show.point?.user.id == performer.user.id ? " (point)" : ""}`}
                                     placement="bottom"
                                     key={performer.user.id}
                                 >
