@@ -1,7 +1,6 @@
 import re
 
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext as _
@@ -109,7 +108,7 @@ class Show(models.Model):
         verbose_name="venue address",
         help_text=_("Venue name or room number if on campus"),
     )
-    is_campus = models.BooleanField(default=False, verbose_name="On Campus")
+    is_campus = models.BooleanField(default=False, verbose_name="on campus")
     lions = models.PositiveSmallIntegerField(
         null=True, blank=True, verbose_name="Number of lions"
     )
@@ -136,6 +135,7 @@ class Show(models.Model):
         null=True,
         blank=True,
     )
+    pending = models.BooleanField(default=True)
     status = models.PositiveSmallIntegerField(choices=STATUSES, default=STATUSES.draft)
     priority = models.PositiveSmallIntegerField(
         choices=PRIORITIES, default=PRIORITIES.normal

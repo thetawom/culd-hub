@@ -50,9 +50,13 @@ class ShowType(DjangoObjectType):
         convert_choices_to_enum = False
 
     is_open = graphene.Boolean()
+    is_pending = graphene.Boolean()
 
     def resolve_is_open(self, info):
         return self.is_open()  # noqa
+
+    def resolve_is_pending(self, info):
+        return self.pending  # noqa
 
 
 class RoundType(DjangoObjectType):

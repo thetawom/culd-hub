@@ -10,18 +10,20 @@ import {
     Tooltip
 } from "antd";
 import {
+    InfoCircleOutlined,
     InfoCircleTwoTone,
     MailTwoTone,
     PhoneTwoTone,
     PlusOutlined,
     StarFilled,
+    WarningFilled
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import ShowsTableContext from "../../context/ShowsTableContext";
-import ShowDetails from "../ShowDetails";
 import {OPTIONS_ENUM} from "../ShowsTableControls";
 import {Contact, Member, Round, Show, User} from "../../../../types/types";
 import {ShowContextInterface} from "../../context/ShowsTableContext/types";
+import ShowDetails from "../ShowDetails";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const customParseFormat = require("dayjs/plugin/customParseFormat");
@@ -100,13 +102,25 @@ const ShowsTable = ({user}: { user: User }) => {
         render: (name: string, show: Show) => {
             return (<>
                 <span style={{fontSize: "1.05em"}}>{name}</span>
+                {show.isPending && <Tooltip
+                    title="Show pending confirmation"
+                    placement="bottom"
+                    style={{textAlign: "center"}}
+                >
+                    <WarningFilled
+                        style={{
+                            marginLeft: "8px",
+                            color: "#faad14"
+                        }}
+                    />
+                </Tooltip>}
                 <Tooltip
                     title="More Info"
                     placement="bottom"
                     style={{textAlign: "center"}}
                 >
-                    <InfoCircleTwoTone
-                        style={{marginLeft: "10px"}}
+                    <InfoCircleOutlined
+                        style={{marginLeft: "5px", color: "gray"}}
                         onClick={() => {
                             Modal.info({
                                 content: <ShowDetails show={show}/>,

@@ -15,7 +15,7 @@ export type Member = {
 }
 
 export type Show = {
-    id: number, s
+    id: number,
     name: string,
     priority: number,
     date: string,
@@ -28,6 +28,7 @@ export type Show = {
     contact: Contact,
     isCampus: boolean,
     isOpen: boolean,
+    isPending: boolean,
     status: number,
 }
 

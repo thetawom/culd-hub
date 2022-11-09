@@ -35,8 +35,9 @@ export const GET_SHOWS_QUERY = gql`
 				email
 			}
 			isCampus
-			status
 			isOpen
+			isPending
+			status
 		}
 	}
 `;
