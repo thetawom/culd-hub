@@ -145,7 +145,7 @@ const ShowsTable = ({user}: { user: User }) => {
             <div key={id}>
                 {time ? dayjs(time, "HH:mm:ss").format("h:mm A") : ""}
             </div>)),
-        sorter: (a, b) => a.time.localeCompare(b.time),
+        sorter: (a, b) => a.time?.localeCompare(b.time),
     }, {
         title: (<span
             style={{
