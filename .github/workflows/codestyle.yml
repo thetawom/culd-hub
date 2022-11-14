@@ -42,4 +42,4 @@ jobs:
           pip install pycodestyle
       - name: Run pycodestyle
         run: |
-          pycodestyle --statistics --max-line-length=120 ./backend
+          pycodestyle --statistics --max-line-length=120 --exclude="*/migrations" ./backend
