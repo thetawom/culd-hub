@@ -25,8 +25,6 @@ function App() {
                 <Routes>
                     <Route element={<PrivateRoutes/>}>
                         <Route path="/" element={<ShowsPage/>}/>
-                        <Route path="calendar/"
-                               element={<ShowsPage/>}/>
                         <Route path="profile/" element={<ProfilePage/>}/>
                     </Route>
                     <Route path="login/" element={<LoginPage/>}/>
