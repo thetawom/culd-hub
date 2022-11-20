@@ -1,4 +1,4 @@
-import {Rule} from "antd/lib/form";
+import {Rule} from "antd/dist/antd";
 import {isValidPhoneNumber} from "libphonenumber-js";
 
 export const FIRST_NAME_VALIDATION_RULES: Rule[] = [

@@ -20,21 +20,20 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import ShowsTableContext from "../../context/ShowsTableContext";
-import {OPTIONS_ENUM} from "../ShowsTableControls";
 import {Contact, Member, Round, Show, User} from "../../../../types/types";
 import {ShowContextInterface} from "../../context/ShowsTableContext/types";
 import ShowDetails from "../ShowDetails";
+import {Views} from "../ShowsTableControls";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
 const ShowsTable = ({user}: { user: User }) => {
-
     const {
         shows,
         showPriorityChoices,
-        openFilter,
+        view,
         needsRefresh,
         addToShowRoster,
         removeFromShowRoster,
@@ -124,6 +123,7 @@ const ShowsTable = ({user}: { user: User }) => {
                             style={{color: "gray"}}
                             onClick={() => {
                                 Modal.info({
+                                    title: show.name,
                                     content: <ShowDetails show={show}/>,
                                     width: "60%",
                                 });
@@ -258,24 +258,9 @@ const ShowsTable = ({user}: { user: User }) => {
             width: "35%",
         },];
 
-    const isPerforming = (show: Show) => {
-        for (const performer of show.performers) {
-            if (performer.user.id === user.id) return true;
-        }
-        return false;
-    };
-
-    return <Table
+    return view == Views.TABLE && <Table
         columns={columns}
-        dataSource={
-            openFilter === OPTIONS_ENUM.ALL
-                ? shows
-                : openFilter === OPTIONS_ENUM.MINE
-                    ? shows.filter((show: Show) => isPerforming(show))
-                    : openFilter === OPTIONS_ENUM.OPEN
-                        ? shows.filter((show: Show) => show.isOpen)
-                        : shows.filter((show: Show) => !show.isOpen)
-        }
+        dataSource={shows}
         rowKey="id"
         size="middle"
         loading={needsRefresh}

@@ -10,8 +10,7 @@ import {
 
 const ShowDetails = ({show}: { show: Show }) => {
     return (
-        <Descriptions title={show.name} layout="vertical" bordered
-                      size="middle">
+        <Descriptions layout="vertical" bordered size="middle">
             <Descriptions.Item label="Date">
                 {dayjs(show.date).format("ddd, MMM DD") || "TBD"}
             </Descriptions.Item>

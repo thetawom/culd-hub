@@ -16,6 +16,7 @@ import {
 } from "./queries";
 import {Show} from "../../../../types/types";
 import {ShowContextInterface} from "./types";
+import {Options, Views} from "../../components/ShowsTableControls";
 
 const ShowsTableContext = createContext(undefined);
 
@@ -26,7 +27,7 @@ interface Props {
 }
 
 export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
-    const {logoutUser} = useContext(AuthContext);
+    const {user, logoutUser} = useContext(AuthContext);
 
     const [shows, setShows] = useState<Show[]>([]);
 
@@ -44,7 +45,8 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
         },
     });
 
-    const [openFilter, setOpenFilter] = useState<string>("Open");
+    const [view, setView] = useState<Views>(Views.TABLE);
+    const [optionsFilter, setOptionsFilter] = useState<Options>(Options.OPEN);
     const [needsRefresh, setNeedsRefresh] = useState<boolean>(true);
 
     const [getShows] = useAuthLazyQuery(GET_SHOWS_QUERY, {
@@ -106,13 +108,30 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
         }
     };
 
+    const isPerforming = (show: Show) => {
+        for (const performer of show.performers) {
+            if (performer.user.id === user.id) return true;
+        }
+        return false;
+    };
+
+    const filtered_shows = optionsFilter === Options.ALL
+        ? shows
+        : optionsFilter === Options.MINE
+            ? shows.filter((show: Show) => isPerforming(show))
+            : optionsFilter === Options.OPEN
+                ? shows.filter((show: Show) => show.isOpen)
+                : shows.filter((show: Show) => !show.isOpen);
+
     const contextData: ShowContextInterface = {
-        shows: shows,
+        shows: filtered_shows,
         showPriorityChoices: showPriorityChoices,
         showStatusChoices: showStatusChoices,
-        openFilter: openFilter,
+        view: view,
+        optionsFilter: optionsFilter,
         needsRefresh: needsRefresh,
-        setOpenFilter: setOpenFilter,
+        setView: setView,
+        setOptionsFilter: setOptionsFilter,
         setNeedsRefresh: setNeedsRefresh,
         addToShowRoster: addToShowRoster,
         removeFromShowRoster: removeFromShowRoster,

@@ -1,12 +1,15 @@
 import {Show} from "../../../../types/types";
+import {Options, Views} from "../../components/ShowsTableControls";
 
 export interface ShowContextInterface {
     shows: Show[],
     showPriorityChoices: object,
     showStatusChoices: object,
-    openFilter: string,
+    view: Views,
+    optionsFilter: Options,
     needsRefresh: boolean,
-    setOpenFilter: (openFilter: string) => void,
+    setView: (view: Views) => void,
+    setOptionsFilter: (optionsFilter: Options) => void,
     setNeedsRefresh: (needsRefresh: boolean) => void,
     addToShowRoster: (id: number) => void,
     removeFromShowRoster: (id: number) => void,

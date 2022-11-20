@@ -33,6 +33,11 @@ const Header: React.FC<Props> = ({newUserTooltip}: Props) => {
             icon: <HomeFilled/>,
         },
         {
+            label: <Link to="/calendar">Calendar</Link>,
+            key: "calendar",
+            icon: <HomeFilled/>,
+        },
+        {
             label: <a href="/admin/" target="_blank">Admin</a>,
             key: "admin",
             icon: <SettingFilled/>,

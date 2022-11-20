@@ -1,13 +1,13 @@
 import React, {useContext} from "react";
-import {Button, Segmented, Space, Tooltip} from "antd";
+import {Button, Segmented, Select, Space, Tooltip} from "antd";
 import {SyncOutlined} from "@ant-design/icons";
 import ShowsTableContext from "../../context/ShowsTableContext";
-import {OPTIONS_ENUM} from "./constants";
+import {Options, Views} from "./constants";
 import styles from "./style.module.css";
 
 const ShowsTableControls = () => {
 
-    const {openFilter, setOpenFilter, setNeedsRefresh} =
+    const {view, optionsFilter, setView, setOptionsFilter, setNeedsRefresh} =
         useContext(ShowsTableContext);
 
     return (
@@ -18,9 +18,24 @@ const ShowsTableControls = () => {
                 </Button>
             </Tooltip>
             <Segmented
-                options={[OPTIONS_ENUM.OPEN, OPTIONS_ENUM.CLOSED, OPTIONS_ENUM.MINE, OPTIONS_ENUM.ALL]}
-                value={openFilter}
-                onChange={setOpenFilter}
+                options={[Options.OPEN, Options.CLOSED, Options.MINE, Options.ALL]}
+                value={optionsFilter}
+                onChange={setOptionsFilter}
+                onResize={undefined}
+                onResizeCapture={undefined}/>
+            <Select
+                value={view}
+                onChange={setView}
+                options={[
+                    {
+                        value: Views.TABLE,
+                        label: "Table",
+                    },
+                    {
+                        value: Views.CALENDAR,
+                        label: "Calendar",
+                    }
+                ]}
             />
         </Space>
     );

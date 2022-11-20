@@ -3,11 +3,12 @@ import {Divider, Layout, Row, Typography} from "antd";
 import {AppstoreAddOutlined} from "@ant-design/icons";
 import {UserContext} from "../../context/UserContext";
 import Header from "../../components/Header";
-import ShowsTable from "./components/ShowsTable";
+import ShowsCalendar from "./components/ShowsCalendar";
 import {ShowsTableProvider} from "./context/ShowsTableContext";
 import {User} from "../../types/types";
 import styles from "./style.module.css";
 import ShowsTableControls from "./components/ShowsTableControls";
+import ShowsTable from "./components/ShowsTable";
 
 const ShowsPage = () => {
 
@@ -28,6 +29,7 @@ const ShowsPage = () => {
                     </Row>
                     <Divider className={styles.divider}/>
                     <ShowsTable user={user}/>
+                    <ShowsCalendar/>
                 </ShowsTableProvider>
             </Layout.Content>
         </Layout>

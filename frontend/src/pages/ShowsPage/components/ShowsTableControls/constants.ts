@@ -1,8 +1,11 @@
-export const OPTIONS_ENUM = {
-    OPEN: "Open",
-    CLOSED: "Closed",
-    MINE: "Mine",
-    ALL: "All"
-};
+export enum Options {
+    OPEN = "Open",
+    CLOSED = "Closed",
+    MINE = "Mine",
+    ALL = "All"
+}
 
-Object.freeze(OPTIONS_ENUM);
+export enum Views {
+    TABLE = "Table",
+    CALENDAR = "Calendar"
+}
