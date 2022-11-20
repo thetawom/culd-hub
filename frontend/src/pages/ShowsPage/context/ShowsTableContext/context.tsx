@@ -14,9 +14,10 @@ import {
     GET_SHOW_STATUS_CHOICES_QUERY,
     GET_SHOWS_QUERY
 } from "./queries";
-import {Show} from "../../../../types/types";
+import {Show, User} from "../../../../types/types";
 import {ShowContextInterface} from "./types";
 import {Options, Views} from "../../components/ShowsTableControls";
+import {UserContext} from "../../../../context/UserContext";
 
 const ShowsTableContext = createContext(undefined);
 
@@ -27,7 +28,8 @@ interface Props {
 }
 
 export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
-    const {user, logoutUser} = useContext(AuthContext);
+    const {logoutUser} = useContext(AuthContext);
+    const {user}: { user: User } = useContext(UserContext);
 
     const [shows, setShows] = useState<Show[]>([]);
 
@@ -115,13 +117,13 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
         return false;
     };
 
-    const filtered_shows = optionsFilter === Options.ALL
-        ? shows
-        : optionsFilter === Options.MINE
-            ? shows.filter((show: Show) => isPerforming(show))
-            : optionsFilter === Options.OPEN
-                ? shows.filter((show: Show) => show.isOpen)
-                : shows.filter((show: Show) => !show.isOpen);
+    const filtered_shows =
+        optionsFilter === Options.ALL ? shows
+            : optionsFilter === Options.MINE
+                ? shows.filter((show: Show) => isPerforming(show))
+                : optionsFilter === Options.OPEN
+                    ? shows.filter((show: Show) => show.isOpen)
+                    : shows.filter((show: Show) => !show.isOpen);
 
     const contextData: ShowContextInterface = {
         shows: filtered_shows,
