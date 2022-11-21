@@ -15,7 +15,7 @@ interface Props {
     newUserTooltip?: boolean,
 }
 
-const Header: React.FC<Props> = ({newUserTooltip}: Props) => {
+const Navigation: React.FC<Props> = ({newUserTooltip}: Props) => {
     const {authTokens, logoutUser} = useContext(AuthContext);
 
     const {user, isNewUser} = useContext(UserContext);
@@ -63,11 +63,11 @@ const Header: React.FC<Props> = ({newUserTooltip}: Props) => {
     ];
 
     return (
-        <Layout.Header>
+        <Layout.Header style={{overflowY: "hidden"}}>
             <Menu items={items} theme="dark" mode="horizontal" onClick={onClick}
                   selectedKeys={[]}/>
         </Layout.Header>
     );
 };
 
-export default Header;
+export default Navigation;

@@ -2,7 +2,7 @@ import React, {useContext} from "react";
 import {Divider, Layout, Row, Typography} from "antd";
 import {AppstoreAddOutlined} from "@ant-design/icons";
 import {UserContext} from "../../context/UserContext";
-import Header from "../../components/Header";
+import Header from "../../components/Navigation";
 import ShowsCalendar from "./components/ShowsCalendar";
 import {ShowsTableProvider} from "./context/ShowsTableContext";
 import {User} from "../../types/types";

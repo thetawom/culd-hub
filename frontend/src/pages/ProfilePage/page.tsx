@@ -16,7 +16,7 @@ import {
     UserOutlined
 } from "@ant-design/icons";
 import {UserContext} from "../../context/UserContext";
-import Header from "../../components/Header";
+import Header from "../../components/Navigation";
 import ProfileItem from "./components/ProfileItem";
 import {QueryResult, useAuthQuery} from "../../services/graphql";
 import {
