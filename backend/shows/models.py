@@ -109,6 +109,7 @@ class Show(models.Model):
         help_text=_("Venue name or room number if on campus"),
     )
     is_campus = models.BooleanField(default=False, verbose_name="on campus")
+    is_out_of_city = models.BooleanField(default=False, verbose_name="out of city")
     lions = models.PositiveSmallIntegerField(
         null=True, blank=True, verbose_name="Number of lions"
     )

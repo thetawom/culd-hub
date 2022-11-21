@@ -27,6 +27,7 @@ export type Show = {
     point: Member,
     contact: Contact,
     isCampus: boolean,
+    isOutOfCity: boolean,
     isOpen: boolean,
     isPending: boolean,
     status: number,

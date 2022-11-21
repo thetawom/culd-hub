@@ -1,6 +1,6 @@
 import React, {useContext} from "react";
 import {Button, Segmented, Select, Space, Tooltip} from "antd";
-import {SyncOutlined} from "@ant-design/icons";
+import {CalendarOutlined, SyncOutlined, TableOutlined} from "@ant-design/icons";
 import ShowsTableContext from "../../context/ShowsTableContext";
 import {Options, Views} from "./constants";
 import styles from "./style.module.css";
@@ -29,11 +29,11 @@ const ShowsTableControls = () => {
                 options={[
                     {
                         value: Views.TABLE,
-                        label: "Table",
+                        label: <TableOutlined/>,
                     },
                     {
                         value: Views.CALENDAR,
-                        label: "Calendar",
+                        label: <CalendarOutlined/>,
                     }
                 ]}
             />

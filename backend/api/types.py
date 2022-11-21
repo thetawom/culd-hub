@@ -44,6 +44,7 @@ class ShowType(DjangoObjectType):
             "contact",
             "performers",
             "is_campus",
+            "is_out_of_city",
             "priority",
             "status",
         )

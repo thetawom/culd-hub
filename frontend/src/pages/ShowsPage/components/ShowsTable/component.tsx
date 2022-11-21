@@ -10,6 +10,8 @@ import {
     Tooltip
 } from "antd";
 import {
+    CarFilled,
+    CrownFilled,
     InfoCircleOutlined,
     InfoCircleTwoTone,
     MailTwoTone,
@@ -106,12 +108,30 @@ const ShowsTable = ({user}: { user: User }) => {
                 }}>{name}</span>
                 <Space size={5}>
                     {show.isPending && <Tooltip
-                        title="Show pending confirmation"
+                        title="Pending confirmation"
                         placement="bottom"
                         style={{textAlign: "center"}}
                     >
                         <WarningFilled
                             style={{color: "#faad14"}}
+                        />
+                    </Tooltip>}
+                    {show.isCampus && <Tooltip
+                        title="On campus"
+                        placement="bottom"
+                        style={{textAlign: "center"}}
+                    >
+                        <CrownFilled
+                            style={{color: "#4096ff"}}
+                        />
+                    </Tooltip>}
+                    {show.isOutOfCity && <Tooltip
+                        title="Out of city"
+                        placement="bottom"
+                        style={{textAlign: "center"}}
+                    >
+                        <CarFilled
+                            style={{color: "#fa541c"}}
                         />
                     </Tooltip>}
                     <Tooltip

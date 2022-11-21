@@ -35,6 +35,7 @@ export const GET_SHOWS_QUERY = gql`
 				email
 			}
 			isCampus
+			isOutOfCity
 			isOpen
 			isPending
 			status
