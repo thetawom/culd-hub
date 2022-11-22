@@ -59,7 +59,7 @@ class SlackBoss:
         email: Optional[str] = None,
         user: Optional[User] = None,
         member: Optional[Member] = None,
-    ) -> Optional[str]:
+    ) -> str:
         """Fetches Slack user ID for the specified member by email.
 
         One of email, user, or member should be provided.
@@ -90,6 +90,39 @@ class SlackBoss:
         else:
             logging.debug(response)
             return response["user"]["id"]
+
+    def fetch_channel_name(
+        self,
+        channel_id: Optional[str] = None,
+        channel: Optional[SlackChannel] = None,
+        show: Optional[Show] = None,
+    ):
+        """Fetches the name of the specified Slack channel.
+
+        One of channel_id, channel, or show should be provided.
+
+        Args:
+            channel_id: The Slack ID for the channel to fetch the name for.
+            channel: The Slack channel to fetch the name for.
+            show: The show to fetch the name of the Slack channel for.
+
+        Raises:
+            SlackBossException: If there was an error fetching info on the channel.
+        """
+
+        channel_id, channel_label = self._get_slack_channel_id_arg(
+            channel_id=channel_id, channel=channel, show=show
+        )
+
+        logging.info(f"Fetching info on channel {channel_label} ...")
+        try:
+            response = self.client.conversations_info(channel=channel_id)
+        except SlackApiError as api_error:
+            error = api_error.response.get("error")
+            raise SlackBossException(error)
+        else:
+            logging.debug(response)
+            return response["channel"]["name"]
 
     def create_channel(self, name: Optional[str] = None, show: Optional[Show] = None):
         """Creates Slack channel for the specified show.
@@ -158,6 +191,7 @@ class SlackBoss:
         channel: Optional[SlackChannel] = None,
         show: Optional[Show] = None,
         name: Optional[str] = None,
+        check: bool = False,
     ):
         """Renames the specified Slack channel.
 
@@ -169,6 +203,10 @@ class SlackBoss:
             channel: The Slack channel to rename.
             show: The show to rename the Slack channel for.
             name: The name to use for the Slack channel.
+            check: Whether to check current channel name to avoid unnecessary updates
+
+        Returns:
+            A bool indicating whether the channel name was updated.
 
         Raises:
             SlackBossException: If there was an error inviting the users.
@@ -179,6 +217,11 @@ class SlackBoss:
             channel_id=channel_id, channel=channel, show=show
         )
 
+        if check:
+            current_name = self.fetch_channel_name(channel_id=channel_id)
+            if name == current_name:
+                return False
+
         logging.info(f"Renaming channel {channel_label} ...")
         try:
             response = self.client.conversations_rename(channel=channel_id, name=name)
@@ -187,7 +230,7 @@ class SlackBoss:
             raise SlackBossException(error)
         else:
             logging.debug(response)
-            return response["channel"]["id"]
+            return True
 
     def invite_users_to_channel(
         self,

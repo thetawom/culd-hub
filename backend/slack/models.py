@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 from common.exceptions import WrongUsage
 from slack.managers import SlackUserManager, SlackChannelManager
 from slack.service import slack_boss
+from users.models import User
 
 
 class SlackUser(models.Model):
@@ -54,15 +55,23 @@ class SlackChannel(models.Model):
     def __str__(self):
         return self.show.default_channel_name()
 
-    def update_name(self, name: Optional[str] = None):
+    def force_refresh(self):
+        self.update_name(check=True)
+        self.invite_performers(invite_admin=True)
+        self.send_or_update_briefing()
+
+    def update_name(self, name: Optional[str] = None, check: bool = False):
         """Renames the Slack channel.
         The default channel name format is used if name is not provided.
 
         Args:
             name: The name to use for the Slack channel.
+            check: Whether to check current channel name to avoid unnecessary updates
         """
 
-        slack_boss.rename_channel(channel_id=self.id, name=name, show=self.show)
+        slack_boss.rename_channel(
+            channel_id=self.id, name=name, show=self.show, check=check
+        )
 
     def archive(self, rename: bool = True):
         """Archives the Slack channel.
@@ -92,8 +101,12 @@ class SlackChannel(models.Model):
 
         slack_boss.invite_users_to_channel(channel_id=self.id, users=users)
 
-    def invite_performers(self):
-        """Invites all registered performers to the Slack channel."""
+    def invite_performers(self, invite_admin: bool = True):
+        """Invites all registered performers to the Slack channel.
+
+        Args:
+            invite_admin: Whether to invite Slack admins
+        """
 
         if self.show.performers.count() > 0:
             self.invite_users(
@@ -102,6 +115,21 @@ class SlackChannel(models.Model):
                     for performer in self.show.performers.all()
                 ]
             )
+
+        if invite_admin:
+            self.invite_admin()
+
+    def invite_admin(self):
+        """Invites all Slack admin to the Slack channel."""
+
+        slack_admins = [
+            user.member.slack_user
+            for user in User.objects.filter(groups__name="slack_admins")
+            if user.member
+        ]
+
+        if len(slack_admins) > 0:
+            self.invite_users(slack_admins)
 
     def remove_users(self, users: Union[SlackUser, List[SlackUser]]):
         """Removes Slack user or users from the Slack channel.

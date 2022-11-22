@@ -270,13 +270,13 @@ class TestSlackBoss(SimpleTestCase):
 
         self.mock_client.conversations_rename.side_effect = mock_conversations_rename
 
-        fetched_channel_id = self.slack_boss.rename_channel(
+        name_updated = self.slack_boss.rename_channel(
             name=show_name, channel_id=channel_id
         )
         self.mock_client.conversations_rename.assert_called_with(
             channel=channel_id, name=show_name
         )
-        self.assertEqual(fetched_channel_id, channel_id)
+        self.assertTrue(name_updated)
 
         with self.assertRaises(SlackBossException):
             self.slack_boss.rename_channel(

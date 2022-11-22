@@ -56,7 +56,10 @@ class TestSlackChannel(PatchSlackBossMixin, TestCase):
     def test_slack_channel_update_name(self):
         self.slack_channel.update_name(name=self.channel_name)
         self.mock_rename_channel.assert_called_with(
-            channel_id=self.channel_id, name=self.channel_name, show=self.show
+            channel_id=self.channel_id,
+            name=self.channel_name,
+            show=self.show,
+            check=False,
         )
 
     def test_slack_channel_archive(self):
