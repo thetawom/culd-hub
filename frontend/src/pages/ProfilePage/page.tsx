@@ -88,8 +88,7 @@ const ProfilePage = () => {
                         }}
                         display={values => `${values.firstName} ${values.lastName}`}
                         input={
-                            <Input.Group compact
-                                         className={styles.fullWidthInput}>
+                            <>
                                 <Form.Item
                                     name="firstName"
                                     initialValue={user.firstName}
@@ -107,10 +106,10 @@ const ProfilePage = () => {
                                     normalize={toTitleCase}
                                     noStyle>
                                     <Input placeholder="Last name"
-                                           className={styles.halfWidthInput}/>
+                                           className={styles.halfWidthInput}
+                                           prefix={<UserOutlined/>}/>
                                 </Form.Item>
-                            </Input.Group>
-                        }
+                            </>}
                     />
                     <ProfileItem
                         title="Email Address"

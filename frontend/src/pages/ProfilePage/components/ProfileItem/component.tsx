@@ -77,19 +77,7 @@ const ProfileItem: React.FC<Props> = ({
         <div className={styles.content}>
             <Card.Meta
                 title={title}
-                description={editing ? (<Form form={form} onFinish={onSubmit}
-                                              style={{width: "100%"}}>
-                    <Input.Group compact style={{width: "100%"}}>
-                        {input}
-                        <Form.Item shouldUpdate noStyle>
-                            {() => <Button type="primary" htmlType="submit"
-                                           style={{width: "50px"}}
-                                           disabled={!!form.getFieldsError().filter(({errors}) => errors.length).length}>
-                                <CheckOutlined/>
-                            </Button>}
-                        </Form.Item>
-                    </Input.Group>
-                </Form>) : (choices ? choices[display(values)] ?? display(values) : display(values))}
+                description={!editing && (choices ? choices[display(values)] ?? display(values) : display(values))}
                 style={{width: "100%"}}
             />
             {!editing && (<EditTwoTone
@@ -98,6 +86,19 @@ const ProfileItem: React.FC<Props> = ({
                 }}
             />)}
         </div>
+        {editing && <Form form={form} onFinish={onSubmit}
+                          style={{marginTop: "15px"}}>
+            <Input.Group compact style={{width: "100%"}}>
+                {input}
+                <Form.Item shouldUpdate noStyle>
+                    {() => <Button type="primary" htmlType="submit"
+                                   style={{width: "50px"}}
+                                   disabled={!!form.getFieldsError().filter(({errors}) => errors.length).length}>
+                        <CheckOutlined/>
+                    </Button>}
+                </Form.Item>
+            </Input.Group>
+        </Form>}
     </Card>);
 };
 

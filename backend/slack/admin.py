@@ -8,7 +8,7 @@ class SlackUserAdmin(admin.ModelAdmin):
     list_display = ["id", "member"]
 
 
-@admin.action(description="Refresh Slack channel")
+@admin.action(description="Refresh Slack channels")
 def force_refresh(modeladmin, request, queryset):
     for slack_channel in queryset:
         slack_channel.force_refresh()

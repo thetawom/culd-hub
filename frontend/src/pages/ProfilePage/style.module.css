@@ -47,7 +47,7 @@
 }
 
 .halfWidthInput {
-    width: 50% !important;
+    width: calc(50% - 25px) !important;
 }
 
 .fullWidthInput {
