@@ -43,7 +43,7 @@ const Navigation: React.FC<Props> = ({newUserTooltip}: Props) => {
                     <Tooltip
                         title="Complete your member profile"
                         placement="bottomRight"
-                        visible={newUserTooltip && isNewUser}
+                        open={newUserTooltip && isNewUser}
                         color="#eb2f96"
                         overlayClassName={styles.tooltip}
                     >

@@ -18,7 +18,7 @@ const ShowsTableControls = () => {
                 </Button>
             </Tooltip>
             <Segmented
-                options={[Options.OPEN, Options.CLOSED, Options.MINE, Options.ALL]}
+                options={[Options.UPCOMING, Options.PAST, Options.MINE, Options.ALL]}
                 value={optionsFilter}
                 onChange={setOptionsFilter}
                 onResize={undefined}

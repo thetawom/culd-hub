@@ -17,7 +17,7 @@ const ShowCalendar = () => {
 
     const getShowDataForDate = (date: Dayjs, unit: TimeUnit) => {
         const listData = shows
-            .filter(show => dayjs(show.date).isSame(date, unit))
+            .filter(show => show.date.isSame(date, unit))
             .map(show => ({
                 type: show.isOpen ? (show.isPending ? "warning" : "success") : "default",
                 content: show.name,

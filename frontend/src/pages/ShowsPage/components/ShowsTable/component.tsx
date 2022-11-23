@@ -20,7 +20,7 @@ import {
     StarFilled,
     WarningFilled
 } from "@ant-design/icons";
-import dayjs from "dayjs";
+import dayjs, {Dayjs} from "dayjs";
 import ShowsTableContext from "../../context/ShowsTableContext";
 import {Contact, Member, Round, Show, User} from "../../../../types/types";
 import {ShowContextInterface} from "../../context/ShowsTableContext/types";
@@ -157,8 +157,8 @@ const ShowsTable = ({user}: { user: User }) => {
         title: "Date",
         dataIndex: "date",
         key: "date",
-        render: (date: string) => (date ? dayjs(date).format("ddd, MMM DD") : ""),
-        sorter: (a, b) => a.date.localeCompare(b.date),
+        render: (date: Dayjs) => (date ? date.format("ddd, MMM DD") : ""),
+        sorter: (a, b) => a.date?.diff(b.date),
     }, {
         title: "Time",
         dataIndex: "rounds",

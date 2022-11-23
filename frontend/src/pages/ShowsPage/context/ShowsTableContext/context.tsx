@@ -18,6 +18,7 @@ import {Show, User} from "../../../../types/types";
 import {ShowContextInterface} from "./types";
 import {Options, Views} from "../../components/ShowsTableControls";
 import {UserContext} from "../../../../context/UserContext";
+import dayjs from "dayjs";
 
 const ShowsTableContext = createContext(undefined);
 
@@ -30,8 +31,6 @@ interface Props {
 export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
     const {logoutUser} = useContext(AuthContext);
     const {user}: { user: User } = useContext(UserContext);
-
-    const [shows, setShows] = useState<Show[]>([]);
 
     const [showPriorityChoices, setShowPriorityChoices] = useState(null);
     useAuthQuery(GET_SHOW_PRIORITY_CHOICES_QUERY, {
@@ -48,11 +47,13 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
     });
 
     const [view, setView] = useState<Views>(Views.TABLE);
-    const [optionsFilter, setOptionsFilter] = useState<Options>(Options.OPEN);
+    const [optionsFilter, setOptionsFilter] = useState<Options>(Options.UPCOMING);
     const [needsRefresh, setNeedsRefresh] = useState<boolean>(true);
 
+    const [shows, setShows] = useState<Show[]>([]);
     const [getShows] = useAuthLazyQuery(GET_SHOWS_QUERY, {
         onCompleted: ({shows}) => {
+            shows.forEach(show => show.date = dayjs(show.date));
             setShows(shows);
             setNeedsRefresh(false);
         },
@@ -117,13 +118,21 @@ export const ShowsTableProvider: React.FC<Props> = ({children}: Props) => {
         return false;
     };
 
-    const filtered_shows =
-        optionsFilter === Options.ALL ? shows
-            : optionsFilter === Options.MINE
-                ? shows.filter((show: Show) => isPerforming(show))
-                : optionsFilter === Options.OPEN
-                    ? shows.filter((show: Show) => show.isOpen)
-                    : shows.filter((show: Show) => !show.isOpen);
+    let filtered_shows: Show[];
+    switch (optionsFilter) {
+        case Options.ALL:
+            filtered_shows = shows;
+            break;
+        case Options.MINE:
+            filtered_shows = shows.filter(isPerforming);
+            break;
+        case Options.UPCOMING:
+            filtered_shows = shows.filter((show: Show) => !dayjs().isAfter(show.date, "day"));
+            break;
+        case Options.PAST:
+            filtered_shows = shows.filter((show: Show) => dayjs().isAfter(show.date, "day"));
+            break;
+    }
 
     const contextData: ShowContextInterface = {
         shows: filtered_shows,

@@ -1,3 +1,5 @@
+import {Dayjs} from "dayjs";
+
 export type User = {
     id: number,
     firstName: string,
@@ -18,7 +20,7 @@ export type Show = {
     id: number,
     name: string,
     priority: number,
-    date: string,
+    date: Dayjs,
     time: string,
     rounds: Round[],
     address: string,

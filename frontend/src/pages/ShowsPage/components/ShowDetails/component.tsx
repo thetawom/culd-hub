@@ -12,7 +12,7 @@ const ShowDetails = ({show}: { show: Show }) => {
     return (
         <Descriptions layout="vertical" bordered size="middle">
             <Descriptions.Item label="Date">
-                {dayjs(show.date).format("ddd, MMM DD") || "TBD"}
+                {show.date.format("ddd, MMM DD") || "TBD"}
             </Descriptions.Item>
             <Descriptions.Item label="Time(s)">
                 <Space>

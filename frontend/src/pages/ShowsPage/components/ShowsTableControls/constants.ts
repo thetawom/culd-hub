@@ -1,6 +1,6 @@
 export enum Options {
-    OPEN = "Open",
-    CLOSED = "Closed",
+    UPCOMING = "Upcoming",
+    PAST = "Past",
     MINE = "Mine",
     ALL = "All"
 }
