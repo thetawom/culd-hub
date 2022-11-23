@@ -247,6 +247,9 @@ class Show(models.Model):
         return self.performers.count()
 
     @admin.display(description="Slack", boolean=True)
+    def is_slack_channel_active(self):
+        return self.has_slack_channel() and not self.channel.is_archived()
+
     def has_slack_channel(self):
         return hasattr(self, "channel")
 

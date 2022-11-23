@@ -34,7 +34,7 @@ class ShowAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "status",
-        "has_slack_channel",
+        "is_slack_channel_active",
         "priority",
         "day_of_week",
         "date",
