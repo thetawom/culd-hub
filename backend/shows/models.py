@@ -170,25 +170,26 @@ class Show(models.Model):
         super().save(*args, **kwargs)
         if self.status > Show.STATUSES.draft:
             channel, created = self.fetch_slack_channel()
-            if created:
-                channel.send_or_update_briefing()
-                channel.invite_performers()
-            else:
-                if updated_fields:
+            if not channel.is_archived():
+                if created:
                     channel.send_or_update_briefing()
-                    channel.send_update_message(
-                        [
-                            self._meta.get_field(field).verbose_name.lower()
-                            for field in updated_fields
-                        ]
-                    )
-                    if "name" in updated_fields or "date" in updated_fields:
-                        channel.update_name()
+                    channel.invite_performers()
+                else:
+                    if updated_fields:
+                        channel.send_or_update_briefing()
+                        channel.send_update_message(
+                            [
+                                self._meta.get_field(field).verbose_name.lower()
+                                for field in updated_fields
+                            ]
+                        )
+                        if "name" in updated_fields or "date" in updated_fields:
+                            channel.update_name()
 
     def delete(self, *args, **kwargs):
         self.status = self.STATUSES.draft
         self.save()
-        if hasattr(self, "channel"):
+        if self.has_slack_channel() and not self.channel.is_archived():
             self.channel.archive(rename=True)
         super().delete(*args, **kwargs)
 

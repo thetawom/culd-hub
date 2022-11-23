@@ -11,6 +11,20 @@ class RoleInlineAdmin(admin.TabularInline):
     model = Role
 
 
+@admin.action(description="Refresh show Slack channels")
+def refresh_channels(modeladmin, request, queryset):
+    for show in queryset:
+        if show.has_slack_channel:
+            show.channel.force_refresh()
+
+
+@admin.action(description="Archive show Slack channels")
+def archive_channels(modeladmin, request, queryset):
+    for show in queryset:
+        if show.has_slack_channel:
+            show.channel.archive(rename=False)
+
+
 class ShowAdmin(admin.ModelAdmin):
     @staticmethod
     def rounds(show):
@@ -33,6 +47,8 @@ class ShowAdmin(admin.ModelAdmin):
     empty_value_display = "TBD"
 
     inlines = [RoundInlineAdmin, RoleInlineAdmin]
+
+    actions = [refresh_channels, archive_channels]
 
 
 class MemberAdmin(admin.ModelAdmin):

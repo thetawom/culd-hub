@@ -14,10 +14,16 @@ def force_refresh(modeladmin, request, queryset):
         slack_channel.force_refresh()
 
 
+@admin.action(description="Archive Slack channels")
+def archive(modeladmin, request, queryset):
+    for slack_channel in queryset:
+        slack_channel.archive(rename=False)
+
+
 class SlackChannelAdmin(admin.ModelAdmin):
-    readonly_fields = ["id", "show", "briefing_ts"]
-    list_display = ["id", "show"]
-    actions = [force_refresh]
+    readonly_fields = ["id", "show", "briefing_ts", "is_archived"]
+    list_display = ["id", "show", "is_archived"]
+    actions = [force_refresh, archive]
 
 
 admin.site.register(SlackUser, SlackUserAdmin)

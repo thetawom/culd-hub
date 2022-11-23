@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Union, List, Optional
 
+from django.contrib import admin
 from django.db import models
 from django.utils.translation import gettext as _
 
@@ -49,11 +50,16 @@ class SlackChannel(models.Model):
         verbose_name="briefing timestamp",
         help_text=_("Slack ts for initial briefing message in the channel"),
     )
+    archived = models.BooleanField(default=False)
 
     objects = SlackChannelManager()
 
     def __str__(self):
         return self.show.default_channel_name()
+
+    @admin.display(description="Is Archived", boolean=True)
+    def is_archived(self):
+        return self.archived
 
     def force_refresh(self):
         self.update_name(check=True)
@@ -85,12 +91,15 @@ class SlackChannel(models.Model):
             rename: Whether to rename the channel before archiving.
         """
 
-        if rename:
-            timestamp = str(datetime.now().timestamp()).replace(".", "-")
-            self.update_name(
-                name=f"arch-{self.show.default_channel_name()}-{timestamp}"
-            )
-        slack_boss.archive_channel(channel_id=self.id)
+        if not self.is_archived():
+            if rename:
+                timestamp = str(datetime.now().timestamp()).replace(".", "-")
+                self.update_name(
+                    name=f"arch-{self.show.default_channel_name()}-{timestamp}"
+                )
+            slack_boss.archive_channel(channel_id=self.id)
+            self.archived = True
+            self.save()
 
     def invite_users(self, users: Union[SlackUser, List[SlackUser]]):
         """Invites Slack user or users to the Slack channel.
