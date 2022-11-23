@@ -18,6 +18,7 @@ interface Props {
     values: StringDict,
     display: (values: StringDict) => string,
     input: React.ReactNode,
+    customSubmit?: boolean
     choices?: StringDict,
 }
 
@@ -30,8 +31,9 @@ const ProfileItem: React.FC<Props> = ({
                                           values,
                                           display,
                                           input,
+                                          customSubmit,
                                           choices
-                                      }) => {
+                                      }: Props) => {
     const [form] = Form.useForm();
 
     const [editing, setEditing] = useState(false);
@@ -66,40 +68,36 @@ const ProfileItem: React.FC<Props> = ({
         }
     };
 
-    return (<Card
-        hoverable
-        onClick={() => {
-            if (!editing) {
-                setEditing(true);
-            }
-        }}
-    >
-        <div className={styles.content}>
-            <Card.Meta
-                title={title}
-                description={!editing && (choices ? choices[display(values)] ?? display(values) : display(values))}
-                style={{width: "100%"}}
-            />
-            {!editing && (<EditTwoTone
-                style={{
-                    fontSize: "1.8em",
-                }}
-            />)}
-        </div>
-        {editing && <Form form={form} onFinish={onSubmit}
-                          style={{marginTop: "15px"}}>
-            <Input.Group compact style={{width: "100%"}}>
-                {input}
-                <Form.Item shouldUpdate noStyle>
-                    {() => <Button type="primary" htmlType="submit"
-                                   style={{width: "50px"}}
-                                   disabled={!!form.getFieldsError().filter(({errors}) => errors.length).length}>
-                        <CheckOutlined/>
-                    </Button>}
-                </Form.Item>
-            </Input.Group>
-        </Form>}
-    </Card>);
+    const defaultSubmitButton = () =>
+        <Button type="primary" htmlType="submit"
+                style={{width: "50px"}}
+                disabled={!!form.getFieldsError().filter(({errors}) => errors.length).length}>
+            <CheckOutlined/>
+        </Button>;
+
+    if (editing) {
+        return <Card hoverable>
+            <div className={styles.content}>
+                <Card.Meta title={title}/>
+            </div>
+            <Form form={form} onFinish={onSubmit}>
+                <Input.Group compact>
+                    {input}
+                    <Form.Item shouldUpdate noStyle>
+                        {customSubmit || defaultSubmitButton}
+                    </Form.Item>
+                </Input.Group>
+            </Form>
+        </Card>;
+    } else {
+        return <Card hoverable onClick={() => setEditing(true)}>
+            <div className={styles.content}>
+                <Card.Meta title={title}
+                           description={(choices ? choices[display(values)] ?? display(values) : display(values))}/>
+                <EditTwoTone className={styles.editButton}/>
+            </div>
+        </Card>;
+    }
 };
 
 export default ProfileItem;
