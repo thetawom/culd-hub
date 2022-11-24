@@ -18,6 +18,7 @@ import {
 import {UserContext} from "../../context/UserContext";
 import Header from "../../components/Navigation";
 import ProfileItem from "./components/ProfileItem";
+import ProfilePasswordItem from "./components/ProfilePasswordItem";
 import {QueryResult, useAuthQuery} from "../../services/graphql";
 import {
     EMAIL_VALIDATION_RULES,
@@ -68,7 +69,8 @@ const ProfilePage = () => {
     return <Layout>
         <Header/>
         <Layout.Content className={styles.content}>
-            <Row className={styles.heading} justify="space-between"
+            <Row className={styles.heading}
+                 justify="space-between"
                  align="bottom">
                 <Typography.Title className={styles.title} level={2}>
                     <SmileOutlined className={styles.icon}/>Member Profile
@@ -180,6 +182,7 @@ const ProfilePage = () => {
                             </Form.Item>
                         }
                     />
+                    <ProfilePasswordItem/>
                 </Space>}
         </Layout.Content>
     </Layout>;

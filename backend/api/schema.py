@@ -16,6 +16,7 @@ from .mutations import (
     ResetPasswordMutation,
     RegisterMutation,
     UpdateProfileMutation,
+    UpdatePasswordMutation,
 )
 from .types import UserType, MemberType, ShowType
 
@@ -96,6 +97,7 @@ class Mutation(graphene.ObjectType):
     create_role = CreateRoleMutation.Field()
     delete_role = DeleteRoleMutation.Field()
     update_profile = UpdateProfileMutation.Field()
+    update_password = UpdatePasswordMutation.Field()
 
     logout_user = LogoutUserMutation.Field()
     send_password_reset_email = SendPasswordResetEmailMutation.Field()

@@ -46,6 +46,13 @@ export const PASSWORD_VALIDATION_RULES: Rule[] = [
     }
 ];
 
+export const NEW_PASSWORD_VALIDATION_RULES: Rule[] = [
+    {
+        required: true,
+        message: "Please enter your new password."
+    }
+];
+
 export const CONFIRM_PASSWORD_VALIDATION_RULES: Rule[] = [
     {
         required: true,

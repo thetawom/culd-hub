@@ -8,11 +8,11 @@
     margin-top: 15px;
 }
 
+.formItem {
+    margin-bottom: 10px;
+}
+
 .editButton {
     font-size: 1.5em;
     margin-right: 5px;
-}
-
-.submitButton {
-    width: 50px;
 }

@@ -52,3 +52,18 @@ export const UPDATE_PROFILE_MUTATION = gql`
         }
     }
 `;
+
+export const UPDATE_PASSWORD_MUTATION = gql`
+    mutation UpdateProfile (
+        $oldPassword: String
+        $password: String
+    ) {
+        updatePassword (
+            oldPassword: $oldPassword
+            password: $password
+        ) {
+            success
+            errors
+        }
+    }
+`;

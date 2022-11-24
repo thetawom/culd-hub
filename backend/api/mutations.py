@@ -7,6 +7,7 @@ from users.mixins import (
     ResetPasswordMixin,
     RegisterMixin,
     UpdateProfileMixin,
+    UpdatePasswordMixin,
 )
 from .bases import DynamicArgsMixin
 from .types import RoleType
@@ -53,6 +54,11 @@ class RegisterMutation(DynamicArgsMixin, RegisterMixin, graphene.Mutation):
 class UpdateProfileMutation(DynamicArgsMixin, UpdateProfileMixin, graphene.Mutation):
     __doc__ = UpdateProfileMixin.__doc__
     _args = ["first_name", "last_name", "email", "phone", "school", "class_year"]
+
+
+class UpdatePasswordMutation(DynamicArgsMixin, UpdatePasswordMixin, graphene.Mutation):
+    __doc__ = UpdatePasswordMixin.__doc__
+    _args = ["old_password", "password"]
 
 
 class LogoutUserMutation(LogoutUserMixin, graphene.Mutation):

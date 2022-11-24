@@ -72,6 +72,22 @@ class UpdateProfileMixin(Output):
             return cls(success=False, errors=errors)
 
 
+class UpdatePasswordMixin(Output):
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls)
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs):
+        user = info.context.user
+        old_password = kwargs.get("old_password")
+        if user and user.check_password(old_password):
+            user.set_password(kwargs.get("password"))
+            user.save()
+        else:
+            return cls(success=False, errors=Messages.INVALID_PASSWORD)
+        return cls(success=True)
+
+
 class LogoutUserMixin(Output):
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)

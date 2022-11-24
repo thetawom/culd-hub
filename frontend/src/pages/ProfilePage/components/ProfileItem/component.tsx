@@ -18,7 +18,6 @@ interface Props {
     values: StringDict,
     display: (values: StringDict) => string,
     input: React.ReactNode,
-    customSubmit?: boolean
     choices?: StringDict,
 }
 
@@ -31,7 +30,6 @@ const ProfileItem: React.FC<Props> = ({
                                           values,
                                           display,
                                           input,
-                                          customSubmit,
                                           choices
                                       }: Props) => {
     const [form] = Form.useForm();
@@ -68,13 +66,6 @@ const ProfileItem: React.FC<Props> = ({
         }
     };
 
-    const defaultSubmitButton = () =>
-        <Button type="primary" htmlType="submit"
-                style={{width: "50px"}}
-                disabled={!!form.getFieldsError().filter(({errors}) => errors.length).length}>
-            <CheckOutlined/>
-        </Button>;
-
     if (editing) {
         return <Card hoverable>
             <div className={styles.content}>
@@ -84,7 +75,13 @@ const ProfileItem: React.FC<Props> = ({
                 <Input.Group compact>
                     {input}
                     <Form.Item shouldUpdate noStyle>
-                        {customSubmit || defaultSubmitButton}
+                        {() =>
+                            <Button type="primary"
+                                    htmlType="submit"
+                                    className={styles.submitButton}
+                                    disabled={!!form.getFieldsError().filter(({errors}) => errors.length).length}>
+                                <CheckOutlined/>
+                            </Button>}
                     </Form.Item>
                 </Input.Group>
             </Form>
