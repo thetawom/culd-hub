@@ -43,6 +43,7 @@ class ShowAdmin(admin.ModelAdmin):
         "performer_count",
         "rounds",
         "address",
+        "notes",
     ]
     empty_value_display = "TBD"
 

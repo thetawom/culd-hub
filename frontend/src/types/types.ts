@@ -33,6 +33,7 @@ export type Show = {
     isOpen: boolean,
     isPending: boolean,
     status: number,
+    notes: string,
 }
 
 export type Round = {

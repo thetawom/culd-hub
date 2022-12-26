@@ -141,6 +141,7 @@ class Show(models.Model):
     priority = models.PositiveSmallIntegerField(
         choices=PRIORITIES, default=PRIORITIES.normal
     )
+    notes = models.TextField(blank=True, verbose_name="notes")
 
     class Meta:
         ordering = ["date", "time"]

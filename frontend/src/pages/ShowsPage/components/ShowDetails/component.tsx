@@ -82,6 +82,9 @@ const ShowDetails = ({show}: { show: Show }) => {
                         ))}
                 </Space>
             </Descriptions.Item>
+            <Descriptions.Item label="Notes">
+                {show.notes || ""}
+            </Descriptions.Item>
         </Descriptions>
     );
 };

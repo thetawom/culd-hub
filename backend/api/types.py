@@ -47,6 +47,7 @@ class ShowType(DjangoObjectType):
             "is_out_of_city",
             "priority",
             "status",
+            "notes",
         )
         convert_choices_to_enum = False
 
