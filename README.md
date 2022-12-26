@@ -211,7 +211,7 @@ Navigate to http://localhost:3000/ to see the results.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://github.com/Ileriayo/markdown-badges -->
 
-[build-shield]: https://img.shields.io/github/workflow/status/ew2664/culd-hub/Deployment?style=flat-square
+[build-shield]: https://img.shields.io/github/actions/workflow/status/ew2664/culd-hub/deploy.yml?style=flat-square
 
 [build-url]: https://github.com/ew2664/culd-hub/actions/workflows/deploy.yml
 
