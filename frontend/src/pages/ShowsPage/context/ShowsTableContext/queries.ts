@@ -39,6 +39,7 @@ export const GET_SHOWS_QUERY = gql`
 			isOpen
 			isPending
 			status
+			notes
 		}
 	}
 `;
